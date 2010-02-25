@@ -38,7 +38,47 @@ public class TidalController {
         // TESTING
         DropletModel m =
             new DropletModel(
-                    "TEST",
+                    "Test",
+                    new DropletContentModel(
+                            1,
+                            "Douglas Teoh",
+                            "Just a test email",
+                            "Lorem ipsum dolor sit amet, consectetur "
+                                + "adipiscing elit. Etiam felis leo, elementum "
+                                + "interdum interdum at, mollis sed nibh. Mauris "
+                                + "laoreet metus sed massa sagittis tempor. "
+                                + "Pellentesque diam est, adipiscing non vehicula id,"
+                                + " aliquet eget ligula. Aenea scelerisque dictum"
+                                + " nulla eget semper. Sed dapibus accumsan ligula "
+                                + "eget faucibus. Donec vitae interdum neque. Aliquam"
+                                + " sed erat vitae dui lacinia tincidunt a eu velit."
+                                + " Suspendisse in nulla sit amet urna semper "
+                                + "tincidunt pharetra at neque. Pellentesque et "
+                                + "turpis eget urna aliquet elementum at sed massa. "
+                                + "Fusce facilisis lorem id mi lobortis in rhoncus "
+                                + "urna viverra. Praesent pulvinar volutpat urna."
+                                + "\nCras molestie sollicitudin ultrices. In quis est"
+                                + " sit amet dolor egestas interdum. Vestibulum "
+                                + "consectetur enim ultricies nisl tristique varius. "
+                                + "Etiam et nunc non odio dapibus scelerisque. Cum "
+                                + "sociis natoque penatibus et magnis dis parturient "
+                                + "montes, nascetur ridiculus mus. Mauris nec volutpat"
+                                + " elit. Nulla eget diam nibh, ac lobortis nunc. Ut "
+                                + "at lectus enim. Etiam quis ipsum dolor. Proin "
+                                + "luctus lorem id purus venenatis imperdiet eget "
+                                + "varius est. Morbi non lacinia neque. Maecenas "
+                                + "lobortis ligula vel magna blandit pellentesque. ",
+                            Calendar.getInstance().getTimeInMillis()),
+                    new DropletContentModel(
+                            1,
+                            "Tester",
+                            "Another test email",
+                            "Email contents are supposed to be truncated after 50 characters, are the contents being truncated in the preview?",
+                            Calendar.getInstance().getTimeInMillis()));
+
+        DropletModel n =
+            new DropletModel(
+                    "Another",
                     new DropletContentModel(
                             1,
                             "Douglas Teoh",
@@ -77,7 +117,7 @@ public class TidalController {
                             Calendar.getInstance().getTimeInMillis()));
         // END
 
-        view.displayDroplets(m);
+        view.displayDroplets(m, n);
 
         view.revalidate();
     }

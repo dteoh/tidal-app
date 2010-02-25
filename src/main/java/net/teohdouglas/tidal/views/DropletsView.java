@@ -1,6 +1,7 @@
 package net.teohdouglas.tidal.views;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
@@ -32,7 +33,7 @@ public class DropletsView extends JPanel {
         setBackground(Color.WHITE);
 
         dropletsPanel = new JPanel();
-        dropletsPanel.setLayout(new MigLayout("wrap 1"));
+        dropletsPanel.setLayout(new MigLayout("wrap 1, ins 0"));
         dropletsPanel.setBackground(Color.WHITE);
 
         dropletsContentPanel = new JPanel();
@@ -74,11 +75,20 @@ public class DropletsView extends JPanel {
     private class DropletViewMouseAdapter extends MouseAdapter {
         @Override
         public void mouseClicked(final MouseEvent e) {
-            System.out.println("Clicked");
+            if (e.isPopupTrigger()) {
+                return;
+            }
+
+            for (Component c : dropletsPanel.getComponents()) {
+                DropletView view = (DropletView) c;
+                view.deselect();
+            }
+
             dropletsContentPanel.removeAll();
             dropletsContentPanel.revalidate();
 
             DropletView view = (DropletView) e.getSource();
+            view.select();
             Iterator<RippleView> rippleViews = view.getRippleViews();
 
             while (rippleViews.hasNext()) {

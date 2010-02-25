@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -22,6 +23,13 @@ public class DropletView extends JPanel {
     private final DropletModel dropletModel;
     private final List<RippleView> rippleViews;
 
+    private static final Font NORMAL_FONT =
+        new Font(Font.SANS_SERIF, Font.PLAIN, 13);
+    private static final Font SELECTED_FONT =
+        new Font(Font.SANS_SERIF, Font.BOLD, 13);
+
+    private JLabel dropletNameLabel;
+
     public DropletView(final DropletModel dropletModel) {
         super();
         this.dropletModel = dropletModel;
@@ -30,12 +38,19 @@ public class DropletView extends JPanel {
     }
 
     private void initView() {
-        setLayout(new MigLayout());
+        setLayout(new MigLayout("fill, ins 0", "[grow]"));
         setBackground(Color.WHITE);
 
-        JLabel dropletNameLabel = new JLabel(dropletModel.getDropletName());
-        dropletNameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
-        add(dropletNameLabel);
+        dropletNameLabel = new JLabel(dropletModel.getDropletName());
+        dropletNameLabel.setBackground(new Color(102, 148, 227));
+        dropletNameLabel.setForeground(new Color(102, 148, 227));
+        dropletNameLabel.setFont(NORMAL_FONT);
+
+        // Create padding for the label.
+        dropletNameLabel
+                .setBorder(BorderFactory.createEmptyBorder(2, 20, 2, 4));
+
+        add(dropletNameLabel, "growx, w 200!");
 
         Iterator<DropletContentModel> contentModels =
             dropletModel.getDropletContents();
@@ -43,6 +58,18 @@ public class DropletView extends JPanel {
         while (contentModels.hasNext()) {
             rippleViews.add(new RippleView(contentModels.next()));
         }
+    }
+
+    public void select() {
+        dropletNameLabel.setOpaque(true);
+        dropletNameLabel.setFont(SELECTED_FONT);
+        dropletNameLabel.setForeground(Color.WHITE);
+    }
+
+    public void deselect() {
+        dropletNameLabel.setOpaque(false);
+        dropletNameLabel.setFont(NORMAL_FONT);
+        dropletNameLabel.setForeground(new Color(102, 148, 227));
     }
 
     public Iterator<RippleView> getRippleViews() {
