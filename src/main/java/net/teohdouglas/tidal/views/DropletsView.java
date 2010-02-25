@@ -50,9 +50,14 @@ public class DropletsView extends JPanel {
         dropletsPanel.removeAll();
         dropletsContentPanel.removeAll();
 
+        PoolDropletView poolView = new PoolDropletView();
+        poolView.addMouseListener(dropletViewMouseAdapter);
+        dropletsPanel.add(poolView);
+
         for (int i = 0; i < dropletModels.length; i++) {
             DropletView dropletView = new DropletView(dropletModels[i]);
             dropletView.addMouseListener(dropletViewMouseAdapter);
+            poolView.addRippleViews(dropletView.getRippleViews());
             dropletsPanel.add(dropletView);
         }
 

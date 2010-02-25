@@ -108,13 +108,13 @@ public class TidalController {
                                 + "luctus lorem id purus venenatis imperdiet eget "
                                 + "varius est. Morbi non lacinia neque. Maecenas "
                                 + "lobortis ligula vel magna blandit pellentesque. ",
-                            Calendar.getInstance().getTimeInMillis()),
+                            Calendar.getInstance().getTimeInMillis() - 50000),
                     new DropletContentModel(
                             1,
                             "Tester",
                             "Another test email",
                             "Email contents are supposed to be truncated after 50 characters, are the contents being truncated in the preview?",
-                            Calendar.getInstance().getTimeInMillis()));
+                            Calendar.getInstance().getTimeInMillis() + 50000));
         // END
 
         view.displayDroplets(m, n);
