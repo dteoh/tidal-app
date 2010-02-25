@@ -1,0 +1,37 @@
+usePlugin 'java'
+usePlugin 'eclipse'
+
+sourceCompatibility = 1.6
+version = '0.1'
+manifest.mainAttributes(
+	'Implementation-Title': 'Tidal',
+	'Implementation-Version': version,
+	'Main-Class': 'net.teohdouglas.tidal.Tidal',
+	'Class-Path': ''
+)
+
+repositories {
+	mavenCentral()
+	mavenRepo urls: ["http://download.java.net/maven/2/"]
+}
+
+dependencies {
+	compile 'com.miglayout:miglayout:3.7.2:swing'
+	compile 'javax.mail:mail:1.4.3'
+	compile 'org.slf4j:slf4j-simple:1.5.10'
+	compile 'com.google.collections:google-collections:1.0'
+		
+	testCompile 'junit:junit:4.7'
+}
+
+task copyToLib(dependsOn: configurations.default.buildArtifacts, type: Copy) {
+    into('build/libs')
+    from configurations.default
+    from configurations.default.allArtifacts*.file
+}
+
+jar.doFirst {
+    for(file in configurations.runtime.resolve()) {
+		jar.merge(file)
+    }
+}
