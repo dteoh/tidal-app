@@ -2,6 +2,7 @@ package net.teohdouglas.tidal.views;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +61,8 @@ public class DropletView extends JPanel {
         while (contentModels.hasNext()) {
             rippleViews.add(new RippleView(contentModels.next()));
         }
+
+        Collections.sort(rippleViews);
     }
 
     public void select() {
