@@ -1,0 +1,8 @@
+glob:.project
+glob:.fbprefs
+glob:.classpath
+glob:build/*
+glob:.settings/*
+glob:gradle-app.setting
+
+
