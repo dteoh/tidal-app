@@ -6,7 +6,7 @@ version = '0.1'
 manifest.mainAttributes(
 	'Implementation-Title': 'Tidal',
 	'Implementation-Version': version,
-	'Main-Class': 'net.teohdouglas.tidal.Tidal',
+	'Main-Class': 'org.tidal_app.tidal.Tidal',
 	'Class-Path': ''
 )
 
