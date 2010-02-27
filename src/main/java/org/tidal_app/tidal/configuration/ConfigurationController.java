@@ -27,9 +27,7 @@ import org.jasypt.util.text.StrongTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.exceptions.UnsecuredException;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * This class is responsible for managing program configuration.
@@ -75,12 +73,10 @@ public class ConfigurationController {
         FileReader fr = null;
         try {
             fr = new FileReader(file);
-            Gson gson = new Gson();
-            config = gson.fromJson(fr, Configuration.class);
+            Yaml yaml = new Yaml();
+            config = (Configuration) yaml.load(fr);
         } catch (FileNotFoundException e) {
             LOGGER.error("File not found", e);
-        } catch (JsonParseException e) {
-            LOGGER.error("Failed to parse config", e);
         } finally {
             if (fr != null) {
                 try {
@@ -120,8 +116,8 @@ public class ConfigurationController {
         FileWriter fw = null;
         try {
             fw = new FileWriter(file);
-            Gson gson = new Gson();
-            gson.toJson(config, fw);
+            Yaml yaml = new Yaml();
+            yaml.dump(config, fw);
         } catch (IOException e) {
             LOGGER.error("Cannot write config", e);
         } finally {
@@ -160,5 +156,9 @@ public class ConfigurationController {
         StrongPasswordEncryptor passwordEncryptor =
             new StrongPasswordEncryptor();
         config.setAuthKeyDigest(passwordEncryptor.encryptPassword(newAuthKey));
+
+        // TODO decrypt other stored passwords and re-encrypt with new key.
+
+        encryptor.setPassword(newAuthKey);
     }
 }
