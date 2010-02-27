@@ -12,7 +12,9 @@ manifest.mainAttributes(
 
 repositories {
 	mavenCentral()
-	mavenRepo urls: ["http://download.java.net/maven/2/"]
+	mavenRepo urls: [
+			"http://download.java.net/maven/2/", 
+			"http://google-gson.googlecode.com/svn/mavenrepo"]
 }
 
 dependencies {
@@ -20,6 +22,8 @@ dependencies {
 	compile 'javax.mail:mail:1.4.3'
 	compile 'org.slf4j:slf4j-simple:1.5.10'
 	compile 'com.google.collections:google-collections:1.0'
+	compile 'com.google.code.gson:gson:1.4'
+	compile 'org.jasypt:jasypt:1.6'
 		
 	testCompile 'junit:junit:4.7'
 }
