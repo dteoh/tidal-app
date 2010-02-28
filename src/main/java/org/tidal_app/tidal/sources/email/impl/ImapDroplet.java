@@ -34,9 +34,11 @@ import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.sources.email.EmailDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
+import org.tidal_app.tidal.sources.email.models.EmailSettings;
 
 /**
  * This Droplet is used to handle IMAP/IMAPS email services.
@@ -51,6 +53,30 @@ public class ImapDroplet extends EmailDroplet {
     private Store store = null;
     private Folder inbox = null;
 
+    public static ImapDroplet create(final EmailSettings settings)
+            throws DropletCreationException {
+        String protocol = settings.getProtocol();
+        if (!protocol.equals("imap") && !protocol.equals("imaps")) {
+            throw new DropletCreationException("Unsupported protocol: "
+                + protocol);
+        }
+        return new ImapDroplet(settings);
+    }
+
+    public static ImapDroplet create(final String host, final String protocol,
+            final String username, final String password)
+            throws DropletCreationException {
+        if (!protocol.equals("imap") && !protocol.equals("imaps")) {
+            throw new DropletCreationException("Unsupported protocol: "
+                + protocol);
+        }
+        return new ImapDroplet(host, protocol, username, password);
+    }
+
+    private ImapDroplet(final EmailSettings settings) {
+        super(settings);
+    }
+
     /**
      * @param host
      * @param protocol
@@ -58,7 +84,7 @@ public class ImapDroplet extends EmailDroplet {
      * @param username
      * @param password
      */
-    public ImapDroplet(final String host, final String protocol,
+    private ImapDroplet(final String host, final String protocol,
             final String username, final String password) {
         super(host, protocol, username, password);
     }
@@ -90,8 +116,9 @@ public class ImapDroplet extends EmailDroplet {
 
         // Set up the mailbox to read from
         try {
-            store = session.getStore(protocol);
-            store.connect(host, username, password);
+            store = session.getStore(settings.getProtocol());
+            store.connect(settings.getHost(), settings.getUsername(), settings
+                    .getPassword());
             inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_WRITE);
         } catch (NoSuchProviderException e) {

@@ -14,10 +14,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.configuration;
+package org.tidal_app.tidal.configuration.models;
 
 /**
- * Configuration model.
+ * Master configuration model, might eventually expand to include program
+ * settings.
  * 
  * @author Douglas Teoh
  */

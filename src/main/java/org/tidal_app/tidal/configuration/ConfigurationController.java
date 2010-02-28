@@ -21,12 +21,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tidal_app.tidal.configuration.models.Configuration;
 import org.tidal_app.tidal.exceptions.UnsecuredException;
+import org.yaml.snakeyaml.Dumper;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -44,9 +52,12 @@ public class ConfigurationController {
     /** Symmetric key cryptography */
     private final StrongTextEncryptor encryptor;
 
+    private final Set<Configurable> configurableInstances;
+
     public ConfigurationController() {
         config = new Configuration();
         encryptor = new StrongTextEncryptor();
+        configurableInstances = new HashSet<Configurable>();
     }
 
     /**
@@ -55,9 +66,9 @@ public class ConfigurationController {
      * 
      * @param filePath
      */
-    public void load(final String filePath) {
+    public void loadMainSettings(final String filePath) {
         File file = new File(filePath);
-        load(file);
+        loadMainSettings(file);
     }
 
     /**
@@ -66,10 +77,7 @@ public class ConfigurationController {
      * 
      * @param file
      */
-    public void load(final File file) {
-        if (!file.exists()) {
-            return;
-        }
+    public void loadMainSettings(final File file) {
         FileReader fr = null;
         try {
             fr = new FileReader(file);
@@ -95,9 +103,10 @@ public class ConfigurationController {
      * @throws UnsecuredException
      *             if no authorization key is set.
      */
-    public void save(final String filePath) throws UnsecuredException {
+    public void saveMainSettings(final String filePath)
+            throws UnsecuredException {
         File file = new File(filePath);
-        save(file);
+        saveMainSettings(file);
     }
 
     /**
@@ -107,7 +116,7 @@ public class ConfigurationController {
      * @throws UnsecuredException
      *             if no authorization key is set.
      */
-    public void save(final File file) throws UnsecuredException {
+    public void saveMainSettings(final File file) throws UnsecuredException {
         if (config.getAuthKeyDigest().isEmpty()
             || config.getAuthKeyDigest() == null) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
@@ -132,6 +141,99 @@ public class ConfigurationController {
     }
 
     /**
+     * Saves all current Droplet settings to the given file.
+     * 
+     * @param filePath
+     * @throws UnsecuredException
+     *             if there is no authorization key
+     */
+    public void saveDropletSettings(final String filePath)
+            throws UnsecuredException {
+        File file = new File(filePath);
+        saveDropletSettings(file);
+    }
+
+    /**
+     * Saves all current Droplet settings to the given file.
+     * 
+     * @param file
+     * @throws UnsecuredException
+     *             if there is no authorization key
+     */
+    public void saveDropletSettings(final File file) throws UnsecuredException {
+        if (config.getAuthKeyDigest().isEmpty()
+            || config.getAuthKeyDigest() == null) {
+            throw new UnsecuredException("Authorisation key cannot be blank.");
+        }
+
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(file);
+            Yaml yaml =
+                new Yaml(new Dumper(new DropletsConfigurationsRepresenter(
+                        encryptor), new DumperOptions()));
+
+            List<Object> allSettings = new LinkedList<Object>();
+            for (Configurable instance : configurableInstances) {
+                allSettings.add(instance.getSettings());
+            }
+
+            yaml.dumpAll(allSettings.iterator(), fw);
+        } catch (IOException e) {
+            LOGGER.error("Cannot write droplet settings", e);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException e) {
+                    LOGGER.error("Could not close writer", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load all droplet settings from the given file.
+     * 
+     * @param filePath
+     * @return droplet settings if the file was loaded, {@code null} otherwise.
+     */
+    public Iterable<Object> loadDropletSettings(final String filePath) {
+        File file = new File(filePath);
+        return loadDropletSettings(file);
+    }
+
+    /**
+     * Load all droplet settings from the given file.
+     * 
+     * @param file
+     * @return droplet settings if the file was loaded, {@code null} otherwise.
+     */
+    public Iterable<Object> loadDropletSettings(final File file) {
+        FileReader fr = null;
+        Iterable<Object> allSettings = null;
+        try {
+            fr = new FileReader(file);
+
+            Yaml yaml =
+                new Yaml(new Loader(new DropletsConfigurationsConstructor(
+                        encryptor)));
+            allSettings = yaml.loadAll(fr);
+        } catch (FileNotFoundException e) {
+            LOGGER.error("File not found", e);
+        } finally {
+            if (fr != null) {
+                try {
+                    fr.close();
+                } catch (IOException e) {
+                    LOGGER.error("Could not close reader", e);
+                }
+            }
+        }
+        return allSettings;
+    }
+
+    /**
      * Unlock the configuration in use.
      * 
      * @param authKey
@@ -151,8 +253,14 @@ public class ConfigurationController {
      * Changes the authorization key.
      * 
      * @param newAuthKey
+     * @throws UnsecuredException
      */
-    public void changeAuthorisationKey(final String newAuthKey) {
+    public void changeAuthorisationKey(final String newAuthKey)
+            throws UnsecuredException {
+        if (newAuthKey.isEmpty() || newAuthKey == null) {
+            throw new UnsecuredException("Authorisation key cannot be blank.");
+        }
+
         StrongPasswordEncryptor passwordEncryptor =
             new StrongPasswordEncryptor();
         config.setAuthKeyDigest(passwordEncryptor.encryptPassword(newAuthKey));
@@ -160,5 +268,13 @@ public class ConfigurationController {
         // TODO decrypt other stored passwords and re-encrypt with new key.
 
         encryptor.setPassword(newAuthKey);
+    }
+
+    public void addConfigurable(final Configurable instance) {
+        configurableInstances.add(instance);
+    }
+
+    public void removeConfigurable(final Configurable instance) {
+        configurableInstances.remove(instance);
     }
 }

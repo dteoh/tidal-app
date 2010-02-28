@@ -16,6 +16,14 @@
 
 package org.tidal_app.tidal.exceptions;
 
+import org.tidal_app.tidal.sources.Droplet;
+
+/**
+ * This exception is thrown when the call to {@link Droplet#init()} results in
+ * failure.
+ * 
+ * @author Douglas Teoh
+ */
 public class DropletInitException extends Exception {
 
     /**

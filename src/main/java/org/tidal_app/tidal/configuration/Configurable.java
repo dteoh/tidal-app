@@ -14,28 +14,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.sources.email.impl;
+package org.tidal_app.tidal.configuration;
 
-import org.junit.Test;
-import org.tidal_app.tidal.exceptions.DropletCreationException;
-import org.tidal_app.tidal.exceptions.DropletInitException;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
-public class ImapDropletTests {
+/**
+ * Classes that implement this interface contains configuration information that
+ * can be serialized. The settings will be serialized and deserialized using
+ * custom SnakeYAML {@link Representer} and {@link Constructor} classes, if they
+ * exist.
+ * 
+ * @author Douglas Teoh
+ */
+public interface Configurable {
 
-    /**
-     * No email-password pair specified, use own. Do not commit.
-     * 
-     * @throws DropletInitException
-     * @throws DropletCreationException
-     */
-    @Test
-    public void testGetRipples() throws DropletInitException,
-            DropletCreationException {
-        ImapDroplet d = ImapDroplet.create("", "", "", "");
-
-        d.init();
-        d.getRipples();
-        d.destroy();
-    }
+    public Object getSettings();
 
 }

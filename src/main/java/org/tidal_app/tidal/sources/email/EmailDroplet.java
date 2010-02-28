@@ -19,6 +19,7 @@ package org.tidal_app.tidal.sources.email;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.sources.Droplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
+import org.tidal_app.tidal.sources.email.models.EmailSettings;
 
 /**
  * Generic email droplet.
@@ -27,21 +28,27 @@ import org.tidal_app.tidal.sources.email.models.EmailRipple;
  */
 public abstract class EmailDroplet implements Droplet {
 
-    protected final String username;
-    protected final String password;
-    protected final String host;
-    protected final String protocol;
+    protected final EmailSettings settings;
 
-    public EmailDroplet(final String host, final String protocol,
+    protected EmailDroplet(final EmailSettings settings) {
+        this.settings = settings;
+    }
+
+    protected EmailDroplet(final String host, final String protocol,
             final String username, final String password) {
-        this.host = host;
-        this.protocol = protocol;
-        this.username = username;
-        this.password = password;
+        settings = new EmailSettings();
+        settings.setHost(host);
+        settings.setPassword(password);
+        settings.setProtocol(protocol);
+        settings.setUsername(username);
     }
 
     public String getUsername() {
-        return username;
+        return settings.getUsername();
+    }
+
+    public Object getSettings() {
+        return settings.clone();
     }
 
     public abstract void init() throws DropletInitException;
