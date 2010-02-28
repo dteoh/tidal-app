@@ -19,7 +19,6 @@ package org.tidal_app.tidal;
 import java.util.Calendar;
 
 import javax.swing.JComponent;
-import javax.swing.JTextField;
 
 import org.tidal_app.tidal.views.DropletsView;
 import org.tidal_app.tidal.views.models.DropletContentModel;
@@ -36,11 +35,8 @@ public class TidalController {
 
     /** The plate controller's view */
     private DropletsView view;
-    private JTextField accountsField;
-    private final EmailDropletsController ac;
 
     public TidalController() {
-        ac = new EmailDropletsController();
         initView();
     }
 
@@ -137,19 +133,5 @@ public class TidalController {
 
         view.revalidate();
     }
-    // private void askPassword() {
-    // JPasswordField passwordField = new JPasswordField();
-    // JLabel passwordLabel = new JLabel("Enter password:");
-    // int option = JOptionPane.showConfirmDialog(null, new Object[] {
-    // passwordLabel, passwordField }, "Plate",
-    // JOptionPane.OK_CANCEL_OPTION);
-    //
-    // // User selected OK
-    // if (option == 0) {
-    // ac.addAccount(accountsField.getText(), new String(passwordField
-    // .getPassword()));
-    // accountsField.setText("");
-    // passwordField.setText("");
-    // }
-    // }
+
 }

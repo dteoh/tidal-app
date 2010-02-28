@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.sources.models;
+package org.tidal_app.tidal.sources.email.models;
 
 /**
  * Am EmailRipple represents an email message.

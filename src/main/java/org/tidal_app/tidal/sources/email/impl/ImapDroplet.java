@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.impl.sources.gmail;
+package org.tidal_app.tidal.sources.email.impl;
 
 import java.io.IOException;
 import java.util.Date;
@@ -35,22 +35,32 @@ import javax.mail.search.FlagTerm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.exceptions.DropletInitException;
-import org.tidal_app.tidal.sources.EmailDroplet;
-import org.tidal_app.tidal.sources.models.EmailRipple;
+import org.tidal_app.tidal.sources.email.EmailDroplet;
+import org.tidal_app.tidal.sources.email.models.EmailRipple;
 
-public class GmailDroplet extends EmailDroplet {
+/**
+ * This Droplet is used to handle IMAP/IMAPS email services.
+ * 
+ * @author Douglas Teoh
+ */
+public class ImapDroplet extends EmailDroplet {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(GmailDroplet.class);
-
-    private static String HOST = "imap.gmail.com";
-    private static String PROTOCOL = "imaps";
+    private static Logger LOGGER = LoggerFactory.getLogger(ImapDroplet.class);
 
     private Session session = null;
     private Store store = null;
     private Folder inbox = null;
 
-    public GmailDroplet(final String username, final String password) {
-        super(username, password);
+    /**
+     * @param host
+     * @param protocol
+     *            must be either IMAP or IMAPS
+     * @param username
+     * @param password
+     */
+    public ImapDroplet(final String host, final String protocol,
+            final String username, final String password) {
+        super(host, protocol, username, password);
     }
 
     @Override
@@ -80,8 +90,8 @@ public class GmailDroplet extends EmailDroplet {
 
         // Set up the mailbox to read from
         try {
-            store = session.getStore(PROTOCOL);
-            store.connect(HOST, username, password);
+            store = session.getStore(protocol);
+            store.connect(host, username, password);
             inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_WRITE);
         } catch (NoSuchProviderException e) {
@@ -94,7 +104,7 @@ public class GmailDroplet extends EmailDroplet {
     }
 
     @Override
-    public List<EmailRipple> getRipples() {
+    public Iterable<EmailRipple> getRipples() {
         if (inbox == null) {
             return null;
         }

@@ -14,19 +14,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.sources;
-
-import java.util.List;
+package org.tidal_app.tidal.sources.email;
 
 import org.tidal_app.tidal.exceptions.DropletInitException;
-import org.tidal_app.tidal.sources.models.EmailRipple;
+import org.tidal_app.tidal.sources.Droplet;
+import org.tidal_app.tidal.sources.email.models.EmailRipple;
 
+/**
+ * Generic email droplet.
+ * 
+ * @author douglas
+ */
 public abstract class EmailDroplet implements Droplet {
 
     protected final String username;
     protected final String password;
+    protected final String host;
+    protected final String protocol;
 
-    public EmailDroplet(final String username, final String password) {
+    public EmailDroplet(final String host, final String protocol,
+            final String username, final String password) {
+        this.host = host;
+        this.protocol = protocol;
         this.username = username;
         this.password = password;
     }
@@ -39,6 +48,9 @@ public abstract class EmailDroplet implements Droplet {
 
     public abstract void destroy();
 
-    public abstract List<EmailRipple> getRipples();
+    /**
+     * @return Most recent EmailRipple objects.
+     */
+    public abstract Iterable<EmailRipple> getRipples();
 
 }

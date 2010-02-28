@@ -14,15 +14,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal;
+package org.tidal_app.tidal.sources.email;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.tidal_app.tidal.sources.EmailDroplet;
-import org.tidal_app.tidal.sources.models.EmailRipple;
+import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.views.models.DropletContentModel;
 import org.tidal_app.tidal.views.models.DropletModel;
 
@@ -39,7 +38,10 @@ public class EmailDropletsController {
     }
 
     public synchronized void removeEmailDroplet(final String dropletUsername) {
-        droplets.remove(dropletUsername);
+        EmailDroplet emailDroplet = droplets.remove(dropletUsername);
+        if (emailDroplet != null) {
+            emailDroplet.destroy();
+        }
     }
 
     public synchronized DropletModel getDropletModel(

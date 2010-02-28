@@ -14,13 +14,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.sources.gmail;
+package org.tidal_app.tidal.sources.email.impl;
 
 import org.junit.Test;
 import org.tidal_app.tidal.exceptions.DropletInitException;
-import org.tidal_app.tidal.impl.sources.gmail.GmailDroplet;
+import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 
-public class GmailDropletTests {
+public class ImapDropletTests {
 
     /**
      * No email-password pair specified, use own. Do not commit.
@@ -29,7 +29,7 @@ public class GmailDropletTests {
      */
     @Test
     public void testGetRipples() throws DropletInitException {
-        GmailDroplet d = new GmailDroplet("", "");
+        ImapDroplet d = new ImapDroplet("", "", "", "");
 
         d.init();
         d.getRipples();
