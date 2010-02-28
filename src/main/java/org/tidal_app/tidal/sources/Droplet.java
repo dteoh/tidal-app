@@ -16,6 +16,7 @@
 
 package org.tidal_app.tidal.sources;
 
+import org.tidal_app.tidal.configuration.Configurable;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 
 /**
@@ -24,7 +25,7 @@ import org.tidal_app.tidal.exceptions.DropletInitException;
  * 
  * @author douglas
  */
-public interface Droplet {
+public interface Droplet extends Configurable {
 
     public void init() throws DropletInitException;
 
