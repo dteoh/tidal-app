@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -34,6 +35,11 @@ import org.tidal_app.tidal.views.models.DropletModel;
 
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Used to visualize a single {@link DropletModel} on the interface.
+ * 
+ * @author Douglas Teoh
+ */
 public class DropletView extends JPanel {
 
     /**
@@ -57,6 +63,9 @@ public class DropletView extends JPanel {
         initView();
     }
 
+    /**
+     * Initialize the view.
+     */
     private void initView() {
         setLayout(new MigLayout("fill, ins 0", "[grow]"));
         setBackground(Color.WHITE);
@@ -82,20 +91,39 @@ public class DropletView extends JPanel {
         Collections.sort(rippleViews);
     }
 
+    /**
+     * Show the state of the view as being selected.
+     */
     public void select() {
-        dropletNameLabel.setOpaque(true);
-        dropletNameLabel.setFont(SELECTED_FONT);
-        dropletNameLabel.setForeground(Color.WHITE);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                dropletNameLabel.setOpaque(true);
+                dropletNameLabel.setFont(SELECTED_FONT);
+                dropletNameLabel.setForeground(Color.WHITE);
+            }
+        });
     }
 
+    /**
+     * Show the state of the view as being deselected.
+     */
     public void deselect() {
-        dropletNameLabel.setOpaque(false);
-        dropletNameLabel.setFont(NORMAL_FONT);
-        dropletNameLabel.setForeground(new Color(102, 148, 227));
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                dropletNameLabel.setOpaque(false);
+                dropletNameLabel.setFont(NORMAL_FONT);
+                dropletNameLabel.setForeground(new Color(102, 148, 227));
+            }
+        });
     }
 
-    public Iterator<RippleView> getRippleViews() {
-        return ImmutableList.copyOf(rippleViews).iterator();
+    /**
+     * @return Ripple views of this droplet.
+     */
+    public Iterable<RippleView> getRippleViews() {
+        return ImmutableList.copyOf(rippleViews);
     }
 
 }

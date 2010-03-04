@@ -25,7 +25,7 @@ import org.tidal_app.tidal.views.models.DropletModel;
  * Special type of droplet view, used for aggregating every other droplet to
  * form a pool.
  * 
- * @author douglas
+ * @author Douglas Teoh
  */
 public final class PoolDropletView extends DropletView {
 
@@ -38,6 +38,13 @@ public final class PoolDropletView extends DropletView {
 
     public PoolDropletView() {
         super(emptyModel);
+    }
+
+    public void addRippleViews(final Iterable<RippleView> rippleViews) {
+        for (RippleView rippleView : rippleViews) {
+            this.rippleViews.add(rippleView);
+        }
+        Collections.sort(this.rippleViews);
     }
 
     public void addRippleViews(final Iterator<RippleView> rippleViews) {

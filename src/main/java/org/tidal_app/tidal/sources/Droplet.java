@@ -23,7 +23,7 @@ import org.tidal_app.tidal.exceptions.DropletInitException;
  * A Droplet represents some arbitrary source of communications. Each Droplet
  * causes a Ripple to occur.
  * 
- * @author douglas
+ * @author Douglas Teoh
  */
 public interface Droplet extends Configurable {
 

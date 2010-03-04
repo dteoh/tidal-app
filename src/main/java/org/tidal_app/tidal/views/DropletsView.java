@@ -24,11 +24,17 @@ import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
 import org.tidal_app.tidal.views.models.DropletModel;
 
+/**
+ * Used to visualize a number of {@link DropletModel} objects on the interface.
+ * 
+ * @author Douglas Teoh
+ */
 public class DropletsView extends JPanel {
 
     /**
@@ -45,6 +51,9 @@ public class DropletsView extends JPanel {
         initView();
     }
 
+    /**
+     * Initialize the view.
+     */
     private void initView() {
         setLayout(new MigLayout("", "[200]0[600::, grow 100]", ""));
         setBackground(Color.WHITE);
@@ -63,34 +72,53 @@ public class DropletsView extends JPanel {
         add(dropletsContentPanel, "grow 100 100");
     }
 
+    /**
+     * Displays the given droplet models on the interface.
+     * 
+     * @param dropletModels
+     */
     public void displayDroplets(final DropletModel... dropletModels) {
-        dropletsPanel.removeAll();
-        dropletsContentPanel.removeAll();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                dropletsPanel.removeAll();
+                dropletsContentPanel.removeAll();
 
-        PoolDropletView poolView = new PoolDropletView();
-        poolView.addMouseListener(dropletViewMouseAdapter);
-        dropletsPanel.add(poolView);
+                PoolDropletView poolView = new PoolDropletView();
+                poolView.addMouseListener(dropletViewMouseAdapter);
+                dropletsPanel.add(poolView);
 
-        for (int i = 0; i < dropletModels.length; i++) {
-            DropletView dropletView = new DropletView(dropletModels[i]);
-            dropletView.addMouseListener(dropletViewMouseAdapter);
-            poolView.addRippleViews(dropletView.getRippleViews());
-            dropletsPanel.add(dropletView);
-        }
-
+                for (int i = 0; i < dropletModels.length; i++) {
+                    DropletView dropletView = new DropletView(dropletModels[i]);
+                    dropletView.addMouseListener(dropletViewMouseAdapter);
+                    poolView.addRippleViews(dropletView.getRippleViews());
+                    dropletsPanel.add(dropletView);
+                }
+            }
+        });
         dropletsPanel.revalidate();
     }
 
+    /**
+     * Displays the given droplet models on the interface.
+     * 
+     * @param dropletModels
+     */
     public void displayDroplets(final Iterator<DropletModel> dropletModels) {
-        dropletsPanel.removeAll();
-        dropletsContentPanel.removeAll();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                dropletsPanel.removeAll();
+                dropletsContentPanel.removeAll();
 
-        while (dropletModels.hasNext()) {
-            DropletView dropletView = new DropletView(dropletModels.next());
-            dropletView.addMouseListener(dropletViewMouseAdapter);
-            dropletsPanel.add(dropletView);
-        }
-
+                while (dropletModels.hasNext()) {
+                    DropletView dropletView =
+                        new DropletView(dropletModels.next());
+                    dropletView.addMouseListener(dropletViewMouseAdapter);
+                    dropletsPanel.add(dropletView);
+                }
+            }
+        });
         dropletsPanel.revalidate();
     }
 
@@ -101,22 +129,24 @@ public class DropletsView extends JPanel {
                 return;
             }
 
-            for (Component c : dropletsPanel.getComponents()) {
-                DropletView view = (DropletView) c;
-                view.deselect();
-            }
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    for (Component c : dropletsPanel.getComponents()) {
+                        DropletView view = (DropletView) c;
+                        view.deselect();
+                    }
 
-            dropletsContentPanel.removeAll();
-            dropletsContentPanel.revalidate();
+                    dropletsContentPanel.removeAll();
 
-            DropletView view = (DropletView) e.getSource();
-            view.select();
-            Iterator<RippleView> rippleViews = view.getRippleViews();
+                    DropletView view = (DropletView) e.getSource();
+                    view.select();
 
-            while (rippleViews.hasNext()) {
-                dropletsContentPanel.add(rippleViews.next(), "pushx, growx");
-            }
-
+                    for (RippleView rippleView : view.getRippleViews()) {
+                        dropletsContentPanel.add(rippleView, "pushx, growx");
+                    }
+                }
+            });
             dropletsContentPanel.revalidate();
         }
     }

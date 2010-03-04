@@ -27,12 +27,18 @@ import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.text.html.HTMLDocument;
 
 import net.miginfocom.swing.MigLayout;
 
 import org.tidal_app.tidal.views.models.DropletContentModel;
 
+/**
+ * Used to visualize a ripple model.
+ * 
+ * @author Douglas Teoh
+ */
 public class RippleView extends JPanel implements Comparable<RippleView> {
 
     /**
@@ -81,7 +87,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
     }
 
     /**
-     * Initialise the view components
+     * Initialize the view.
      */
     private void initView() {
         setLayout(new MigLayout("hidemode 3, wrap 3", "[215][grow 100][115]",
@@ -142,34 +148,39 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      * Hides or shows the message, depending on previous state.
      */
     private void showHideMessage() {
-        if (contents.isVisible()) {
-            // Hide the contents of the message
-            contents.setVisible(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (contents.isVisible()) {
+                    // Hide the contents of the message
+                    contents.setVisible(false);
 
-            setBackground(SEEN_BG_COLOR);
+                    setBackground(SEEN_BG_COLOR);
 
-            originLabel.setFont(SEEN_FONT_STYLE);
-            subjectLabel.setFont(SEEN_FONT_STYLE);
-            receivedLabel.setFont(SEEN_FONT_STYLE);
+                    originLabel.setFont(SEEN_FONT_STYLE);
+                    subjectLabel.setFont(SEEN_FONT_STYLE);
+                    receivedLabel.setFont(SEEN_FONT_STYLE);
 
-            receivedLabel.setForeground(SEEN_FONT_COLOR);
-            originLabel.setForeground(SEEN_FONT_COLOR);
-            subjectLabel.setForeground(SEEN_FONT_COLOR);
-            previewLabel.setForeground(PREVIEW_FONT_COLOR);
+                    receivedLabel.setForeground(SEEN_FONT_COLOR);
+                    originLabel.setForeground(SEEN_FONT_COLOR);
+                    subjectLabel.setForeground(SEEN_FONT_COLOR);
+                    previewLabel.setForeground(PREVIEW_FONT_COLOR);
+                } else {
+                    // Show the contents of the message
+                    contents.setVisible(true);
+                    setBackground(UNSEEN_BG_COLOR);
 
-        } else {
-            // Show the contents of the message
-            contents.setVisible(true);
-            setBackground(UNSEEN_BG_COLOR);
+                    subjectLabel.setFont(READING_SUBJECT_FONT_STYLE);
+                    receivedLabel.setFont(READING_DATE_FONT_STYLE);
 
-            subjectLabel.setFont(READING_SUBJECT_FONT_STYLE);
-            receivedLabel.setFont(READING_DATE_FONT_STYLE);
+                    receivedLabel.setForeground(READING_FONT_COLOR);
+                    originLabel.setForeground(READING_FONT_COLOR);
+                    subjectLabel.setForeground(READING_FONT_COLOR);
+                    previewLabel.setForeground(UNSEEN_BG_COLOR);
+                }
+            }
+        });
 
-            receivedLabel.setForeground(READING_FONT_COLOR);
-            originLabel.setForeground(READING_FONT_COLOR);
-            subjectLabel.setForeground(READING_FONT_COLOR);
-            previewLabel.setForeground(UNSEEN_BG_COLOR);
-        }
     }
 
     /**
