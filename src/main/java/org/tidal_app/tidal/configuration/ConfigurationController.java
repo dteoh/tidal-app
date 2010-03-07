@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.SwingUtilities;
+
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
 import org.slf4j.Logger;
@@ -67,6 +69,8 @@ public class ConfigurationController {
      * @param filePath
      */
     public void loadMainSettings(final String filePath) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         File file = new File(filePath);
         loadMainSettings(file);
     }
@@ -78,6 +82,8 @@ public class ConfigurationController {
      * @param file
      */
     public void loadMainSettings(final File file) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         FileReader fr = null;
         try {
             fr = new FileReader(file);
@@ -105,6 +111,8 @@ public class ConfigurationController {
      */
     public void saveMainSettings(final String filePath)
             throws UnsecuredException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         File file = new File(filePath);
         saveMainSettings(file);
     }
@@ -117,6 +125,8 @@ public class ConfigurationController {
      *             if no authorization key is set.
      */
     public void saveMainSettings(final File file) throws UnsecuredException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         if (config.getAuthKeyDigest().isEmpty()
             || config.getAuthKeyDigest() == null) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
@@ -149,6 +159,8 @@ public class ConfigurationController {
      */
     public void saveDropletSettings(final String filePath)
             throws UnsecuredException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         File file = new File(filePath);
         saveDropletSettings(file);
     }
@@ -161,6 +173,8 @@ public class ConfigurationController {
      *             if there is no authorization key
      */
     public void saveDropletSettings(final File file) throws UnsecuredException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         if (config.getAuthKeyDigest().isEmpty()
             || config.getAuthKeyDigest() == null) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
@@ -199,6 +213,8 @@ public class ConfigurationController {
      * @return droplet settings if the file was loaded, {@code null} otherwise.
      */
     public Iterable<Object> loadDropletSettings(final String filePath) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         File file = new File(filePath);
         return loadDropletSettings(file);
     }
@@ -210,6 +226,8 @@ public class ConfigurationController {
      * @return droplet settings if the file was loaded, {@code null} otherwise.
      */
     public Iterable<Object> loadDropletSettings(final File file) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         FileReader fr = null;
         Iterable<Object> allSettings = null;
         try {
@@ -240,6 +258,8 @@ public class ConfigurationController {
      * @return true if authorized, false otherwise.
      */
     public boolean authorise(final String authKey) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         StrongPasswordEncryptor passwordEncryptor =
             new StrongPasswordEncryptor();
         if (passwordEncryptor.checkPassword(authKey, config.getAuthKeyDigest())) {
@@ -257,7 +277,9 @@ public class ConfigurationController {
      */
     public void changeAuthorisationKey(final String newAuthKey)
             throws UnsecuredException {
-        if (newAuthKey.isEmpty() || newAuthKey == null) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
+        if (newAuthKey == null || newAuthKey.isEmpty()) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
@@ -270,11 +292,15 @@ public class ConfigurationController {
         encryptor.setPassword(newAuthKey);
     }
 
-    public void addConfigurable(final Configurable instance) {
+    public synchronized void addConfigurable(final Configurable instance) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         configurableInstances.add(instance);
     }
 
-    public void removeConfigurable(final Configurable instance) {
+    public synchronized void removeConfigurable(final Configurable instance) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         configurableInstances.remove(instance);
     }
 }

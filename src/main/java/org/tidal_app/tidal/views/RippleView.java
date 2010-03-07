@@ -90,6 +90,8 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      * Initialize the view.
      */
     private void initView() {
+        assert (SwingUtilities.isEventDispatchThread());
+
         setLayout(new MigLayout("hidemode 3, wrap 3", "[215][grow 100][115]",
                 ""));
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(214,
@@ -148,39 +150,35 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      * Hides or shows the message, depending on previous state.
      */
     private void showHideMessage() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                if (contents.isVisible()) {
-                    // Hide the contents of the message
-                    contents.setVisible(false);
+        assert (SwingUtilities.isEventDispatchThread());
 
-                    setBackground(SEEN_BG_COLOR);
+        if (contents.isVisible()) {
+            // Hide the contents of the message
+            contents.setVisible(false);
 
-                    originLabel.setFont(SEEN_FONT_STYLE);
-                    subjectLabel.setFont(SEEN_FONT_STYLE);
-                    receivedLabel.setFont(SEEN_FONT_STYLE);
+            setBackground(SEEN_BG_COLOR);
 
-                    receivedLabel.setForeground(SEEN_FONT_COLOR);
-                    originLabel.setForeground(SEEN_FONT_COLOR);
-                    subjectLabel.setForeground(SEEN_FONT_COLOR);
-                    previewLabel.setForeground(PREVIEW_FONT_COLOR);
-                } else {
-                    // Show the contents of the message
-                    contents.setVisible(true);
-                    setBackground(UNSEEN_BG_COLOR);
+            originLabel.setFont(SEEN_FONT_STYLE);
+            subjectLabel.setFont(SEEN_FONT_STYLE);
+            receivedLabel.setFont(SEEN_FONT_STYLE);
 
-                    subjectLabel.setFont(READING_SUBJECT_FONT_STYLE);
-                    receivedLabel.setFont(READING_DATE_FONT_STYLE);
+            receivedLabel.setForeground(SEEN_FONT_COLOR);
+            originLabel.setForeground(SEEN_FONT_COLOR);
+            subjectLabel.setForeground(SEEN_FONT_COLOR);
+            previewLabel.setForeground(PREVIEW_FONT_COLOR);
+        } else {
+            // Show the contents of the message
+            contents.setVisible(true);
+            setBackground(UNSEEN_BG_COLOR);
 
-                    receivedLabel.setForeground(READING_FONT_COLOR);
-                    originLabel.setForeground(READING_FONT_COLOR);
-                    subjectLabel.setForeground(READING_FONT_COLOR);
-                    previewLabel.setForeground(UNSEEN_BG_COLOR);
-                }
-            }
-        });
+            subjectLabel.setFont(READING_SUBJECT_FONT_STYLE);
+            receivedLabel.setFont(READING_DATE_FONT_STYLE);
 
+            receivedLabel.setForeground(READING_FONT_COLOR);
+            originLabel.setForeground(READING_FONT_COLOR);
+            subjectLabel.setForeground(READING_FONT_COLOR);
+            previewLabel.setForeground(UNSEEN_BG_COLOR);
+        }
     }
 
     /**

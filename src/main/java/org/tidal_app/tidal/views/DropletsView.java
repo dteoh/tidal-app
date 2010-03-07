@@ -55,6 +55,8 @@ public class DropletsView extends JPanel {
      * Initialize the view.
      */
     private void initView() {
+        assert (SwingUtilities.isEventDispatchThread());
+
         setLayout(new MigLayout("", "[200]0[600::, grow 100]", ""));
         setBackground(Color.WHITE);
 
@@ -129,24 +131,20 @@ public class DropletsView extends JPanel {
                 return;
             }
 
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    for (Component c : dropletsPanel.getComponents()) {
-                        DropletView view = (DropletView) c;
-                        view.deselect();
-                    }
+            for (Component c : dropletsPanel.getComponents()) {
+                DropletView view = (DropletView) c;
+                view.deselect();
+            }
 
-                    dropletsContentPanel.removeAll();
+            dropletsContentPanel.removeAll();
 
-                    DropletView view = (DropletView) e.getSource();
-                    view.select();
+            DropletView view = (DropletView) e.getSource();
+            view.select();
 
-                    for (RippleView rippleView : view.getRippleViews()) {
-                        dropletsContentPanel.add(rippleView, "pushx, growx");
-                    }
-                }
-            });
+            for (RippleView rippleView : view.getRippleViews()) {
+                dropletsContentPanel.add(rippleView, "pushx, growx");
+            }
+
             dropletsContentPanel.revalidate();
         }
     }

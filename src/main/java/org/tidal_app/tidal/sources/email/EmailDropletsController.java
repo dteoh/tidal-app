@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.SwingUtilities;
+
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.views.models.DropletContentModel;
 import org.tidal_app.tidal.views.models.DropletModel;
@@ -34,10 +36,14 @@ public class EmailDropletsController {
     }
 
     public synchronized void addEmailDroplet(final EmailDroplet droplet) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         droplets.put(droplet.getUsername(), droplet);
     }
 
     public synchronized void removeEmailDroplet(final String dropletUsername) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         EmailDroplet emailDroplet = droplets.remove(dropletUsername);
         if (emailDroplet != null) {
             emailDroplet.destroy();
@@ -46,6 +52,8 @@ public class EmailDropletsController {
 
     public synchronized DropletModel getDropletModel(
             final String dropletUsername) {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         EmailDroplet droplet = droplets.get(dropletUsername);
         if (droplet == null) {
             return null;
@@ -61,6 +69,8 @@ public class EmailDropletsController {
     }
 
     public synchronized List<DropletModel> getAllDropletModels() {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         List<DropletModel> allModels = new LinkedList<DropletModel>();
         for (String dropletUsername : droplets.keySet()) {
             EmailDroplet droplet = droplets.get(dropletUsername);

@@ -17,12 +17,14 @@
 package org.tidal_app.tidal;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
@@ -35,9 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main application class.
+ * Main application entry point.
  * 
- * @author douglas
+ * @author Douglas Teoh
  */
 public class Tidal {
 
@@ -66,7 +68,13 @@ public class Tidal {
         } catch (UnsupportedLookAndFeelException e) {
             LOGGER.error("Look and feel error", e);
         }
-        new Tidal();
+
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Tidal();
+            }
+        });
     }
 
     public Tidal() {
@@ -77,7 +85,12 @@ public class Tidal {
         mainFrame.setVisible(true);
     }
 
+    /**
+     * Initialize application view.
+     */
     private void initView() {
+        assert (SwingUtilities.isEventDispatchThread());
+
         // Make our application frame.
         mainFrame = new JFrame();
         mainFrame.setTitle("Tidal");
@@ -88,13 +101,6 @@ public class Tidal {
                 Tidal.this.exitHandler();
             }
         });
-
-        // Make a menu bar
-        // JMenuBar menuBar = new JMenuBar();
-        // JMenu tidalMenu = new JMenu("Tidal");
-        // menuBar.add(tidalMenu);
-
-        // mainFrame.setJMenuBar(menuBar);
 
         mainFrame.setLayout(new MigLayout("ins 0", "[grow]", "[grow]"));
         mainFrame.setBackground(Color.WHITE);
@@ -114,6 +120,7 @@ public class Tidal {
          * Since pack calculates a "big-enough" size, use it to enforce minimum
          * size.
          */
+        // TODO change this.
         mainFrame.setMinimumSize(mainFrame.getSize());
     }
 

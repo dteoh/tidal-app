@@ -67,6 +67,8 @@ public class DropletView extends JPanel {
      * Initialize the view.
      */
     private void initView() {
+        assert (SwingUtilities.isEventDispatchThread());
+
         setLayout(new MigLayout("fill, ins 0", "[grow]"));
         setBackground(Color.WHITE);
 

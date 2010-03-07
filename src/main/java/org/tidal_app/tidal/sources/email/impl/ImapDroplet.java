@@ -31,6 +31,7 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
+import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,8 @@ public class ImapDroplet extends EmailDroplet {
 
     public static ImapDroplet create(final EmailSettings settings)
             throws DropletCreationException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         String protocol = settings.getProtocol();
         if (!protocol.equals("imap") && !protocol.equals("imaps")) {
             throw new DropletCreationException("Unsupported protocol: "
@@ -66,6 +69,8 @@ public class ImapDroplet extends EmailDroplet {
     public static ImapDroplet create(final String host, final String protocol,
             final String username, final String password)
             throws DropletCreationException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         if (!protocol.equals("imap") && !protocol.equals("imaps")) {
             throw new DropletCreationException("Unsupported protocol: "
                 + protocol);
@@ -91,6 +96,8 @@ public class ImapDroplet extends EmailDroplet {
 
     @Override
     public void destroy() {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         if (inbox != null) {
             try {
                 // False, because deleted messages get expunged if true.
@@ -111,6 +118,8 @@ public class ImapDroplet extends EmailDroplet {
 
     @Override
     public void init() throws DropletInitException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         Properties props = System.getProperties();
         session = Session.getInstance(props, null);
 
@@ -132,6 +141,8 @@ public class ImapDroplet extends EmailDroplet {
 
     @Override
     public Iterable<EmailRipple> getRipples() {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         if (inbox == null) {
             return null;
         }

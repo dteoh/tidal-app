@@ -19,6 +19,7 @@ package org.tidal_app.tidal;
 import java.util.Calendar;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import org.tidal_app.tidal.views.DropletsView;
 import org.tidal_app.tidal.views.models.DropletContentModel;
@@ -45,6 +46,8 @@ public class TidalController {
     }
 
     private void initView() {
+        assert (SwingUtilities.isEventDispatchThread());
+
         view = new DropletsView();
 
         // TESTING
