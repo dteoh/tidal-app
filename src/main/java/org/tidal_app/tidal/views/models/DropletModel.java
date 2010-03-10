@@ -31,8 +31,8 @@ public class DropletModel {
         return dropletName;
     }
 
-    public Iterator<DropletContentModel> getDropletContents() {
-        return dropletContents.iterator();
+    public Iterable<DropletContentModel> getDropletContents() {
+        return dropletContents;
     }
 
     public DropletModel(final String dropletName,

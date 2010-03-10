@@ -43,7 +43,7 @@ public class DropletsView extends JPanel {
     private static final long serialVersionUID = -2013255389551067933L;
     private JPanel dropletsPanel;
     private JPanel dropletsContentPanel;
-    private final MouseAdapter dropletViewMouseAdapter;
+    private MouseAdapter dropletViewMouseAdapter;
 
     public DropletsView() {
         super();

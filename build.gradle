@@ -24,8 +24,10 @@ dependencies {
 	compile 'com.google.collections:google-collections:1.0'
 	compile 'org.jasypt:jasypt:1.6'
 	compile 'org.yaml:snakeyaml:1.6'
+	compile 'foxtrot:foxtrot-core:3.0'
 		
 	testCompile 'junit:junit:4.7'
+	testCompile 'org.easytesting:fest-swing-junit:1.2a4'
 }
 
 task copyToLib(dependsOn: configurations.default.buildArtifacts, type: Copy) {

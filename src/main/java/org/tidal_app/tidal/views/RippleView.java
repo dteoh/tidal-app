@@ -46,12 +46,11 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      */
     private static final long serialVersionUID = -6001157043106549763L;
 
-    private static final SimpleDateFormat SDF =
-        new SimpleDateFormat("MMM d, h:mm aa");
+    private final SimpleDateFormat SDF = new SimpleDateFormat("MMM d, h:mm aa");
 
     // Colors for the various message states
-    private static final Color SEEN_BG_COLOR = new Color(239, 239, 239);
-    private static final Color UNSEEN_BG_COLOR = Color.WHITE;
+    private static final Color SEEN_BG_COLOR = new Color(241, 239, 226);
+    private static final Color UNSEEN_BG_COLOR = new Color(231, 228, 211);
     private static final Color SEEN_FONT_COLOR = new Color(68, 68, 68);
     private static final Color READING_FONT_COLOR = Color.BLACK;
     private static final Color PREVIEW_FONT_COLOR = new Color(119, 119, 119);
@@ -137,11 +136,15 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         contents.setFont(SEEN_FONT_STYLE);
         contents.setBorder(null);
 
-        String bodyRule =
-            "body { font-family: " + SEEN_FONT_STYLE.getFamily() + "; "
-                + "font-size: " + SEEN_FONT_STYLE.getSize() + "pt;" + " }";
+        StringBuilder bodyRule = new StringBuilder();
+        bodyRule.append("body { font-family: ");
+        bodyRule.append(SEEN_FONT_STYLE.getFamily());
+        bodyRule.append("; font-size: ");
+        bodyRule.append(SEEN_FONT_STYLE.getSize());
+        bodyRule.append("pt; }");
+
         ((HTMLDocument) contents.getDocument()).getStyleSheet().addRule(
-                bodyRule);
+                bodyRule.toString());
 
         add(contents, "skip, growx, pushx");
     }
@@ -188,13 +191,17 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      * @return Original string wrapped in div markup.
      */
     private String wrapHTML(final String content) {
-        return "<div width=\"500px\">" + content + "</div>";
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div width=\"500px\">");
+        sb.append(content);
+        sb.append("</div>");
+        return sb.toString();
     }
 
     /**
      * Inner class for handling mouse events.
      * 
-     * @author douglas
+     * @author Douglas Teoh
      */
     private class RippleViewMouseAdapter extends MouseAdapter {
         @Override

@@ -63,16 +63,37 @@ public class ConfigurationController {
     }
 
     /**
+     * Load the config file from a default location. If the default config file
+     * doesn't exist, the current loaded config is unchanged.
+     * 
+     * @return true if the settings can be loaded, false otherwise.
+     */
+    public boolean loadMainSettings() {
+        final String homeDirectory = System.getProperty("user.home");
+        if (homeDirectory == null) {
+            return false;
+        }
+        StringBuilder sb = new StringBuilder(homeDirectory);
+        sb.append("/.tidal");
+        File configFile = new File(sb.toString(), "tidalrc");
+        if (!configFile.exists()) {
+            return false;
+        }
+        return loadMainSettings(configFile);
+    }
+
+    /**
      * Load the given config file. If the file doesn't exist, the current loaded
      * config is unchanged.
      * 
      * @param filePath
+     * @return true if the settings can be loaded, false otherwise.
      */
-    public void loadMainSettings(final String filePath) {
+    public boolean loadMainSettings(final String filePath) {
         assert (!SwingUtilities.isEventDispatchThread());
 
         File file = new File(filePath);
-        loadMainSettings(file);
+        return loadMainSettings(file);
     }
 
     /**
@@ -80,17 +101,25 @@ public class ConfigurationController {
      * config is unchanged.
      * 
      * @param file
+     * @return true if the settings can be loaded, false otherwise.
      */
-    public void loadMainSettings(final File file) {
+    public boolean loadMainSettings(final File file) {
         assert (!SwingUtilities.isEventDispatchThread());
-
+        boolean result = true;
         FileReader fr = null;
         try {
             fr = new FileReader(file);
             Yaml yaml = new Yaml();
             config = (Configuration) yaml.load(fr);
+            if (config == null) {
+                result = false;
+            }
         } catch (FileNotFoundException e) {
             LOGGER.error("File not found", e);
+            result = false;
+        } catch (ClassCastException e) {
+            LOGGER.error("Incorrect config file", e);
+            result = false;
         } finally {
             if (fr != null) {
                 try {
@@ -100,6 +129,26 @@ public class ConfigurationController {
                 }
             }
         }
+        return result;
+    }
+
+    /**
+     * Saves the main program's configuration settings to the default
+     * configuration file.
+     * 
+     * @throws UnsecuredException
+     *             if no authorization key is set.
+     */
+    public void saveMainSettings() throws UnsecuredException {
+        final String homeDirectory = System.getProperty("user.home");
+        if (homeDirectory == null) {
+            LOGGER.error("No home directory");
+            return;
+        }
+        StringBuilder sb = new StringBuilder(homeDirectory);
+        sb.append("/.tidal");
+        File configFile = new File(sb.toString(), "tidalrc");
+        saveMainSettings(configFile);
     }
 
     /**
@@ -134,6 +183,9 @@ public class ConfigurationController {
 
         FileWriter fw = null;
         try {
+            // mkdir first because if the directory does not exist, then file
+            // creation fails.
+            file.getParentFile().mkdir();
             fw = new FileWriter(file);
             Yaml yaml = new Yaml();
             yaml.dump(config, fw);
@@ -257,7 +309,7 @@ public class ConfigurationController {
      * @param authKey
      * @return true if authorized, false otherwise.
      */
-    public boolean authorise(final String authKey) {
+    public boolean authorize(final String authKey) {
         assert (!SwingUtilities.isEventDispatchThread());
 
         StrongPasswordEncryptor passwordEncryptor =
@@ -275,7 +327,7 @@ public class ConfigurationController {
      * @param newAuthKey
      * @throws UnsecuredException
      */
-    public void changeAuthorisationKey(final String newAuthKey)
+    public void changeAuthorizationKey(final String newAuthKey)
             throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
 
@@ -287,20 +339,16 @@ public class ConfigurationController {
             new StrongPasswordEncryptor();
         config.setAuthKeyDigest(passwordEncryptor.encryptPassword(newAuthKey));
 
-        // TODO decrypt other stored passwords and re-encrypt with new key.
-
         encryptor.setPassword(newAuthKey);
     }
 
     public synchronized void addConfigurable(final Configurable instance) {
         assert (!SwingUtilities.isEventDispatchThread());
-
         configurableInstances.add(instance);
     }
 
     public synchronized void removeConfigurable(final Configurable instance) {
         assert (!SwingUtilities.isEventDispatchThread());
-
         configurableInstances.remove(instance);
     }
 }
