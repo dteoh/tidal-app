@@ -89,7 +89,6 @@ public class TidalController implements AccessViewListener {
                                 exitHandler();
                             }
                         });
-
                     }
                 };
 
@@ -126,11 +125,11 @@ public class TidalController implements AccessViewListener {
 
                 mainApplicationView = new JPanel() {
                     {
-                        setLayout(new MigLayout("ins 0", "[grow]", "[grow]"));
-                        setBackground(new Color(248, 248, 248));
+                        setLayout(new MigLayout("ins 0, wrap", "[grow]",
+                                "[grow]"));
+                        setBackground(new Color(90, 100, 115));
 
-                        add(menuBarController.getView(),
-                                "pushx, growx, wrap, north");
+                        add(menuBarController.getView(), "pushx, growx, north");
                         add(dropletsController.getView(), "pushx, growx, north");
                     }
                 };

@@ -49,9 +49,9 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
     private final SimpleDateFormat SDF = new SimpleDateFormat("MMM d, h:mm aa");
 
     // Colors for the various message states
-    private static final Color SEEN_BG_COLOR = new Color(241, 239, 226);
-    private static final Color UNSEEN_BG_COLOR = new Color(231, 228, 211);
-    private static final Color SEEN_FONT_COLOR = new Color(68, 68, 68);
+    private static final Color SEEN_BG_COLOR = new Color(245, 250, 250);
+    private static final Color UNSEEN_BG_COLOR = new Color(250, 250, 250);
+    private static final Color SEEN_FONT_COLOR = Color.black;
     private static final Color READING_FONT_COLOR = Color.BLACK;
     private static final Color PREVIEW_FONT_COLOR = new Color(119, 119, 119);
 
@@ -93,8 +93,8 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
 
         setLayout(new MigLayout("hidemode 3, wrap 3", "[215][grow 100][115]",
                 ""));
-        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(214,
-                214, 214)));
+        setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(178,
+                178, 178)));
         setBackground(UNSEEN_BG_COLOR);
 
         originLabel = new JLabel(contentModel.getOrigin());
@@ -111,7 +111,10 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
                     .getContent().length();
         String previewString =
             contentModel.getContent().substring(0, previewLength);
-        if (previewString.length() == 100) {
+        if (!previewString.isEmpty()) {
+            previewString = " - ".concat(previewString);
+        }
+        if (previewString.length() >= 100) {
             previewString = previewString.concat(" ...");
         }
 
@@ -128,13 +131,18 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
 
         add(receivedLabel, "right");
 
-        contents = new JEditorPane();
-        contents.setEditable(false);
-        contents.setVisible(false);
-        contents.setContentType("text/html");
-        contents.setText(wrapHTML(contentModel.getContent()));
-        contents.setFont(SEEN_FONT_STYLE);
-        contents.setBorder(null);
+        contents = new JEditorPane() {
+            {
+                setEditable(false);
+                setEditable(false);
+                setVisible(false);
+                setOpaque(false);
+                setContentType("text/html");
+                setText(wrapHTML(contentModel.getContent()));
+                setFont(SEEN_FONT_STYLE);
+                setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            }
+        };
 
         StringBuilder bodyRule = new StringBuilder();
         bodyRule.append("body { font-family: ");

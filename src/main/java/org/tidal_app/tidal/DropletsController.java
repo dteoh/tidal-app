@@ -16,7 +16,6 @@
 
 package org.tidal_app.tidal;
 
-import java.awt.Color;
 import java.util.Calendar;
 
 import javax.swing.JComponent;
@@ -48,7 +47,7 @@ public class DropletsController {
             @Override
             public void run() {
                 dropletsPanel = new JPanel(new MigLayout("wrap", "[grow 100]"));
-                dropletsPanel.setBackground(new Color(248, 248, 248));
+                dropletsPanel.setOpaque(false);
 
                 // TODO testing only, must remove.
                 DropletModel m =
