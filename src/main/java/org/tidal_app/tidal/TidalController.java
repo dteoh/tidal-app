@@ -20,7 +20,9 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -37,6 +39,7 @@ import org.tidal_app.tidal.configuration.ConfigurationController;
 import org.tidal_app.tidal.events.views.AccessViewEvent;
 import org.tidal_app.tidal.events.views.AccessViewListener;
 import org.tidal_app.tidal.views.AccessView;
+import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
 import foxtrot.Job;
 import foxtrot.Task;
@@ -102,7 +105,23 @@ public class TidalController implements AccessViewListener {
 
                 mainFramePanel.add(new AccessView() {
                     {
+                        BufferedImage backgroundImage = null;
+                        try {
+                            backgroundImage =
+                                (BufferedImage) Worker.post(new Task() {
+                                    @Override
+                                    public Object run() throws Exception {
+                                        return ImageIO.read(getClass()
+                                                .getResource("background.png"));
+                                    }
+                                });
+                        } catch (Exception e) {
+                            LOGGER.error("Error loading image", e);
+                        }
+
                         addAccessViewListener(TidalController.this);
+                        setBackground(new Color(90, 100, 115));
+                        setBackground(backgroundImage);
 
                         boolean isFirstRun = true;
                         try {
@@ -123,11 +142,26 @@ public class TidalController implements AccessViewListener {
                     }
                 }, "ACCESS_VIEW");
 
-                mainApplicationView = new JPanel() {
+                mainApplicationView = new TiledImagePanel() {
                     {
+                        BufferedImage backgroundImage = null;
+                        try {
+                            backgroundImage =
+                                (BufferedImage) Worker.post(new Task() {
+                                    @Override
+                                    public Object run() throws Exception {
+                                        return ImageIO.read(getClass()
+                                                .getResource("background.png"));
+                                    }
+                                });
+                        } catch (Exception e) {
+                            LOGGER.error("Error loading image", e);
+                        }
+
                         setLayout(new MigLayout("ins 0, wrap", "[grow]",
                                 "[grow]"));
                         setBackground(new Color(90, 100, 115));
+                        setBackground(backgroundImage);
 
                         add(menuBarController.getView(), "pushx, growx, north");
                         add(dropletsController.getView(), "pushx, growx, north");

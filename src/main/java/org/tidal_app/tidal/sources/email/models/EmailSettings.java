@@ -21,7 +21,7 @@ package org.tidal_app.tidal.sources.email.models;
  * 
  * @author Douglas Teoh
  */
-public class EmailSettings {
+public class EmailSettings implements Cloneable {
 
     private String host;
     private String protocol;
