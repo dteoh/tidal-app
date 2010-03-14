@@ -45,6 +45,7 @@ import org.tidal_app.tidal.sources.email.EmailDropletsController;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
 import org.tidal_app.tidal.views.models.DropletModel;
+import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
 import foxtrot.Job;
@@ -159,6 +160,9 @@ public class TidalController implements AccessViewListener {
 
                 mainApplicationView = new TiledImagePanel() {
                     {
+                        setLayout(new MigLayout("ins 0, wrap", "[grow]",
+                                "[grow]"));
+
                         BufferedImage backgroundImage = null;
                         try {
                             backgroundImage =
@@ -173,12 +177,15 @@ public class TidalController implements AccessViewListener {
                             LOGGER.error("Error loading image", e);
                         }
 
-                        setLayout(new MigLayout("ins 0, wrap", "[grow]",
-                                "[grow]"));
                         setBackground(new Color(90, 100, 115));
                         setBackground(backgroundImage);
 
-                        add(menuBarController.getView(), "pushx, growx, north");
+                        add(new DropShadowPanel(6, 0.5F) {
+                            {
+                                setLayout(new MigLayout("", "0[grow]0", "0[]"));
+                                add(menuBarController.getView(), "growx");
+                            }
+                        }, "pushx, growx, north");
                         add(dropletsViewController.getView(),
                                 "pushx, growx, north");
                     }

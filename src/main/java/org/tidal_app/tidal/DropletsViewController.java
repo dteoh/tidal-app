@@ -62,7 +62,7 @@ public class DropletsViewController {
                 dropletsPanel = new JPanel(new MigLayout("wrap", "[grow 100]"));
                 dropletsPanel.setOpaque(false);
 
-                // // TODO testing only, must remove.
+                // TODO testing only, must remove.
                 // DropletModel m =
                 // new DropletModel(
                 // "Test",
