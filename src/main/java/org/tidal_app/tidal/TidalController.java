@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -29,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 
 import net.miginfocom.swing.MigLayout;
@@ -38,7 +40,11 @@ import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.configuration.ConfigurationController;
 import org.tidal_app.tidal.events.views.AccessViewEvent;
 import org.tidal_app.tidal.events.views.AccessViewListener;
+import org.tidal_app.tidal.exceptions.DropletCreationException;
+import org.tidal_app.tidal.sources.email.EmailDropletsController;
+import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
+import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
 import foxtrot.Job;
@@ -67,13 +73,17 @@ public class TidalController implements AccessViewListener {
 
     /** Controllers */
     private final MenuBarController menuBarController;
-    private final DropletsController dropletsController;
+    private final DropletsViewController dropletsViewController;
     private final ConfigurationController configurationController;
+    private final EmailDropletsController emailDropletsController;
 
-    public TidalController() {
+    public TidalController(
+            final ConfigurationController configurationController,
+            final EmailDropletsController emailDropletsController) {
+        this.configurationController = configurationController;
+        this.emailDropletsController = emailDropletsController;
         menuBarController = new MenuBarController();
-        dropletsController = new DropletsController();
-        configurationController = new ConfigurationController();
+        dropletsViewController = new DropletsViewController();
         initView();
     }
 
@@ -103,8 +113,9 @@ public class TidalController implements AccessViewListener {
 
                 mainFrame.add(mainFramePanel);
 
-                mainFramePanel.add(new AccessView() {
+                mainFramePanel.add(new TiledImagePanel() {
                     {
+                        setLayout(new MigLayout("", "push[center]push"));
                         BufferedImage backgroundImage = null;
                         try {
                             backgroundImage =
@@ -119,9 +130,11 @@ public class TidalController implements AccessViewListener {
                             LOGGER.error("Error loading image", e);
                         }
 
-                        addAccessViewListener(TidalController.this);
                         setBackground(new Color(90, 100, 115));
                         setBackground(backgroundImage);
+
+                        AccessView av = new AccessView();
+                        av.addAccessViewListener(TidalController.this);
 
                         boolean isFirstRun = true;
                         try {
@@ -135,10 +148,12 @@ public class TidalController implements AccessViewListener {
                         }
 
                         if (isFirstRun) {
-                            showFirstRun();
+                            av.showFirstRun();
                         } else {
-                            showLogin();
+                            av.showLogin();
                         }
+
+                        add(av, "w 33%!");
                     }
                 }, "ACCESS_VIEW");
 
@@ -164,7 +179,8 @@ public class TidalController implements AccessViewListener {
                         setBackground(backgroundImage);
 
                         add(menuBarController.getView(), "pushx, growx, north");
-                        add(dropletsController.getView(), "pushx, growx, north");
+                        add(dropletsViewController.getView(),
+                                "pushx, growx, north");
                     }
                 };
 
@@ -198,6 +214,7 @@ public class TidalController implements AccessViewListener {
                 @Override
                 public Object run() throws Exception {
                     configurationController.saveMainSettings();
+                    configurationController.saveDropletSettings();
                     return null;
                 }
             });
@@ -233,7 +250,38 @@ public class TidalController implements AccessViewListener {
         });
 
         if (passwordOK) {
-            // TODO unlock droplet settings, then show the main interface.
+            new SwingWorker<Void, DropletModel>() {
+                @Override
+                protected void process(
+                        final List<DropletModel> dropletModelChunks) {
+                    dropletsViewController
+                            .updateDropletViews(dropletModelChunks);
+                }
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    Iterable<Object> dropletSettings =
+                        configurationController.loadDropletSettings();
+
+                    for (Object settings : dropletSettings) {
+                        if (settings instanceof EmailSettings) {
+                            EmailSettings emailSettings =
+                                (EmailSettings) settings;
+                            try {
+                                emailDropletsController
+                                        .addEmailDroplet(emailSettings);
+                                publish(emailDropletsController
+                                        .getDropletModel(emailSettings
+                                                .getUsername()));
+                            } catch (DropletCreationException e) {
+                                LOGGER.error("Cannot create droplet", e);
+                            }
+                        }
+                    }
+                    return null;
+                }
+            }.execute();
+
             CardLayout cards = (CardLayout) mainFramePanel.getLayout();
             cards.show(mainFramePanel, "MAIN_VIEW");
 

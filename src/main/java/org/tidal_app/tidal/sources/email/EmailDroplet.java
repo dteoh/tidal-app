@@ -24,7 +24,7 @@ import org.tidal_app.tidal.sources.email.models.EmailSettings;
 /**
  * Generic email droplet.
  * 
- * @author douglas
+ * @author Douglas Teoh
  */
 public abstract class EmailDroplet implements Droplet {
 

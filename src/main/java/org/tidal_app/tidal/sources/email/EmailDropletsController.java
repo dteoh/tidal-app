@@ -23,7 +23,10 @@ import java.util.TreeMap;
 
 import javax.swing.SwingUtilities;
 
+import org.tidal_app.tidal.exceptions.DropletCreationException;
+import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
+import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.models.DropletContentModel;
 import org.tidal_app.tidal.views.models.DropletModel;
 
@@ -32,7 +35,38 @@ public class EmailDropletsController {
     private final Map<String, EmailDroplet> droplets;
 
     public EmailDropletsController() {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         droplets = new TreeMap<String, EmailDroplet>();
+    }
+
+    /**
+     * Given an EmailSettings object, create and add the appropriate
+     * implementation of an EmailDroplet.
+     * 
+     * @param emailSettings
+     * @throws DropletCreationException
+     *             If the given email settings are incompatible with any of the
+     *             EmailDroplet implementations.
+     * @return the created EmailDroplet.
+     */
+    public synchronized EmailDroplet addEmailDroplet(
+            final EmailSettings emailSettings) throws DropletCreationException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
+        // Determine what type of droplet to build based on the given protocol.
+        final String protocol = emailSettings.getProtocol();
+        if (protocol.equalsIgnoreCase("imap")
+            || protocol.equalsIgnoreCase("imaps")) {
+            ImapDroplet imapsDroplet = ImapDroplet.create(emailSettings);
+            droplets.put(imapsDroplet.getUsername(), imapsDroplet);
+            return imapsDroplet;
+        } else {
+            StringBuilder sb = new StringBuilder("Unknown protocol \"");
+            sb.append(protocol);
+            sb.append("\"");
+            throw new DropletCreationException(sb.toString());
+        }
     }
 
     public synchronized void addEmailDroplet(final EmailDroplet droplet) {
@@ -68,12 +102,11 @@ public class EmailDropletsController {
         return new DropletModel(droplet.getUsername(), contentModel.iterator());
     }
 
-    public synchronized List<DropletModel> getAllDropletModels() {
+    public synchronized Iterable<DropletModel> getAllDropletModels() {
         assert (!SwingUtilities.isEventDispatchThread());
 
         List<DropletModel> allModels = new LinkedList<DropletModel>();
-        for (String dropletUsername : droplets.keySet()) {
-            EmailDroplet droplet = droplets.get(dropletUsername);
+        for (EmailDroplet droplet : droplets.values()) {
             List<DropletContentModel> contentModel =
                 new LinkedList<DropletContentModel>();
             for (EmailRipple ripple : droplet.getRipples()) {
@@ -81,8 +114,8 @@ public class EmailDropletsController {
                         .getSender(), ripple.getSubject(), ripple.getContent(),
                         ripple.getReceivedDate()));
             }
-            allModels.add(new DropletModel(droplet.getUsername(), contentModel
-                    .iterator()));
+            allModels
+                    .add(new DropletModel(droplet.getUsername(), contentModel));
         }
         return allModels;
     }

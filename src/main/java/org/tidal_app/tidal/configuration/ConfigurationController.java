@@ -55,11 +55,20 @@ public class ConfigurationController {
     private final StrongTextEncryptor encryptor;
 
     private final Set<Configurable> configurableInstances;
+    /**
+     * A state for determining if the user's configuration has been unlocked or
+     * not
+     */
+    private boolean configurationUnlocked;
 
     public ConfigurationController() {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         config = new Configuration();
         encryptor = new StrongTextEncryptor();
         configurableInstances = new HashSet<Configurable>();
+
+        configurationUnlocked = false;
     }
 
     /**
@@ -69,6 +78,8 @@ public class ConfigurationController {
      * @return true if the settings can be loaded, false otherwise.
      */
     public boolean loadMainSettings() {
+        assert (!SwingUtilities.isEventDispatchThread());
+
         final String homeDirectory = System.getProperty("user.home");
         if (homeDirectory == null) {
             return false;
@@ -105,6 +116,7 @@ public class ConfigurationController {
      */
     public boolean loadMainSettings(final File file) {
         assert (!SwingUtilities.isEventDispatchThread());
+
         boolean result = true;
         FileReader fr = null;
         try {
@@ -140,6 +152,12 @@ public class ConfigurationController {
      *             if no authorization key is set.
      */
     public void saveMainSettings() throws UnsecuredException {
+        assert (!SwingUtilities.isEventDispatchThread());
+
+        if (!configurationUnlocked) {
+            return;
+        }
+
         final String homeDirectory = System.getProperty("user.home");
         if (homeDirectory == null) {
             LOGGER.error("No home directory");
@@ -162,6 +180,10 @@ public class ConfigurationController {
             throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
 
+        if (!configurationUnlocked) {
+            return;
+        }
+
         File file = new File(filePath);
         saveMainSettings(file);
     }
@@ -175,6 +197,10 @@ public class ConfigurationController {
      */
     public void saveMainSettings(final File file) throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
+
+        if (!configurationUnlocked) {
+            return;
+        }
 
         if (config.getAuthKeyDigest().isEmpty()
             || config.getAuthKeyDigest() == null) {
@@ -203,6 +229,27 @@ public class ConfigurationController {
     }
 
     /**
+     * Saves the user's droplet settings in the default location.
+     * 
+     * @throws UnsecuredException
+     */
+    public void saveDropletSettings() throws UnsecuredException {
+        if (!configurationUnlocked) {
+            return;
+        }
+
+        final String homeDirectory = System.getProperty("user.home");
+        if (homeDirectory == null) {
+            LOGGER.error("No home directory");
+            return;
+        }
+        StringBuilder sb = new StringBuilder(homeDirectory);
+        sb.append("/.tidal");
+        File configFile = new File(sb.toString(), "dropletsrc");
+        saveDropletSettings(configFile);
+    }
+
+    /**
      * Saves all current Droplet settings to the given file.
      * 
      * @param filePath
@@ -212,6 +259,10 @@ public class ConfigurationController {
     public void saveDropletSettings(final String filePath)
             throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
+
+        if (!configurationUnlocked) {
+            return;
+        }
 
         File file = new File(filePath);
         saveDropletSettings(file);
@@ -226,6 +277,10 @@ public class ConfigurationController {
      */
     public void saveDropletSettings(final File file) throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
+
+        if (!configurationUnlocked) {
+            return;
+        }
 
         if (config.getAuthKeyDigest().isEmpty()
             || config.getAuthKeyDigest() == null) {
@@ -256,6 +311,25 @@ public class ConfigurationController {
                 }
             }
         }
+    }
+
+    /**
+     * Load all droplet settings from the default droplets configuration file.
+     * 
+     * @return settings if the file was loaded, {@code null} otherwise.
+     */
+    public Iterable<Object> loadDropletSettings() {
+        assert (!SwingUtilities.isEventDispatchThread());
+
+        final String homeDirectory = System.getProperty("user.home");
+        if (homeDirectory == null) {
+            LOGGER.error("No home directory");
+            return null;
+        }
+        StringBuilder sb = new StringBuilder(homeDirectory);
+        sb.append("/.tidal");
+        File configFile = new File(sb.toString(), "dropletsrc");
+        return loadDropletSettings(configFile);
     }
 
     /**
@@ -316,6 +390,7 @@ public class ConfigurationController {
             new StrongPasswordEncryptor();
         if (passwordEncryptor.checkPassword(authKey, config.getAuthKeyDigest())) {
             encryptor.setPassword(authKey);
+            configurationUnlocked = true;
             return true;
         }
         return false;
@@ -340,6 +415,8 @@ public class ConfigurationController {
         config.setAuthKeyDigest(passwordEncryptor.encryptPassword(newAuthKey));
 
         encryptor.setPassword(newAuthKey);
+
+        configurationUnlocked = true;
     }
 
     public synchronized void addConfigurable(final Configurable instance) {

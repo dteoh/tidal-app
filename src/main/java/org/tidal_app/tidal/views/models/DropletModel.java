@@ -27,6 +27,9 @@ public class DropletModel {
 
     private final List<DropletContentModel> dropletContents;
 
+    /**
+     * @return the name or identifier of this droplet.
+     */
     public String getDropletName() {
         return dropletName;
     }
@@ -49,6 +52,18 @@ public class DropletModel {
 
     public DropletModel(final String dropletName,
             final Iterator<DropletContentModel> dropletContents) {
+        this.dropletName = dropletName;
+
+        ImmutableList.Builder<DropletContentModel> contentModelBuilder =
+            ImmutableList.builder();
+
+        contentModelBuilder.addAll(dropletContents);
+
+        this.dropletContents = contentModelBuilder.build();
+    }
+
+    public DropletModel(final String dropletName,
+            final Iterable<DropletContentModel> dropletContents) {
         this.dropletName = dropletName;
 
         ImmutableList.Builder<DropletContentModel> contentModelBuilder =
