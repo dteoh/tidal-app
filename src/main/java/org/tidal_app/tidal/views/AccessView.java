@@ -51,20 +51,19 @@ public class AccessView extends DropShadowPanel {
      */
     private static final long serialVersionUID = 6436957774350065323L;
 
-    private JLabel heading;
-    private JLabel information;
+    private transient JLabel heading;
+    private transient JLabel information;
 
-    private JPasswordField passwordField;
-    private JPasswordField confirmationField;
+    private transient JPasswordField passwordField;
+    private transient JPasswordField confirmationField;
 
-    private JButton unlockButton;
+    private transient JButton unlockButton;
 
-    private List<AccessViewListener> accessViewListeners;
+    private transient final List<AccessViewListener> listeners;
 
     public AccessView() {
         super(6, 0.5F);
-        // super(getClass().getResource(name));
-        accessViewListeners = new LinkedList<AccessViewListener>();
+        listeners = new LinkedList<AccessViewListener>();
         initView();
     }
 
@@ -72,155 +71,132 @@ public class AccessView extends DropShadowPanel {
      * Initialize the view.
      */
     private void initView() {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
 
         setLayout(new MigLayout("", "[grow]", "[]0[]0[]"));
 
-        add(new GradientPanel(new Color(0, 100, 175), new Color(0, 55, 125)) {
-            {
-                setLayout(new MigLayout());
-                heading = new JLabel() {
-                    {
-                        setForeground(Color.WHITE);
-                        setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
-                        setName("AccessViewHeading");
-                    }
-                };
-                add(heading);
-            }
-        }, "growx, wrap");
+        // Construct our header panel and header contents
 
-        add(new GradientPanel(new Color(235, 240, 250),
-                new Color(215, 225, 235)) {
-            {
-                setLayout(new MigLayout());
-                information = new JLabel() {
-                    {
-                        setName("AccessViewInformation");
-                    }
-                };
-                add(information);
-            }
-        }, "growx, wrap");
+        final GradientPanel headerPanel =
+            new GradientPanel(new Color(0, 100, 175), new Color(0, 55, 125));
+        headerPanel.setLayout(new MigLayout());
+
+        heading = new JLabel();
+        heading.setForeground(Color.WHITE);
+        heading.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
+        heading.setName("AccessViewHeading");
+
+        headerPanel.add(heading);
+
+        add(headerPanel, "growx, wrap");
+
+        // Construct our information panel
+        final GradientPanel infoPanel =
+            new GradientPanel(new Color(235, 240, 250),
+                    new Color(215, 225, 235));
+        infoPanel.setLayout(new MigLayout());
+        information = new JLabel();
+        information.setName("AccessViewInformation");
+        infoPanel.add(information);
+
+        add(infoPanel, "growx, wrap");
     }
 
     /**
      * Display the first run screen.
      */
     public void showFirstRun() {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
 
         // TODO externalise this text
         heading.setText("First run");
         information
                 .setText("Create a password so that your Tidal settings are secured.");
 
-        add(new JPanel() {
-            {
-                setLayout(new MigLayout());
-
-                passwordField = new JPasswordField() {
-                    {
-                        setName("AccessViewPasswordField");
-                        addKeyListener(new KeyAdapter() {
-                            @Override
-                            public void keyReleased(final KeyEvent e) {
-                                // Want to unlock the confirm button if the
-                                // confirmation
-                                // field matches the password field.
-                                if (Arrays.equals(confirmationField
-                                        .getPassword(), passwordField
-                                        .getPassword())) {
-                                    unlockButton.setEnabled(true);
-                                } else {
-                                    unlockButton.setEnabled(false);
-                                }
-                            }
-                        });
-                    }
-                };
-
-                add(passwordField, "pushx, growx, wrap");
-
-                confirmationField = new JPasswordField() {
-                    {
-                        setName("AccessViewConfirmationField");
-                        addKeyListener(new KeyAdapter() {
-                            @Override
-                            public void keyReleased(final KeyEvent e) {
-                                // Want to unlock the confirm button if the
-                                // confirmation
-                                // field matches the password field.
-                                if (Arrays.equals(confirmationField
-                                        .getPassword(), passwordField
-                                        .getPassword())) {
-                                    unlockButton.setEnabled(true);
-                                } else {
-                                    unlockButton.setEnabled(false);
-                                }
-                            }
-                        });
-                    }
-                };
-
-                unlockButton = new JButton() {
-                    {
-                        setName("AccessViewUnlockButton");
-                        setText("Confirm");
-                        setEnabled(false);
-                        addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(final ActionEvent e) {
-                                handleUnlockButtonAction(e, true);
-                            }
-                        });
-                    }
-                };
-
-                add(confirmationField, "pushx, growx");
-                add(unlockButton, "wrap");
+        passwordField = new JPasswordField();
+        passwordField.setName("AccessViewPasswordField");
+        passwordField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(final KeyEvent e) {
+                // Want to unlock the confirm button if the
+                // confirmation
+                // field matches the password field.
+                if (Arrays.equals(confirmationField.getPassword(),
+                        passwordField.getPassword())) {
+                    unlockButton.setEnabled(true);
+                } else {
+                    unlockButton.setEnabled(false);
+                }
             }
-        }, "pushx, growx, wrap");
+        });
+
+        confirmationField = new JPasswordField();
+        confirmationField.setName("AccessViewConfirmationField");
+        confirmationField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(final KeyEvent e) {
+                // Want to unlock the confirm button if the
+                // confirmation
+                // field matches the password field.
+                if (Arrays.equals(confirmationField.getPassword(),
+                        passwordField.getPassword())) {
+                    unlockButton.setEnabled(true);
+                } else {
+                    unlockButton.setEnabled(false);
+                }
+            }
+        });
+
+        unlockButton = new JButton();
+        unlockButton.setName("AccessViewUnlockButton");
+        unlockButton.setText("Confirm");
+        unlockButton.setEnabled(false);
+        unlockButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                handleUnlockButtonAction(e, true);
+            }
+        });
+
+        // Construct input panel.
+
+        final JPanel inputPanel = new JPanel(new MigLayout());
+        inputPanel.add(passwordField, "pushx, growx, wrap");
+        inputPanel.add(confirmationField, "pushx, growx");
+        inputPanel.add(unlockButton, "wrap");
+
+        add(inputPanel, "pushx, growx, wrap");
     }
 
     /**
      * Display the login screen.
      */
     public void showLogin() {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
 
         // TODO externalise this text
         heading.setText("Unlock Tidal");
         information.setText("Sign in with your Tidal password.");
 
-        add(new JPanel() {
-            {
-                setLayout(new MigLayout());
+        passwordField = new JPasswordField();
+        passwordField.setName("AccessViewPasswordField");
 
-                passwordField = new JPasswordField() {
-                    {
-                        setName("AccessViewPasswordField");
-                    }
-                };
-
-                unlockButton = new JButton() {
-                    {
-                        setText("Unlock");
-                        setName("AccessViewUnlockButton");
-                        addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(final ActionEvent e) {
-                                handleUnlockButtonAction(e, false);
-                            }
-                        });
-                    }
-                };
-
-                add(passwordField, "pushx, growx");
-                add(unlockButton, "wrap");
+        unlockButton = new JButton();
+        unlockButton.setText("Unlock");
+        unlockButton.setName("AccessViewUnlockButton");
+        unlockButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                handleUnlockButtonAction(e, false);
             }
-        }, "pushx, growx, wrap");
+        });
 
+        // Construct input panel.
+        final JPanel inputPanel = new JPanel(new MigLayout());
+        inputPanel.add(passwordField, "pushx, growx");
+        inputPanel.add(unlockButton, "wrap");
+
+        add(inputPanel, "pushx, growx, wrap");
     }
 
     /**
@@ -229,7 +205,7 @@ public class AccessView extends DropShadowPanel {
      * @param message
      */
     public void displayMessage(final String message) {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
         information.setText(message);
     }
 
@@ -248,7 +224,7 @@ public class AccessView extends DropShadowPanel {
         }
 
         // FIXME This isn't the best way of passing passwords around.
-        String password = new String(passwordField.getPassword());
+        final String password = new String(passwordField.getPassword());
         if (firstRun) {
             fireSetupPasswordEvent(password);
         } else {
@@ -262,7 +238,7 @@ public class AccessView extends DropShadowPanel {
      * @param listener
      */
     public void addAccessViewListener(final AccessViewListener listener) {
-        accessViewListeners.add(listener);
+        listeners.add(listener);
     }
 
     /**
@@ -271,7 +247,7 @@ public class AccessView extends DropShadowPanel {
      * @param listener
      */
     public void removeAccessViewListener(final AccessViewListener listener) {
-        accessViewListeners.remove(listener);
+        listeners.remove(listener);
     }
 
     /**
@@ -280,9 +256,9 @@ public class AccessView extends DropShadowPanel {
      * @param password
      */
     private void fireLoginAttemptedEvent(final String password) {
-        assert (SwingUtilities.isEventDispatchThread());
-        AccessViewEvent event = new AccessViewEvent(this, password);
-        for (AccessViewListener listener : accessViewListeners) {
+        assert SwingUtilities.isEventDispatchThread();
+        final AccessViewEvent event = new AccessViewEvent(this, password);
+        for (final AccessViewListener listener : listeners) {
             listener.loginAttempted(event);
         }
     }
@@ -293,9 +269,9 @@ public class AccessView extends DropShadowPanel {
      * @param password
      */
     private void fireSetupPasswordEvent(final String password) {
-        assert (SwingUtilities.isEventDispatchThread());
-        AccessViewEvent event = new AccessViewEvent(this, password);
-        for (AccessViewListener listener : accessViewListeners) {
+        assert SwingUtilities.isEventDispatchThread();
+        final AccessViewEvent event = new AccessViewEvent(this, password);
+        for (final AccessViewListener listener : listeners) {
             listener.setupPassword(event);
         }
     }

@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
-import org.tidal_app.tidal.sources.email.EmailDroplet;
+import org.tidal_app.tidal.sources.email.AbstractEmailDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 
@@ -46,20 +46,20 @@ import org.tidal_app.tidal.sources.email.models.EmailSettings;
  * 
  * @author Douglas Teoh
  */
-public class ImapDroplet extends EmailDroplet {
+public final class ImapDroplet extends AbstractEmailDroplet {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(ImapDroplet.class);
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(ImapDroplet.class);
 
-    private Session session = null;
-    private Store store = null;
-    private Folder inbox = null;
+    private transient Store store = null;
+    private transient Folder inbox = null;
 
     public static ImapDroplet create(final EmailSettings settings)
             throws DropletCreationException {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        String protocol = settings.getProtocol();
-        if (!protocol.equals("imap") && !protocol.equals("imaps")) {
+        final String protocol = settings.getProtocol();
+        if (!"imap".equals(protocol) && !"imaps".equals(protocol)) {
             throw new DropletCreationException("Unsupported protocol: "
                 + protocol);
         }
@@ -71,7 +71,7 @@ public class ImapDroplet extends EmailDroplet {
             throws DropletCreationException {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        if (!protocol.equals("imap") && !protocol.equals("imaps")) {
+        if (!"imap".equals(protocol) && !"imaps".equals(protocol)) {
             throw new DropletCreationException("Unsupported protocol: "
                 + protocol);
         }
@@ -120,8 +120,8 @@ public class ImapDroplet extends EmailDroplet {
     public void init() throws DropletInitException {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        Properties props = System.getProperties();
-        session = Session.getInstance(props, null);
+        final Properties props = System.getProperties();
+        final Session session = Session.getInstance(props, null);
 
         // Set up the mailbox to read from
         try {
@@ -132,10 +132,10 @@ public class ImapDroplet extends EmailDroplet {
             inbox.open(Folder.READ_WRITE);
         } catch (NoSuchProviderException e) {
             LOGGER.error("Init exception", e);
-            throw new DropletInitException(e.getCause());
+            throw new DropletInitException(e);
         } catch (MessagingException e) {
             LOGGER.error("Init exception", e);
-            throw new DropletInitException(e.getCause());
+            throw new DropletInitException(e);
         }
     }
 
@@ -148,22 +148,23 @@ public class ImapDroplet extends EmailDroplet {
         }
         try {
             // This search option will only download unread messages.
-            FlagTerm searchOption =
+            final FlagTerm searchOption =
                 new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-            Message[] messages = inbox.search(searchOption);
+            final Message[] messages = inbox.search(searchOption);
 
             // Make ripples
-            List<EmailRipple> unreadRipples = new LinkedList<EmailRipple>();
+            final List<EmailRipple> unreadRipples =
+                new LinkedList<EmailRipple>();
             for (int i = 0; i < messages.length; i++) {
-                Address[] senderAddresses = messages[i].getFrom();
-                String subject = messages[i].getSubject();
-                Date received = messages[i].getReceivedDate();
+                final Address[] senderAddresses = messages[i].getFrom();
+                final String subject = messages[i].getSubject();
+                final Date received = messages[i].getReceivedDate();
 
-                String contentType = messages[i].getContentType();
+                final String contentType = messages[i].getContentType();
                 String content =
                     "Only plaintext and HTML emails are supported.";
-                if (contentType.equalsIgnoreCase("text/plain")
-                    || contentType.equalsIgnoreCase("text/html")) {
+                if ("text/plain".equalsIgnoreCase(contentType)
+                    || "text/html".equalsIgnoreCase(contentType)) {
                     content = (String) messages[i].getContent();
                 }
 

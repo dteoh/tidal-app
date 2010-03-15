@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 
 public class DropletModel {
 
-    private final String dropletName;
+    private transient final String dropletName;
 
-    private final List<DropletContentModel> dropletContents;
+    private transient final List<DropletContentModel> dropletContents;
 
     /**
      * @return the name or identifier of this droplet.
@@ -42,35 +42,35 @@ public class DropletModel {
             final DropletContentModel... dropletContents) {
         this.dropletName = dropletName;
 
-        ImmutableList.Builder<DropletContentModel> contentModelBuilder =
+        final ImmutableList.Builder<DropletContentModel> modelBuilder =
             ImmutableList.builder();
 
-        contentModelBuilder.add(dropletContents);
+        modelBuilder.add(dropletContents);
 
-        this.dropletContents = contentModelBuilder.build();
+        this.dropletContents = modelBuilder.build();
     }
 
     public DropletModel(final String dropletName,
             final Iterator<DropletContentModel> dropletContents) {
         this.dropletName = dropletName;
 
-        ImmutableList.Builder<DropletContentModel> contentModelBuilder =
+        final ImmutableList.Builder<DropletContentModel> modelBuilder =
             ImmutableList.builder();
 
-        contentModelBuilder.addAll(dropletContents);
+        modelBuilder.addAll(dropletContents);
 
-        this.dropletContents = contentModelBuilder.build();
+        this.dropletContents = modelBuilder.build();
     }
 
     public DropletModel(final String dropletName,
             final Iterable<DropletContentModel> dropletContents) {
         this.dropletName = dropletName;
 
-        ImmutableList.Builder<DropletContentModel> contentModelBuilder =
+        final ImmutableList.Builder<DropletContentModel> modelBuilder =
             ImmutableList.builder();
 
-        contentModelBuilder.addAll(dropletContents);
+        modelBuilder.addAll(dropletContents);
 
-        this.dropletContents = contentModelBuilder.build();
+        this.dropletContents = modelBuilder.build();
     }
 }

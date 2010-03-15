@@ -30,13 +30,13 @@ public interface AccessViewListener {
      * 
      * @param password
      */
-    public void loginAttempted(AccessViewEvent evt);
+    void loginAttempted(AccessViewEvent evt);
 
     /**
      * First time usage of Tidal, user chose the given password.
      * 
      * @param password
      */
-    public void setupPassword(AccessViewEvent evt);
+    void setupPassword(AccessViewEvent evt);
 
 }

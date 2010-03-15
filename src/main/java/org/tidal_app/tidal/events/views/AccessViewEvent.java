@@ -31,7 +31,7 @@ public class AccessViewEvent extends EventObject {
     private static final long serialVersionUID = -9038459557832649156L;
 
     /** The password entered on the form */
-    private final String password;
+    private transient final String password;
 
     /**
      * @param source

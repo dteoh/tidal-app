@@ -33,9 +33,10 @@ import org.yaml.snakeyaml.nodes.Tag;
  */
 public class DropletsConfigurationsConstructor extends Constructor {
 
-    private StrongTextEncryptor decryptor;
+    private transient final StrongTextEncryptor decryptor;
 
     public DropletsConfigurationsConstructor(final StrongTextEncryptor decryptor) {
+        super();
         this.decryptor = decryptor;
         yamlConstructors.put(new Tag("!email"), new ConstructEmailSettings());
     }
@@ -55,14 +56,14 @@ public class DropletsConfigurationsConstructor extends Constructor {
         @SuppressWarnings("unchecked")
         @Override
         public Object construct(final Node node) {
-            Map enc = constructMapping((MappingNode) node);
+            final Map enc = constructMapping((MappingNode) node);
 
-            String host = (String) enc.get("host");
+            final String host = (String) enc.get("host");
             if (host == null) {
                 return null;
             }
 
-            String protocol = (String) enc.get("prot");
+            final String protocol = (String) enc.get("prot");
             if (protocol == null) {
                 return null;
             }
@@ -81,7 +82,7 @@ public class DropletsConfigurationsConstructor extends Constructor {
                 password = decryptor.decrypt(password);
             }
 
-            EmailSettings settings = new EmailSettings();
+            final EmailSettings settings = new EmailSettings();
             settings.setHost(host);
             settings.setProtocol(protocol);
             settings.setUsername(username);

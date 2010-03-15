@@ -37,8 +37,8 @@ public class GradientPanel extends JPanel {
      */
     private static final long serialVersionUID = 3656954759689879764L;
 
-    private final Color topGradient;
-    private final Color bottomGradient;
+    private transient final Color topGradient;
+    private transient final Color bottomGradient;
 
     /**
      * Creates a gradient panel with the two specified colors.
@@ -56,12 +56,12 @@ public class GradientPanel extends JPanel {
 
     @Override
     protected void paintComponent(final Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        GradientPaint gradient =
+        final Graphics2D g2 = (Graphics2D) g;
+        final GradientPaint gradient =
             new GradientPaint(0, 0, topGradient, 0, getHeight(), bottomGradient);
 
         // Store old state.
-        Paint oldPaint = g2.getPaint();
+        final Paint oldPaint = g2.getPaint();
 
         g2.setPaint(gradient);
         g2.fillRect(0, 0, getWidth(), getHeight());

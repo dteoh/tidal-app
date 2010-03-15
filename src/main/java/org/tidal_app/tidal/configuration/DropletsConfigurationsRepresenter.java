@@ -33,9 +33,10 @@ import org.yaml.snakeyaml.representer.Representer;
  */
 public class DropletsConfigurationsRepresenter extends Representer {
 
-    private StrongTextEncryptor encryptor;
+    private transient final StrongTextEncryptor encryptor;
 
     public DropletsConfigurationsRepresenter(final StrongTextEncryptor encryptor) {
+        super();
         this.encryptor = encryptor;
         representers.put(EmailSettings.class, new RepresentEmailSettings());
     }
@@ -55,8 +56,8 @@ public class DropletsConfigurationsRepresenter extends Representer {
         @SuppressWarnings("unchecked")
         @Override
         public Node representData(final Object obj) {
-            EmailSettings settings = (EmailSettings) obj;
-            Map enc = new TreeMap();
+            final EmailSettings settings = (EmailSettings) obj;
+            final Map enc = new TreeMap();
             enc.put("host", settings.getHost());
             enc.put("prot", settings.getProtocol());
             enc.put("user", encryptor.encrypt(settings.getUsername()));

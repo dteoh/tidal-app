@@ -18,11 +18,11 @@ package org.tidal_app.tidal.views.models;
 
 public class DropletContentModel {
 
-    private final Object id;
-    private final String origin;
-    private final String subject;
-    private final String content;
-    private final long received;
+    private transient final Object id;
+    private transient final String origin;
+    private transient final String subject;
+    private transient final String content;
+    private transient final long received;
 
     public Object getId() {
         return id;

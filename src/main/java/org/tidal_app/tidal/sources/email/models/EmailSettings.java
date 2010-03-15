@@ -29,6 +29,7 @@ public class EmailSettings implements Cloneable {
     private String password;
 
     public EmailSettings() {
+        // Default constructor.
     }
 
     private EmailSettings(final EmailSettings other) {
@@ -95,7 +96,7 @@ public class EmailSettings implements Cloneable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        EmailSettings other = (EmailSettings) obj;
+        final EmailSettings other = (EmailSettings) obj;
         if (host == null) {
             if (other.host != null) {
                 return false;

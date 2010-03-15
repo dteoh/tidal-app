@@ -29,6 +29,6 @@ import org.yaml.snakeyaml.representer.Representer;
  */
 public interface Configurable {
 
-    public Object getSettings();
+    Object getSettings();
 
 }

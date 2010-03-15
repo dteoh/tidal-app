@@ -30,7 +30,7 @@ import org.tidal_app.tidal.sources.email.EmailDropletsController;
  * 
  * @author Douglas Teoh
  */
-public class Tidal {
+public class Tidal { // NOPMD by Douglas Teoh on 15/03/10 8:02 PM
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Tidal.class);
 
@@ -43,13 +43,13 @@ public class Tidal {
         // Set the application to use system UI LnF.
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             LOGGER.error("Look and feel error", e);
-        } catch (InstantiationException e) {
+        } catch (final InstantiationException e) {
             LOGGER.error("Look and feel error", e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             LOGGER.error("Look and feel error", e);
-        } catch (UnsupportedLookAndFeelException e) {
+        } catch (final UnsupportedLookAndFeelException e) {
             LOGGER.error("Look and feel error", e);
         }
 
@@ -64,13 +64,14 @@ public class Tidal {
         final EmailDropletsController emailDropletsController =
             new EmailDropletsController();
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new TidalController(configurationController,
-                        emailDropletsController);
-            }
-        });
+        SwingUtilities.invokeLater(new Runnable() { // NOPMD by Douglas Teoh on
+                    // 15/03/10 8:01 PM
+                    @Override
+                    public void run() {
+                        new TidalController(configurationController,
+                                emailDropletsController);
+                    }
+                });
     }
 
 }

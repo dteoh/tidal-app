@@ -46,7 +46,8 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      */
     private static final long serialVersionUID = -6001157043106549763L;
 
-    private final SimpleDateFormat SDF = new SimpleDateFormat("MMM d, h:mm aa");
+    private transient final SimpleDateFormat SDF =
+        new SimpleDateFormat("MMM d, h:mm aa");
 
     // Colors for the various message states
     private static final Color SEEN_BG_COLOR = new Color(245, 250, 250);
@@ -65,31 +66,27 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
     private static final Font READING_DATE_FONT_STYLE =
         new Font(Font.SANS_SERIF, Font.PLAIN, 16);
     /** Model */
-    private final DropletContentModel contentModel;
+    private transient final DropletContentModel contentModel;
     /** View components */
-    private JLabel originLabel;
-    private JLabel subjectLabel;
-    private JLabel previewLabel;
-    private JLabel receivedLabel;
-    private JEditorPane contents;
-
-    private MouseAdapter rippleViewMouseAdapter;
+    private transient JLabel originLabel;
+    private transient JLabel subjectLabel;
+    private transient JLabel previewLabel;
+    private transient JLabel receivedLabel;
+    private transient JEditorPane contents;
 
     public RippleView(final DropletContentModel contentModel) {
         super();
+
         this.contentModel = contentModel;
-
         initView();
-
-        rippleViewMouseAdapter = new RippleViewMouseAdapter();
-        addMouseListener(rippleViewMouseAdapter);
+        addMouseListener(new RippleViewMouseAdapter());
     }
 
     /**
      * Initialize the view.
      */
     private void initView() {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
 
         setLayout(new MigLayout("hidemode 3, wrap 3", "[215][grow 100][115]",
                 ""));
@@ -106,7 +103,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         subjectLabel.setFont(UNSEEN_FONT_STYLE);
         add(subjectLabel, "split 2, left");
 
-        int previewLength =
+        final int previewLength =
             contentModel.getContent().length() > 100 ? 100 : contentModel
                     .getContent().length();
         String previewString =
@@ -124,27 +121,25 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         previewLabel.setFont(SEEN_FONT_STYLE);
         add(previewLabel, "left");
 
-        Calendar received = Calendar.getInstance();
+        final Calendar received = Calendar.getInstance();
         received.setTimeInMillis(contentModel.getReceived());
         receivedLabel = new JLabel(SDF.format(received.getTime()));
         receivedLabel.setFont(UNSEEN_FONT_STYLE);
 
         add(receivedLabel, "right");
 
-        contents = new JEditorPane() {
-            {
-                setEditable(false);
-                setEditable(false);
-                setVisible(false);
-                setOpaque(false);
-                setContentType("text/html");
-                setText(wrapHTML(contentModel.getContent()));
-                setFont(SEEN_FONT_STYLE);
-                setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-            }
-        };
+        contents = new JEditorPane();
 
-        StringBuilder bodyRule = new StringBuilder();
+        contents.setEditable(false);
+        contents.setEditable(false);
+        contents.setVisible(false);
+        contents.setOpaque(false);
+        contents.setContentType("text/html");
+        contents.setText(wrapHTML(contentModel.getContent()));
+        contents.setFont(SEEN_FONT_STYLE);
+        contents.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        final StringBuilder bodyRule = new StringBuilder();
         bodyRule.append("body { font-family: ");
         bodyRule.append(SEEN_FONT_STYLE.getFamily());
         bodyRule.append("; font-size: ");
@@ -161,7 +156,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      * Hides or shows the message, depending on previous state.
      */
     private void showHideMessage() {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
 
         if (contents.isVisible()) {
             // Hide the contents of the message
@@ -199,7 +194,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      * @return Original string wrapped in div markup.
      */
     private String wrapHTML(final String content) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("<div width=\"500px\">");
         sb.append(content);
         sb.append("</div>");

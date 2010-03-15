@@ -60,7 +60,7 @@ public class MenuBarView extends GradientPanel {
      * Initialize the view.
      */
     private void initView() {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
 
         setLayout(new MigLayout());
         // setBackground(MENUBAR_BACKGROUND);
@@ -72,33 +72,27 @@ public class MenuBarView extends GradientPanel {
         add(new JButton(), "w 32!, h 32!");
 
         // Application name
-        add(new JLabel() {
-            {
-                setText("Tidal");
-                setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
-                setForeground(APP_NAME_FOREGROUND);
-            }
-        });
+        final JLabel appName = new JLabel("Tidal");
+        appName.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
+        appName.setForeground(APP_NAME_FOREGROUND);
+        add(appName);
 
         // Application version number
-        add(new JLabel() {
-            {
-                setText("0.1-dev");
-                setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 22));
-                setForeground(APP_VERSION_FOREGROUND);
-            }
-        });
+        final JLabel appVersion = new JLabel("0.1-dev");
+        appVersion.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 22));
+        appVersion.setForeground(APP_VERSION_FOREGROUND);
+        add(appVersion);
     }
 
     @Override
     protected void paintComponent(final Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        GradientPaint gradient =
+        final Graphics2D g2 = (Graphics2D) g;
+        final GradientPaint gradient =
             new GradientPaint(0, 0, new Color(0, 100, 175), 0, getHeight(),
                     new Color(0, 55, 125));
 
         // Store old state.
-        Paint oldPaint = g2.getPaint();
+        final Paint oldPaint = g2.getPaint();
 
         g2.setPaint(gradient);
         g2.fillRect(0, 0, getWidth(), getHeight());

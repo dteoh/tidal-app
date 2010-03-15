@@ -23,11 +23,11 @@ package org.tidal_app.tidal.sources.email.models;
  */
 public class EmailRipple implements Comparable<EmailRipple> {
 
-    private final int id;
-    private final String sender;
-    private final String subject;
-    private final String content;
-    private final long receivedDate;
+    private transient final int id;
+    private transient final String sender;
+    private transient final String subject;
+    private transient final String content;
+    private transient final long receivedDate;
 
     public int getId() {
         return id;
@@ -96,7 +96,7 @@ public class EmailRipple implements Comparable<EmailRipple> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        EmailRipple other = (EmailRipple) obj;
+        final EmailRipple other = (EmailRipple) obj;
         if (content == null) {
             if (other.content != null) {
                 return false;

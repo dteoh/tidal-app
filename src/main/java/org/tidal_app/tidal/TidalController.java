@@ -68,9 +68,9 @@ public class TidalController implements AccessViewListener {
     /** This is the main application frame */
     private JFrame mainFrame;
     /** This is the main application frame's panel */
-    private JPanel mainFramePanel;
+    private transient JPanel mainFramePanel;
     /** This is the application's main panel */
-    private JPanel mainApplicationView;
+    private transient TiledImagePanel mainApplicationView;
 
     /** Controllers */
     private final MenuBarController menuBarController;
@@ -89,117 +89,102 @@ public class TidalController implements AccessViewListener {
     }
 
     private void initView() {
-        Runnable swingTask = new Runnable() {
+        final Runnable swingTask = new Runnable() {
             @Override
             public void run() {
                 // Make our application frame.
-                mainFrame = new JFrame() {
-                    {
-                        setTitle("Tidal");
-                        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-                        addWindowListener(new WindowAdapter() {
-                            @Override
-                            public void windowClosing(final WindowEvent e) {
-                                exitHandler();
-                            }
-                        });
+                final JFrame mainFrame = new JFrame();
+                mainFrame.setTitle("Tidal");
+                mainFrame
+                        .setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                mainFrame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(final WindowEvent e) {
+                        exitHandler();
                     }
-                };
+                });
 
-                mainFramePanel = new JPanel() {
-                    {
-                        setLayout(new CardLayout());
-                    }
-                };
+                mainFramePanel = new JPanel(new CardLayout());
 
                 mainFrame.add(mainFramePanel);
 
-                mainFramePanel.add(new TiledImagePanel() {
-                    {
-                        setLayout(new MigLayout("", "push[center]push"));
-                        BufferedImage backgroundImage = null;
-                        try {
-                            backgroundImage =
-                                (BufferedImage) Worker.post(new Task() {
-                                    @Override
-                                    public Object run() throws Exception {
-                                        return ImageIO.read(getClass()
-                                                .getResource("background.png"));
-                                    }
-                                });
-                        } catch (Exception e) {
-                            LOGGER.error("Error loading image", e);
+                // START: Set up the AccessView panel
+
+                final TiledImagePanel accessViewPanel = new TiledImagePanel();
+                accessViewPanel
+                        .setLayout(new MigLayout("", "push[center]push"));
+
+                BufferedImage backgroundImage = null;
+                try {
+                    backgroundImage = (BufferedImage) Worker.post(new Task() {
+                        @Override
+                        public Object run() throws Exception {
+                            return ImageIO.read(getClass().getResource(
+                                    "background.png"));
                         }
+                    });
+                } catch (final Exception e) {
+                    LOGGER.error("Error loading image", e);
+                }
 
-                        setBackground(new Color(90, 100, 115));
-                        setBackground(backgroundImage);
+                accessViewPanel.setBackground(new Color(90, 100, 115));
+                accessViewPanel.setBackground(backgroundImage);
 
-                        AccessView av = new AccessView();
-                        av.addAccessViewListener(TidalController.this);
+                final AccessView av = new AccessView();
+                av.addAccessViewListener(TidalController.this);
 
-                        boolean isFirstRun = true;
-                        try {
-                            isFirstRun = (Boolean) Worker.post(new Task() {
-                                @Override
-                                public Object run() {
-                                    return Boolean.valueOf(isFirstRun());
-                                }
-                            });
-                        } catch (Exception e) {
+                boolean isFirstRun = true;
+                try {
+                    isFirstRun = (Boolean) Worker.post(new Task() {
+                        @Override
+                        public Object run() {
+                            return Boolean.valueOf(isFirstRun());
                         }
+                    });
+                } catch (final Exception e) {
+                }
 
-                        if (isFirstRun) {
-                            av.showFirstRun();
-                        } else {
-                            av.showLogin();
-                        }
+                if (isFirstRun) {
+                    av.showFirstRun();
+                } else {
+                    av.showLogin();
+                }
 
-                        add(av, "w 33%!");
-                    }
-                }, "ACCESS_VIEW");
+                accessViewPanel.add(av, "w 33%!");
 
-                mainApplicationView = new TiledImagePanel() {
-                    {
-                        setLayout(new MigLayout("ins 0, wrap", "[grow]",
-                                "[grow]"));
+                mainFramePanel.add(accessViewPanel, "ACCESS_VIEW");
 
-                        BufferedImage backgroundImage = null;
-                        try {
-                            backgroundImage =
-                                (BufferedImage) Worker.post(new Task() {
-                                    @Override
-                                    public Object run() throws Exception {
-                                        return ImageIO.read(getClass()
-                                                .getResource("background.png"));
-                                    }
-                                });
-                        } catch (Exception e) {
-                            LOGGER.error("Error loading image", e);
-                        }
+                // END: Set up the AccessView panel
 
-                        setBackground(new Color(90, 100, 115));
-                        setBackground(backgroundImage);
+                // START: Set up the main application view.
 
-                        add(new DropShadowPanel(6, 0.5F) {
-                            {
-                                setLayout(new MigLayout("", "0[grow]0", "0[]"));
-                                add(menuBarController.getView(), "growx");
-                            }
-                        }, "pushx, growx, north");
-                        add(dropletsViewController.getView(),
-                                "pushx, growx, north");
-                    }
-                };
+                mainApplicationView = new TiledImagePanel();
+                mainApplicationView.setLayout(new MigLayout("ins 0, wrap",
+                        "[grow]", "[grow]"));
+                mainApplicationView.setBackground(new Color(90, 100, 115));
+                mainApplicationView.setBackground(backgroundImage);
+
+                final DropShadowPanel menuBarPanel =
+                    new DropShadowPanel(6, 0.5F);
+                menuBarPanel.setLayout(new MigLayout("", "0[grow]0", "0[]"));
+                menuBarPanel.add(menuBarController.getView(), "growx");
+                mainApplicationView.add(menuBarPanel, "pushx, growx, north");
+
+                mainApplicationView.add(dropletsViewController.getView(),
+                        "pushx, growx, north");
 
                 mainFramePanel.add(mainApplicationView, "MAIN_VIEW");
 
-                mainFrame.add(new JScrollPane(mainFramePanel) {
-                    {
-                        setBorder(BorderFactory.createEmptyBorder());
-                        setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                        setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                    }
-                });
+                // END: Set up the main application view.
+
+                final JScrollPane mainScrollPane =
+                    new JScrollPane(mainFramePanel);
+                mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+                mainScrollPane
+                        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                mainScrollPane
+                        .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                mainFrame.add(mainScrollPane);
 
                 mainFrame.setVisible(true);
             }
@@ -225,10 +210,10 @@ public class TidalController implements AccessViewListener {
                     return null;
                 }
             });
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Error saving application settings", e);
         }
-        System.exit(0);
+        System.exit(0); // NOPMD by Douglas Teoh on 15/03/10 7:59 PM
     }
 
     /**
@@ -249,7 +234,7 @@ public class TidalController implements AccessViewListener {
      */
     @Override
     public void loginAttempted(final AccessViewEvent evt) {
-        boolean passwordOK = (Boolean) Worker.post(new Job() {
+        final boolean passwordOK = (Boolean) Worker.post(new Job() {
             @Override
             public Object run() {
                 return configurationController.authorize(evt.getPassword());
@@ -267,12 +252,12 @@ public class TidalController implements AccessViewListener {
 
                 @Override
                 protected Void doInBackground() throws Exception {
-                    Iterable<Object> dropletSettings =
+                    final Iterable<Object> dropletSettings =
                         configurationController.loadDropletSettings();
 
-                    for (Object settings : dropletSettings) {
+                    for (final Object settings : dropletSettings) {
                         if (settings instanceof EmailSettings) {
-                            EmailSettings emailSettings =
+                            final EmailSettings emailSettings =
                                 (EmailSettings) settings;
                             try {
                                 emailDropletsController
@@ -280,7 +265,7 @@ public class TidalController implements AccessViewListener {
                                 publish(emailDropletsController
                                         .getDropletModel(emailSettings
                                                 .getUsername()));
-                            } catch (DropletCreationException e) {
+                            } catch (final DropletCreationException e) {
                                 LOGGER.error("Cannot create droplet", e);
                             }
                         }
@@ -289,12 +274,12 @@ public class TidalController implements AccessViewListener {
                 }
             }.execute();
 
-            CardLayout cards = (CardLayout) mainFramePanel.getLayout();
+            final CardLayout cards = (CardLayout) mainFramePanel.getLayout();
             cards.show(mainFramePanel, "MAIN_VIEW");
 
             // TODO start timing thread.
         } else {
-            AccessView accessView = (AccessView) evt.getSource();
+            final AccessView accessView = (AccessView) evt.getSource();
             accessView.displayMessage("Incorrect password.");
         }
     }
@@ -318,15 +303,15 @@ public class TidalController implements AccessViewListener {
                     return true;
                 }
             });
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Setup password error", e);
         }
 
         if (passwordOK) {
-            CardLayout cards = (CardLayout) mainFramePanel.getLayout();
+            final CardLayout cards = (CardLayout) mainFramePanel.getLayout();
             cards.show(mainFramePanel, "MAIN_VIEW");
         } else {
-            AccessView accessView = (AccessView) evt.getSource();
+            final AccessView accessView = (AccessView) evt.getSource();
             accessView.displayMessage("Password cannot be blank.");
         }
     }

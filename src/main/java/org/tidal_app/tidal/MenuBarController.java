@@ -29,19 +29,20 @@ import org.tidal_app.tidal.views.MenuBarView;
  */
 public class MenuBarController {
 
-    private MenuBarView menuBar;
+    private transient MenuBarView menuBar;
 
     public MenuBarController() {
         initView();
     }
 
     private void initView() {
-        Runnable swingTask = new Runnable() {
-            @Override
-            public void run() {
-                menuBar = new MenuBarView();
-            }
-        };
+        final Runnable swingTask = new Runnable() { // NOPMD by Douglas Teoh on
+                                                    // 15/03/10 8:01 PM
+                @Override
+                public void run() {
+                    menuBar = new MenuBarView();
+                }
+            };
         if (SwingUtilities.isEventDispatchThread()) {
             swingTask.run();
         } else {

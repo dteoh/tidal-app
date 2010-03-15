@@ -32,25 +32,25 @@ import org.tidal_app.tidal.views.models.DropletModel;
 
 public class EmailDropletsController {
 
-    private final Map<String, EmailDroplet> droplets;
+    private final Map<String, AbstractEmailDroplet> droplets;
 
     public EmailDropletsController() {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        droplets = new TreeMap<String, EmailDroplet>();
+        droplets = new TreeMap<String, AbstractEmailDroplet>();
     }
 
     /**
      * Given an EmailSettings object, create and add the appropriate
-     * implementation of an EmailDroplet.
+     * implementation of an AbstractEmailDroplet.
      * 
      * @param emailSettings
      * @throws DropletCreationException
      *             If the given email settings are incompatible with any of the
-     *             EmailDroplet implementations.
-     * @return the created EmailDroplet.
+     *             AbstractEmailDroplet implementations.
+     * @return the created AbstractEmailDroplet.
      */
-    public synchronized EmailDroplet addEmailDroplet(
+    public synchronized AbstractEmailDroplet addEmailDroplet(
             final EmailSettings emailSettings) throws DropletCreationException {
         assert (!SwingUtilities.isEventDispatchThread());
 
@@ -69,7 +69,7 @@ public class EmailDropletsController {
         }
     }
 
-    public synchronized void addEmailDroplet(final EmailDroplet droplet) {
+    public synchronized void addEmailDroplet(final AbstractEmailDroplet droplet) {
         assert (!SwingUtilities.isEventDispatchThread());
 
         droplets.put(droplet.getUsername(), droplet);
@@ -78,9 +78,9 @@ public class EmailDropletsController {
     public synchronized void removeEmailDroplet(final String dropletUsername) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        EmailDroplet emailDroplet = droplets.remove(dropletUsername);
-        if (emailDroplet != null) {
-            emailDroplet.destroy();
+        AbstractEmailDroplet abstractEmailDroplet = droplets.remove(dropletUsername);
+        if (abstractEmailDroplet != null) {
+            abstractEmailDroplet.destroy();
         }
     }
 
@@ -88,7 +88,7 @@ public class EmailDropletsController {
             final String dropletUsername) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        EmailDroplet droplet = droplets.get(dropletUsername);
+        AbstractEmailDroplet droplet = droplets.get(dropletUsername);
         if (droplet == null) {
             return null;
         }
@@ -106,7 +106,7 @@ public class EmailDropletsController {
         assert (!SwingUtilities.isEventDispatchThread());
 
         List<DropletModel> allModels = new LinkedList<DropletModel>();
-        for (EmailDroplet droplet : droplets.values()) {
+        for (AbstractEmailDroplet droplet : droplets.values()) {
             List<DropletContentModel> contentModel =
                 new LinkedList<DropletContentModel>();
             for (EmailRipple ripple : droplet.getRipples()) {

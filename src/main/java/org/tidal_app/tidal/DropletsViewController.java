@@ -41,7 +41,7 @@ public class DropletsViewController {
     /** View objects */
     private JPanel dropletsPanel;
 
-    private Map<String, DropletView> dropletViews;
+    private final Map<String, DropletView> dropletViews;
 
     @SuppressWarnings("unchecked")
     public DropletsViewController() {
@@ -56,14 +56,14 @@ public class DropletsViewController {
     }
 
     private void initView() {
-        Runnable swingTask = new Runnable() {
+        final Runnable swingTask = new Runnable() {
             @Override
             public void run() {
                 dropletsPanel = new JPanel(new MigLayout("wrap", "[grow 100]"));
                 dropletsPanel.setOpaque(false);
 
-                // TODO testing only, must remove.
-                // DropletModel m =
+                // // TODO testing only, must remove.
+                // final DropletModel m =
                 // new DropletModel(
                 // "Test",
                 // new DropletContentModel(
@@ -103,7 +103,7 @@ public class DropletsViewController {
                 // "Email contents are supposed to be truncated after 50 characters, are the contents being truncated in the preview?",
                 // Calendar.getInstance().getTimeInMillis()));
                 //
-                // DropletModel n =
+                // final DropletModel n =
                 // new DropletModel(
                 // "Another",
                 // new DropletContentModel(
@@ -144,8 +144,8 @@ public class DropletsViewController {
                 // Calendar.getInstance().getTimeInMillis() + 50000));
                 //
                 // // TODO remove
-                // DropletView view1 = new DropletView(m);
-                // DropletView view2 = new DropletView(n);
+                // final DropletView view1 = new DropletView(m);
+                // final DropletView view2 = new DropletView(n);
                 //
                 // // TODO remove
                 // dropletsPanel.add(view1, "growx, pushx");
@@ -173,7 +173,7 @@ public class DropletsViewController {
     public void updateDropletViews(final Iterable<DropletModel> dropletModels) {
         assert (SwingUtilities.isEventDispatchThread());
 
-        for (DropletModel dropletModel : dropletModels) {
+        for (final DropletModel dropletModel : dropletModels) {
             DropletView dv = dropletViews.get(dropletModel.getDropletName());
             if (dv == null) {
                 dv = new DropletView();

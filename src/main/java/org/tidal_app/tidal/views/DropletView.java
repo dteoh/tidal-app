@@ -50,12 +50,11 @@ public class DropletView extends DropShadowPanel {
     /**
      * Models
      */
-    protected DropletModel dropletModel;
+    protected transient DropletModel dropletModel;
     /**
      * Views
      */
-    private JLabel dropletNameLabel;
-    private JPanel ripplesPanel;
+    private transient JPanel ripplesPanel;
 
     private static final Font HEADER_FONT =
         new Font(Font.SANS_SERIF, Font.BOLD, 24);
@@ -81,62 +80,55 @@ public class DropletView extends DropShadowPanel {
         setLayout(new MigLayout("wrap", "[grow 100]", "[]0[]"));
         setOpaque(false);
 
-        dropletNameLabel =
-            new JLabel(dropletModel.getDropletName().toUpperCase()) {
-                {
-                    setForeground(HEADER_FOREGROUND);
-                    setFont(HEADER_FONT);
-                }
-            };
+        final JLabel dropletNameLabel =
+            new JLabel(dropletModel.getDropletName().toUpperCase());
+        dropletNameLabel.setForeground(HEADER_FOREGROUND);
+        dropletNameLabel.setFont(HEADER_FONT);
 
-        // Header JPanel
-        add(new GradientPanel(new Color(235, 240, 250),
-                new Color(215, 225, 235)) {
-            {
-                setLayout(new MigLayout("ins 0", "[]unrel push[][]"));
-                setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(
-                                178, 178, 178)), BorderFactory
-                                .createEmptyBorder(10, 10, 10, 10)));
+        // Construct header panel
+        final GradientPanel headerPanel =
+            new GradientPanel(new Color(235, 240, 250),
+                    new Color(215, 225, 235));
+        headerPanel.setLayout(new MigLayout("ins 0", "[]unrel push[][]"));
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+                .createMatteBorder(1, 1, 1, 1, new Color(178, 178, 178)),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
-                add(dropletNameLabel);
+        headerPanel.add(dropletNameLabel);
 
-                // Control buttons, one for delete, another for
-                // show/hide
-                add(new JButton(), "w 24!, h 24!");
-                add(new JButton(), "w 24!, h 24!, wrap");
-            }
-        }, "pushx, growx");
+        // Control buttons, one for delete, another for show/hide
+        headerPanel.add(new JButton(), "w 24!, h 24!");
+        headerPanel.add(new JButton(), "w 24!, h 24!, wrap");
+
+        add(headerPanel, "pushx, growx");
 
         final List<RippleView> rippleViews = new ArrayList<RippleView>();
 
         if (dropletModel != null) {
-            for (DropletContentModel contentModel : dropletModel
+            for (final DropletContentModel contentModel : dropletModel
                     .getDropletContents()) {
-                RippleView rippleView = new RippleView(contentModel);
+                final RippleView rippleView = new RippleView(contentModel);
                 rippleViews.add(rippleView);
             }
 
             Collections.sort(rippleViews);
         }
 
-        // Content JPanel
-        ripplesPanel = new JPanel() {
-            {
-                setLayout(new MigLayout("wrap 1, gapy 1, ins 0", "[grow 100]",
-                        "[]0"));
-                setOpaque(false);
+        // Construct content panel
+        ripplesPanel = new JPanel();
+        ripplesPanel.setLayout(new MigLayout("wrap 1, gapy 1, ins 0",
+                "[grow 100]", "[]0"));
+        ripplesPanel.setOpaque(false);
 
-                for (RippleView rippleView : rippleViews) {
-                    add(rippleView, "pushx, growx");
-                }
-            }
-        };
+        for (final RippleView rippleView : rippleViews) {
+            ripplesPanel.add(rippleView, "pushx, growx");
+        }
+
         add(ripplesPanel, "pushx, growx");
     }
 
     public void setDropletModel(final DropletModel dropletModel) {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
 
         ripplesPanel.removeAll();
 
@@ -145,16 +137,16 @@ public class DropletView extends DropShadowPanel {
         final List<RippleView> rippleViews = new ArrayList<RippleView>();
 
         if (dropletModel != null) {
-            for (DropletContentModel contentModel : dropletModel
+            for (final DropletContentModel contentModel : dropletModel
                     .getDropletContents()) {
-                RippleView rippleView = new RippleView(contentModel);
+                final RippleView rippleView = new RippleView(contentModel);
                 rippleViews.add(rippleView);
             }
 
             Collections.sort(rippleViews);
         }
 
-        for (RippleView rippleView : rippleViews) {
+        for (final RippleView rippleView : rippleViews) {
             ripplesPanel.add(rippleView, "pushx, growx");
         }
     }

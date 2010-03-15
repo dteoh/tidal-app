@@ -27,8 +27,8 @@ import org.tidal_app.tidal.exceptions.DropletInitException;
  */
 public interface Droplet extends Configurable {
 
-    public void init() throws DropletInitException;
+    void init() throws DropletInitException;
 
-    public void destroy();
+    void destroy();
 
 }

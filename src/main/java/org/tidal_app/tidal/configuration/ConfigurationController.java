@@ -46,20 +46,29 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class ConfigurationController {
 
+    /** Default file name for droplet settings */
+    private static final String DROPLETSRC = "dropletsrc";
+    /** Default file name for user settings */
+    private static final String TIDALRC = "tidalrc";
+    /** Default directory for Tidal user configuration settings */
+    private static final String TIDAL_CONFIG_DIR = "/.tidal";
+    /** Default property for retrieving user home directory */
+    private static final String USER_HOME = "user.home";
+
     private final static Logger LOGGER =
         LoggerFactory.getLogger(ConfigurationController.class);
 
     /** Contains master configuration information */
-    private Configuration config;
+    private transient Configuration config;
     /** Symmetric key cryptography */
-    private final StrongTextEncryptor encryptor;
+    private transient final StrongTextEncryptor encryptor;
 
-    private final Set<Configurable> configurableInstances;
+    private transient final Set<Configurable> configurableInstances;
     /**
      * A state for determining if the user's configuration has been unlocked or
      * not
      */
-    private boolean configurationUnlocked;
+    private transient boolean configurationUnlocked;
 
     public ConfigurationController() {
         assert (!SwingUtilities.isEventDispatchThread());
@@ -80,13 +89,13 @@ public class ConfigurationController {
     public boolean loadMainSettings() {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        final String homeDirectory = System.getProperty("user.home");
+        final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
             return false;
         }
-        StringBuilder sb = new StringBuilder(homeDirectory);
-        sb.append("/.tidal");
-        File configFile = new File(sb.toString(), "tidalrc");
+        final StringBuilder sb = new StringBuilder(homeDirectory);
+        sb.append(TIDAL_CONFIG_DIR);
+        final File configFile = new File(sb.toString(), TIDALRC);
         if (!configFile.exists()) {
             return false;
         }
@@ -103,8 +112,7 @@ public class ConfigurationController {
     public boolean loadMainSettings(final String filePath) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        File file = new File(filePath);
-        return loadMainSettings(file);
+        return loadMainSettings(new File(filePath));
     }
 
     /**
@@ -121,22 +129,22 @@ public class ConfigurationController {
         FileReader fr = null;
         try {
             fr = new FileReader(file);
-            Yaml yaml = new Yaml();
+            final Yaml yaml = new Yaml();
             config = (Configuration) yaml.load(fr);
             if (config == null) {
                 result = false;
             }
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             LOGGER.error("File not found", e);
             result = false;
-        } catch (ClassCastException e) {
+        } catch (final ClassCastException e) {
             LOGGER.error("Incorrect config file", e);
             result = false;
         } finally {
             if (fr != null) {
                 try {
                     fr.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     LOGGER.error("Could not close reader", e);
                 }
             }
@@ -158,15 +166,14 @@ public class ConfigurationController {
             return;
         }
 
-        final String homeDirectory = System.getProperty("user.home");
+        final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
             LOGGER.error("No home directory");
             return;
         }
-        StringBuilder sb = new StringBuilder(homeDirectory);
-        sb.append("/.tidal");
-        File configFile = new File(sb.toString(), "tidalrc");
-        saveMainSettings(configFile);
+        final StringBuilder sb = new StringBuilder(homeDirectory);
+        sb.append(TIDAL_CONFIG_DIR);
+        saveMainSettings(new File(sb.toString(), TIDALRC));
     }
 
     /**
@@ -184,8 +191,7 @@ public class ConfigurationController {
             return;
         }
 
-        File file = new File(filePath);
-        saveMainSettings(file);
+        saveMainSettings(new File(filePath));
     }
 
     /**
@@ -213,15 +219,15 @@ public class ConfigurationController {
             // creation fails.
             file.getParentFile().mkdir();
             fw = new FileWriter(file);
-            Yaml yaml = new Yaml();
+            final Yaml yaml = new Yaml();
             yaml.dump(config, fw);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error("Cannot write config", e);
         } finally {
             if (fw != null) {
                 try {
                     fw.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     LOGGER.error("Could not close writer", e);
                 }
             }
@@ -238,15 +244,14 @@ public class ConfigurationController {
             return;
         }
 
-        final String homeDirectory = System.getProperty("user.home");
+        final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
             LOGGER.error("No home directory");
             return;
         }
-        StringBuilder sb = new StringBuilder(homeDirectory);
-        sb.append("/.tidal");
-        File configFile = new File(sb.toString(), "dropletsrc");
-        saveDropletSettings(configFile);
+        final StringBuilder sb = new StringBuilder(homeDirectory);
+        sb.append(TIDAL_CONFIG_DIR);
+        saveDropletSettings(new File(sb.toString(), DROPLETSRC));
     }
 
     /**
@@ -264,8 +269,7 @@ public class ConfigurationController {
             return;
         }
 
-        File file = new File(filePath);
-        saveDropletSettings(file);
+        saveDropletSettings(new File(filePath));
     }
 
     /**
@@ -290,23 +294,23 @@ public class ConfigurationController {
         FileWriter fw = null;
         try {
             fw = new FileWriter(file);
-            Yaml yaml =
+            final Yaml yaml =
                 new Yaml(new Dumper(new DropletsConfigurationsRepresenter(
                         encryptor), new DumperOptions()));
 
-            List<Object> allSettings = new LinkedList<Object>();
-            for (Configurable instance : configurableInstances) {
+            final List<Object> allSettings = new LinkedList<Object>();
+            for (final Configurable instance : configurableInstances) {
                 allSettings.add(instance.getSettings());
             }
 
             yaml.dumpAll(allSettings.iterator(), fw);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error("Cannot write droplet settings", e);
         } finally {
             if (fw != null) {
                 try {
                     fw.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     LOGGER.error("Could not close writer", e);
                 }
             }
@@ -321,15 +325,14 @@ public class ConfigurationController {
     public Iterable<Object> loadDropletSettings() {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        final String homeDirectory = System.getProperty("user.home");
+        final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
             LOGGER.error("No home directory");
             return null;
         }
-        StringBuilder sb = new StringBuilder(homeDirectory);
-        sb.append("/.tidal");
-        File configFile = new File(sb.toString(), "dropletsrc");
-        return loadDropletSettings(configFile);
+        final StringBuilder sb = new StringBuilder(homeDirectory);
+        sb.append(TIDAL_CONFIG_DIR);
+        return loadDropletSettings(new File(sb.toString(), DROPLETSRC));
     }
 
     /**
@@ -341,8 +344,7 @@ public class ConfigurationController {
     public Iterable<Object> loadDropletSettings(final String filePath) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        File file = new File(filePath);
-        return loadDropletSettings(file);
+        return loadDropletSettings(new File(filePath));
     }
 
     /**
@@ -359,17 +361,17 @@ public class ConfigurationController {
         try {
             fr = new FileReader(file);
 
-            Yaml yaml =
+            final Yaml yaml =
                 new Yaml(new Loader(new DropletsConfigurationsConstructor(
                         encryptor)));
             allSettings = yaml.loadAll(fr);
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             LOGGER.error("File not found", e);
         } finally {
             if (fr != null) {
                 try {
                     fr.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     LOGGER.error("Could not close reader", e);
                 }
             }
@@ -386,7 +388,7 @@ public class ConfigurationController {
     public boolean authorize(final String authKey) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        StrongPasswordEncryptor passwordEncryptor =
+        final StrongPasswordEncryptor passwordEncryptor =
             new StrongPasswordEncryptor();
         if (passwordEncryptor.checkPassword(authKey, config.getAuthKeyDigest())) {
             encryptor.setPassword(authKey);
@@ -410,7 +412,7 @@ public class ConfigurationController {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
-        StrongPasswordEncryptor passwordEncryptor =
+        final StrongPasswordEncryptor passwordEncryptor =
             new StrongPasswordEncryptor();
         config.setAuthKeyDigest(passwordEncryptor.encryptPassword(newAuthKey));
 
@@ -419,12 +421,12 @@ public class ConfigurationController {
         configurationUnlocked = true;
     }
 
-    public synchronized void addConfigurable(final Configurable instance) {
+    public void addConfigurable(final Configurable instance) {
         assert (!SwingUtilities.isEventDispatchThread());
         configurableInstances.add(instance);
     }
 
-    public synchronized void removeConfigurable(final Configurable instance) {
+    public void removeConfigurable(final Configurable instance) {
         assert (!SwingUtilities.isEventDispatchThread());
         configurableInstances.remove(instance);
     }

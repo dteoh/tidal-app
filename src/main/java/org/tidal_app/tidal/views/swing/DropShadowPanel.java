@@ -40,8 +40,8 @@ public class DropShadowPanel extends JPanel {
      */
     private static final long serialVersionUID = 1216616765626022175L;
 
-    private int size;
-    private float opacity;
+    private transient int size;
+    private transient float opacity;
 
     /**
      * Creates a new drop shadow panel.
@@ -72,7 +72,7 @@ public class DropShadowPanel extends JPanel {
 
     @Override
     protected void paintComponent(final Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
+        final Graphics2D g2 = (Graphics2D) g.create();
 
         BufferedImage shadow =
             new BufferedImage(getWidth() - 2 * size, getHeight() - 2 * size,
@@ -109,7 +109,7 @@ public class DropShadowPanel extends JPanel {
             new BufferedImage(image.getWidth() + 4 * size, image.getHeight()
                 + 4 * size, BufferedImage.TYPE_INT_ARGB);
 
-        Graphics2D g2 = shadow.createGraphics();
+        final Graphics2D g2 = shadow.createGraphics();
         g2.drawImage(image, size * 2, size * 2, null);
 
         g2.setComposite(AlphaComposite.SrcIn);
@@ -150,8 +150,8 @@ public class DropShadowPanel extends JPanel {
         float total = 0.0F;
 
         for (int i = -radius; i <= radius; i++) {
-            float distance = i * i;
-            int index = i + radius;
+            final float distance = i * i;
+            final int index = i + radius;
             data[index] =
                 (float) (Math.exp(-distance / twoSigmaSquare) / sigmaRoot);
             total += data[index];
