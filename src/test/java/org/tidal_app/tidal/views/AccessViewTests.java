@@ -16,6 +16,10 @@
 
 package org.tidal_app.tidal.views;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import javax.swing.JFrame;
 
 import org.fest.swing.edt.GuiActionRunner;
@@ -23,12 +27,18 @@ import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.edt.GuiTask;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JButtonFixture;
+import org.fest.swing.fixture.JLabelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.tidal_app.tidal.events.views.AccessViewEvent;
+import org.tidal_app.tidal.events.views.AccessViewListener;
 
 /**
+ * Tests the AccessView class.
+ * 
  * @author Douglas Teoh
  */
 public class AccessViewTests {
@@ -38,17 +48,16 @@ public class AccessViewTests {
 
     @Before
     public void setUp() {
-        JFrame testFrame = GuiActionRunner.execute(new GuiQuery<JFrame>() {
-            @Override
-            protected JFrame executeInEDT() throws Throwable {
-                return new JFrame() {
-                    {
+        final JFrame testFrame =
+                GuiActionRunner.execute(new GuiQuery<JFrame>() {
+                    @Override
+                    protected JFrame executeInEDT() throws Throwable {
+                        final JFrame testFrame = new JFrame();
                         accessView = new AccessView();
-                        add(accessView);
+                        testFrame.add(accessView);
+                        return testFrame;
                     }
-                };
-            }
-        });
+                });
 
         window = new FrameFixture(testFrame);
         window.show();
@@ -64,8 +73,12 @@ public class AccessViewTests {
         accessView = null;
     }
 
+    /**
+     * Test text entry on the first run screen.
+     */
     @Test
     public void testShowFirstRun1() {
+        // Set up GUI components
         GuiActionRunner.execute(new GuiTask() {
             @Override
             protected void executeInEDT() throws Throwable {
@@ -73,16 +86,19 @@ public class AccessViewTests {
             }
         });
 
-        JTextComponentFixture passwordField =
-            window.textBox("AccessViewPasswordField");
+        // Set up test components
+        final JTextComponentFixture passwordField =
+                window.textBox("AccessViewPasswordField");
         passwordField.requireText("");
-        JTextComponentFixture confirmationField =
-            window.textBox("AccessViewConfirmationField");
+        final JTextComponentFixture confirmationField =
+                window.textBox("AccessViewConfirmationField");
         confirmationField.requireText("");
 
-        JButtonFixture unlockButton = window.button("AccessViewUnlockButton");
+        final JButtonFixture unlockButton =
+                window.button("AccessViewUnlockButton");
         unlockButton.requireDisabled();
 
+        // Run the tests
         passwordField.enterText("a");
         unlockButton.requireDisabled();
         confirmationField.enterText("a");
@@ -109,8 +125,55 @@ public class AccessViewTests {
         unlockButton.requireEnabled();
     }
 
+    /**
+     * Test if the password that was entered on the setup screen is the password
+     * that will be returned by the generated event.
+     */
+    @Test
+    public void testFirstRun1() {
+        // Set up GUI components
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                accessView.showFirstRun();
+            }
+        });
+
+        // Set up test components
+        final JTextComponentFixture passwordField =
+                window.textBox("AccessViewPasswordField");
+        passwordField.requireText("");
+        final JTextComponentFixture confirmationField =
+                window.textBox("AccessViewConfirmationField");
+        confirmationField.requireText("");
+
+        final JButtonFixture unlockButton =
+                window.button("AccessViewUnlockButton");
+        unlockButton.requireDisabled();
+
+        final ArgumentCaptor<AccessViewEvent> argument =
+                ArgumentCaptor.forClass(AccessViewEvent.class);
+
+        final AccessViewListener mockListener = mock(AccessViewListener.class);
+        accessView.addAccessViewListener(mockListener);
+
+        // Run the test
+        final String newPassword = "_abc123.+";
+
+        passwordField.enterText(newPassword);
+        confirmationField.enterText(newPassword);
+        unlockButton.click();
+
+        verify(mockListener).setupPassword(argument.capture());
+        assertEquals(newPassword, argument.getValue().getPassword());
+    }
+
+    /**
+     * Test text entry on the login screen.
+     */
     @Test
     public void testShowLogin1() {
+        // Set up GUI components
         GuiActionRunner.execute(new GuiTask() {
             @Override
             protected void executeInEDT() throws Throwable {
@@ -118,16 +181,114 @@ public class AccessViewTests {
             }
         });
 
-        JTextComponentFixture passwordField =
-            window.textBox("AccessViewPasswordField");
+        // Set up test components
+        final JTextComponentFixture passwordField =
+                window.textBox("AccessViewPasswordField");
         passwordField.requireText("");
 
-        JButtonFixture unlockButton = window.button("AccessViewUnlockButton");
+        final JButtonFixture unlockButton =
+                window.button("AccessViewUnlockButton");
         unlockButton.requireEnabled();
 
+        // Run the test
         passwordField.enterText("abc 456 ___");
         passwordField.requireText("abc 456 ___");
 
         unlockButton.requireEnabled();
+    }
+
+    /**
+     * Test if the password that is entered on the login screen is the password
+     * that will be returned by the generated event.
+     */
+    @Test
+    public void testLogin1() {
+        // Set up GUI components
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                accessView.showLogin();
+            }
+        });
+
+        // Set up test components
+        final JTextComponentFixture passwordField =
+                window.textBox("AccessViewPasswordField");
+        passwordField.requireText("");
+        final JButtonFixture unlockButton =
+                window.button("AccessViewUnlockButton");
+        unlockButton.requireEnabled();
+
+        final ArgumentCaptor<AccessViewEvent> argument =
+                ArgumentCaptor.forClass(AccessViewEvent.class);
+
+        final AccessViewListener mockListener = mock(AccessViewListener.class);
+        accessView.addAccessViewListener(mockListener);
+
+        // Run the test
+        final String password = "_abc123.+";
+        passwordField.enterText(password);
+        unlockButton.click();
+
+        verify(mockListener).loginAttempted(argument.capture());
+        assertEquals(password, argument.getValue().getPassword());
+    }
+
+    /**
+     * Test if a custom message can be displayed on the first run screen.
+     */
+    @Test
+    public void testDisplayMessage1() {
+        // Set up GUI components
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                accessView.showFirstRun();
+            }
+        });
+
+        // Set up test components
+        final JLabelFixture infoLabel = window.label("AccessViewInformation");
+        infoLabel.requireVisible();
+
+        // Run the test
+        final String customMessage = "Test first run message.";
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                accessView.displayMessage(customMessage);
+            }
+        });
+
+        assertEquals(customMessage, infoLabel.text());
+    }
+
+    /**
+     * Test if a custom message can be displayed on the login screen.
+     */
+    @Test
+    public void testDisplayMessage2() {
+        // Set up GUI components
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                accessView.showLogin();
+            }
+        });
+
+        // Set up test components
+        final JLabelFixture infoLabel = window.label("AccessViewInformation");
+        infoLabel.requireVisible();
+
+        // Run the test
+        final String customMessage = "Test login message.";
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                accessView.displayMessage(customMessage);
+            }
+        });
+
+        assertEquals(customMessage, infoLabel.text());
     }
 }

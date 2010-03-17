@@ -28,6 +28,7 @@ dependencies {
 		
 	testCompile 'junit:junit:4.7'
 	testCompile 'org.easytesting:fest-swing-junit:1.2a4'
+	testCompile 'org.mockito:mockito-all:1.8.3'
 }
 
 task copyToLib(dependsOn: configurations.default.buildArtifacts, type: Copy) {
