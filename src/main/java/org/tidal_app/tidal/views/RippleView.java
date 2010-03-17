@@ -46,9 +46,6 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      */
     private static final long serialVersionUID = -6001157043106549763L;
 
-    private transient final SimpleDateFormat SDF =
-            new SimpleDateFormat("MMM d, h:mm aa");
-
     // Colors for the various message states
     private static final Color SEEN_BG_COLOR = new Color(245, 250, 250);
     private static final Color UNSEEN_BG_COLOR = new Color(250, 250, 250);
@@ -57,14 +54,14 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
     private static final Color PREVIEW_FONT_COLOR = new Color(119, 119, 119);
 
     // Font styles for the various message states
-    private static final Font UNSEEN_FONT_STYLE =
-            new Font(Font.SANS_SERIF, Font.BOLD, 13);
-    private static final Font SEEN_FONT_STYLE =
-            new Font(Font.SANS_SERIF, Font.PLAIN, 13);
-    private static final Font READING_SUBJECT_FONT_STYLE =
-            new Font(Font.SANS_SERIF, Font.BOLD, 16);
-    private static final Font READING_DATE_FONT_STYLE =
-            new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+    private static final Font UNSEEN_FONT_STYLE = new Font(Font.SANS_SERIF,
+            Font.BOLD, 13);
+    private static final Font SEEN_FONT_STYLE = new Font(Font.SANS_SERIF,
+            Font.PLAIN, 13);
+    private static final Font READING_SUBJECT_FONT_STYLE = new Font(
+            Font.SANS_SERIF, Font.BOLD, 16);
+    private static final Font READING_DATE_FONT_STYLE = new Font(
+            Font.SANS_SERIF, Font.PLAIN, 16);
     /** Model */
     private transient final RippleModel contentModel;
     /** View components */
@@ -88,27 +85,26 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
     private void initView() {
         assert SwingUtilities.isEventDispatchThread();
 
-        setLayout(new MigLayout("hidemode 3, wrap 3", "[215][grow 100][115]",
-                                ""));
+        setLayout(new MigLayout("hidemode 1, wrap 3", "[215][grow 100][115]",
+                ""));
         setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(178,
-                                                                        178,
-                                                                        178)));
+                178, 178)));
         setBackground(UNSEEN_BG_COLOR);
 
         originLabel = new JLabel(contentModel.getOrigin());
         originLabel.setFont(UNSEEN_FONT_STYLE);
-
+        originLabel.setName("RippleViewOriginLabel");
         add(originLabel);
 
         subjectLabel = new JLabel(contentModel.getSubject());
         subjectLabel.setFont(UNSEEN_FONT_STYLE);
+        subjectLabel.setName("RippleViewSubjectLabel");
         add(subjectLabel, "split 2, left");
 
-        final int previewLength =
-                contentModel.getContent().length() > 100 ? 100 : contentModel
-                        .getContent().length();
-        String previewString =
-                contentModel.getContent().substring(0, previewLength);
+        final int previewLength = contentModel.getContent().length() > 100 ? 100
+                : contentModel.getContent().length();
+        String previewString = contentModel.getContent().substring(0,
+                previewLength);
         if (!previewString.isEmpty()) {
             previewString = " - ".concat(previewString);
         }
@@ -118,19 +114,20 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
 
         previewLabel = new JLabel(previewString);
         previewLabel.setForeground(PREVIEW_FONT_COLOR);
-        // It's how Gmail displays it.
         previewLabel.setFont(SEEN_FONT_STYLE);
+        previewLabel.setName("RippleViewPreviewLabel");
         add(previewLabel, "left");
 
+        final SimpleDateFormat sdf = new SimpleDateFormat("MMM d, h:mm aa");
         final Calendar received = Calendar.getInstance();
         received.setTimeInMillis(contentModel.getReceived());
-        receivedLabel = new JLabel(SDF.format(received.getTime()));
+        receivedLabel = new JLabel(sdf.format(received.getTime()));
         receivedLabel.setFont(UNSEEN_FONT_STYLE);
-
+        receivedLabel.setName("RippleViewReceivedLabel");
         add(receivedLabel, "right");
 
         contents = new JEditorPane();
-
+        contents.setName("RippleViewContents");
         contents.setEditable(false);
         contents.setEditable(false);
         contents.setVisible(false);
@@ -139,17 +136,16 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         contents.setText(wrapHTML(contentModel.getContent()));
         contents.setFont(SEEN_FONT_STYLE);
         contents.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
+        // Need to add custom CSS rule or the editor pane will use a serif font
+        // with a small font size.
         final StringBuilder bodyRule = new StringBuilder();
         bodyRule.append("body { font-family: ");
         bodyRule.append(SEEN_FONT_STYLE.getFamily());
         bodyRule.append("; font-size: ");
         bodyRule.append(SEEN_FONT_STYLE.getSize());
         bodyRule.append("pt; }");
-
-        ((HTMLDocument) contents.getDocument()).getStyleSheet()
-                .addRule(bodyRule.toString());
-
+        ((HTMLDocument) contents.getDocument()).getStyleSheet().addRule(
+                bodyRule.toString());
         add(contents, "skip, growx, pushx");
     }
 
@@ -172,7 +168,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
             receivedLabel.setForeground(SEEN_FONT_COLOR);
             originLabel.setForeground(SEEN_FONT_COLOR);
             subjectLabel.setForeground(SEEN_FONT_COLOR);
-            previewLabel.setForeground(PREVIEW_FONT_COLOR);
+            previewLabel.setVisible(true);
         } else {
             // Show the contents of the message
             contents.setVisible(true);
@@ -184,7 +180,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
             receivedLabel.setForeground(READING_FONT_COLOR);
             originLabel.setForeground(READING_FONT_COLOR);
             subjectLabel.setForeground(READING_FONT_COLOR);
-            previewLabel.setForeground(UNSEEN_BG_COLOR);
+            previewLabel.setVisible(false);
         }
     }
 
@@ -229,7 +225,6 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
             return -1;
         }
         return contentModel.getSubject().compareTo(
-                                                   other.contentModel
-                                                           .getSubject());
+                other.contentModel.getSubject());
     }
 }
