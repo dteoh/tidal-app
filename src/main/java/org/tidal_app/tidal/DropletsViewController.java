@@ -66,7 +66,7 @@ public class DropletsViewController {
                 // final DropletModel m =
                 // new DropletModel(
                 // "Test",
-                // new DropletContentModel(
+                // new RippleModel(
                 // 1,
                 // "Douglas Teoh",
                 // "Just a test email",
@@ -96,7 +96,7 @@ public class DropletsViewController {
                 // + "varius est. Morbi non lacinia neque. Maecenas "
                 // + "lobortis ligula vel magna blandit pellentesque. ",
                 // Calendar.getInstance().getTimeInMillis()),
-                // new DropletContentModel(
+                // new RippleModel(
                 // 1,
                 // "Tester",
                 // "Another test email",
@@ -106,7 +106,7 @@ public class DropletsViewController {
                 // final DropletModel n =
                 // new DropletModel(
                 // "Another",
-                // new DropletContentModel(
+                // new RippleModel(
                 // 1,
                 // "Douglas Teoh",
                 // "Just a test email",
@@ -136,7 +136,7 @@ public class DropletsViewController {
                 // + "varius est. Morbi non lacinia neque. Maecenas "
                 // + "lobortis ligula vel magna blandit pellentesque. ",
                 // Calendar.getInstance().getTimeInMillis() - 50000),
-                // new DropletContentModel(
+                // new RippleModel(
                 // 1,
                 // "Tester",
                 // "Another test email",

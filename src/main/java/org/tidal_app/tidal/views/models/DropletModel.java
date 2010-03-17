@@ -25,7 +25,7 @@ public class DropletModel {
 
     private transient final String dropletName;
 
-    private transient final List<DropletContentModel> dropletContents;
+    private transient final List<RippleModel> dropletContents;
 
     /**
      * @return the name or identifier of this droplet.
@@ -34,15 +34,15 @@ public class DropletModel {
         return dropletName;
     }
 
-    public Iterable<DropletContentModel> getDropletContents() {
+    public Iterable<RippleModel> getDropletContents() {
         return dropletContents;
     }
 
     public DropletModel(final String dropletName,
-            final DropletContentModel... dropletContents) {
+            final RippleModel... dropletContents) {
         this.dropletName = dropletName;
 
-        final ImmutableList.Builder<DropletContentModel> modelBuilder =
+        final ImmutableList.Builder<RippleModel> modelBuilder =
             ImmutableList.builder();
 
         modelBuilder.add(dropletContents);
@@ -51,10 +51,10 @@ public class DropletModel {
     }
 
     public DropletModel(final String dropletName,
-            final Iterator<DropletContentModel> dropletContents) {
+            final Iterator<RippleModel> dropletContents) {
         this.dropletName = dropletName;
 
-        final ImmutableList.Builder<DropletContentModel> modelBuilder =
+        final ImmutableList.Builder<RippleModel> modelBuilder =
             ImmutableList.builder();
 
         modelBuilder.addAll(dropletContents);
@@ -63,10 +63,10 @@ public class DropletModel {
     }
 
     public DropletModel(final String dropletName,
-            final Iterable<DropletContentModel> dropletContents) {
+            final Iterable<RippleModel> dropletContents) {
         this.dropletName = dropletName;
 
-        final ImmutableList.Builder<DropletContentModel> modelBuilder =
+        final ImmutableList.Builder<RippleModel> modelBuilder =
             ImmutableList.builder();
 
         modelBuilder.addAll(dropletContents);

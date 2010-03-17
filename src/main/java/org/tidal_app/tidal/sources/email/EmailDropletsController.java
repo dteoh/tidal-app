@@ -27,7 +27,7 @@ import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
-import org.tidal_app.tidal.views.models.DropletContentModel;
+import org.tidal_app.tidal.views.models.RippleModel;
 import org.tidal_app.tidal.views.models.DropletModel;
 
 public class EmailDropletsController {
@@ -92,10 +92,10 @@ public class EmailDropletsController {
         if (droplet == null) {
             return null;
         }
-        List<DropletContentModel> contentModel =
-            new LinkedList<DropletContentModel>();
+        List<RippleModel> contentModel =
+            new LinkedList<RippleModel>();
         for (EmailRipple ripple : droplet.getRipples()) {
-            contentModel.add(new DropletContentModel(ripple.getId(), ripple
+            contentModel.add(new RippleModel(ripple.getId(), ripple
                     .getSender(), ripple.getSubject(), ripple.getContent(),
                     ripple.getReceivedDate()));
         }
@@ -107,10 +107,10 @@ public class EmailDropletsController {
 
         List<DropletModel> allModels = new LinkedList<DropletModel>();
         for (AbstractEmailDroplet droplet : droplets.values()) {
-            List<DropletContentModel> contentModel =
-                new LinkedList<DropletContentModel>();
+            List<RippleModel> contentModel =
+                new LinkedList<RippleModel>();
             for (EmailRipple ripple : droplet.getRipples()) {
-                contentModel.add(new DropletContentModel(ripple.getId(), ripple
+                contentModel.add(new RippleModel(ripple.getId(), ripple
                         .getSender(), ripple.getSubject(), ripple.getContent(),
                         ripple.getReceivedDate()));
             }

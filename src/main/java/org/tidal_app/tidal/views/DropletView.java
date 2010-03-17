@@ -30,7 +30,7 @@ import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.tidal_app.tidal.views.models.DropletContentModel;
+import org.tidal_app.tidal.views.models.RippleModel;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.GradientPanel;
@@ -105,7 +105,7 @@ public class DropletView extends DropShadowPanel {
         final List<RippleView> rippleViews = new ArrayList<RippleView>();
 
         if (dropletModel != null) {
-            for (final DropletContentModel contentModel : dropletModel
+            for (final RippleModel contentModel : dropletModel
                     .getDropletContents()) {
                 final RippleView rippleView = new RippleView(contentModel);
                 rippleViews.add(rippleView);
@@ -137,7 +137,7 @@ public class DropletView extends DropShadowPanel {
         final List<RippleView> rippleViews = new ArrayList<RippleView>();
 
         if (dropletModel != null) {
-            for (final DropletContentModel contentModel : dropletModel
+            for (final RippleModel contentModel : dropletModel
                     .getDropletContents()) {
                 final RippleView rippleView = new RippleView(contentModel);
                 rippleViews.add(rippleView);

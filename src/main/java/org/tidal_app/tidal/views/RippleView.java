@@ -32,7 +32,7 @@ import javax.swing.text.html.HTMLDocument;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.tidal_app.tidal.views.models.DropletContentModel;
+import org.tidal_app.tidal.views.models.RippleModel;
 
 /**
  * Used to visualize a ripple model.
@@ -47,7 +47,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
     private static final long serialVersionUID = -6001157043106549763L;
 
     private transient final SimpleDateFormat SDF =
-        new SimpleDateFormat("MMM d, h:mm aa");
+            new SimpleDateFormat("MMM d, h:mm aa");
 
     // Colors for the various message states
     private static final Color SEEN_BG_COLOR = new Color(245, 250, 250);
@@ -58,15 +58,15 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
 
     // Font styles for the various message states
     private static final Font UNSEEN_FONT_STYLE =
-        new Font(Font.SANS_SERIF, Font.BOLD, 13);
+            new Font(Font.SANS_SERIF, Font.BOLD, 13);
     private static final Font SEEN_FONT_STYLE =
-        new Font(Font.SANS_SERIF, Font.PLAIN, 13);
+            new Font(Font.SANS_SERIF, Font.PLAIN, 13);
     private static final Font READING_SUBJECT_FONT_STYLE =
-        new Font(Font.SANS_SERIF, Font.BOLD, 16);
+            new Font(Font.SANS_SERIF, Font.BOLD, 16);
     private static final Font READING_DATE_FONT_STYLE =
-        new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+            new Font(Font.SANS_SERIF, Font.PLAIN, 16);
     /** Model */
-    private transient final DropletContentModel contentModel;
+    private transient final RippleModel contentModel;
     /** View components */
     private transient JLabel originLabel;
     private transient JLabel subjectLabel;
@@ -74,7 +74,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
     private transient JLabel receivedLabel;
     private transient JEditorPane contents;
 
-    public RippleView(final DropletContentModel contentModel) {
+    public RippleView(final RippleModel contentModel) {
         super();
 
         this.contentModel = contentModel;
@@ -89,9 +89,10 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         assert SwingUtilities.isEventDispatchThread();
 
         setLayout(new MigLayout("hidemode 3, wrap 3", "[215][grow 100][115]",
-                ""));
+                                ""));
         setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(178,
-                178, 178)));
+                                                                        178,
+                                                                        178)));
         setBackground(UNSEEN_BG_COLOR);
 
         originLabel = new JLabel(contentModel.getOrigin());
@@ -104,10 +105,10 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         add(subjectLabel, "split 2, left");
 
         final int previewLength =
-            contentModel.getContent().length() > 100 ? 100 : contentModel
-                    .getContent().length();
+                contentModel.getContent().length() > 100 ? 100 : contentModel
+                        .getContent().length();
         String previewString =
-            contentModel.getContent().substring(0, previewLength);
+                contentModel.getContent().substring(0, previewLength);
         if (!previewString.isEmpty()) {
             previewString = " - ".concat(previewString);
         }
@@ -146,8 +147,8 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         bodyRule.append(SEEN_FONT_STYLE.getSize());
         bodyRule.append("pt; }");
 
-        ((HTMLDocument) contents.getDocument()).getStyleSheet().addRule(
-                bodyRule.toString());
+        ((HTMLDocument) contents.getDocument()).getStyleSheet()
+                .addRule(bodyRule.toString());
 
         add(contents, "skip, growx, pushx");
     }
@@ -228,6 +229,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
             return -1;
         }
         return contentModel.getSubject().compareTo(
-                other.contentModel.getSubject());
+                                                   other.contentModel
+                                                           .getSubject());
     }
 }

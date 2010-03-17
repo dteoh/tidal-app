@@ -16,7 +16,7 @@
 
 package org.tidal_app.tidal.views.models;
 
-public class DropletContentModel {
+public class RippleModel {
 
     private transient final Object id;
     private transient final String origin;
@@ -44,7 +44,19 @@ public class DropletContentModel {
         return received;
     }
 
-    public DropletContentModel(final Object id, final String origin,
+    /**
+     * @param id
+     *            Ripple identifier
+     * @param origin
+     *            Ripple origin
+     * @param subject
+     *            Ripple subject
+     * @param content
+     *            Ripple contents
+     * @param received
+     *            Ripple receipt time in milliseconds
+     */
+    public RippleModel(final Object id, final String origin,
             final String subject, final String content, final long received) {
         this.id = id;
         this.origin = origin;
