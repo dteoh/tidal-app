@@ -218,6 +218,9 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
      */
     @Override
     public int compareTo(final RippleView other) {
+        if (other == null) {
+            return -1;
+        }
         if (contentModel.getReceived() < other.contentModel.getReceived()) {
             return 1;
         }
