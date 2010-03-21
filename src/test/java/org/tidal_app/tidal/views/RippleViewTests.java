@@ -16,6 +16,7 @@
 
 package org.tidal_app.tidal.views;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -119,7 +120,8 @@ public class RippleViewTests {
         final String id = "ID1";
         final String origin = "test@tidal-app.org";
         final String subject = "The subject of this Ripple";
-        final String content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -140,7 +142,8 @@ public class RippleViewTests {
         final String id = "ID1";
         final String origin = "test@tidal-app.org";
         final String subject = "The subject of this Ripple";
-        final String content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet.";
@@ -166,7 +169,8 @@ public class RippleViewTests {
         final String id = "ID1";
         final String origin = "test@tidal-app.org";
         final String subject = "The subject of this Ripple";
-        final String content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet.";
@@ -192,7 +196,8 @@ public class RippleViewTests {
         final String id = "ID1";
         final String origin = "test@tidal-app.org";
         final String subject = "The subject of this Ripple";
-        final String content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet.";
@@ -218,7 +223,8 @@ public class RippleViewTests {
         final String id1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "The subject of this Ripple";
-        final String content1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content1 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -238,7 +244,8 @@ public class RippleViewTests {
         final String id2 = "ID2";
         final String origin2 = "test@tidal-app.org";
         final String subject2 = "The subject of this Ripple";
-        final String content2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content2 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -268,7 +275,8 @@ public class RippleViewTests {
         final String id1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "The subject of this Ripple";
-        final String content1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content1 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -288,7 +296,8 @@ public class RippleViewTests {
         final String id2 = "ID2";
         final String origin2 = "test@tidal-app.org";
         final String subject2 = "The subject of this Ripple";
-        final String content2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content2 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -318,7 +327,8 @@ public class RippleViewTests {
         final String id1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "The subject of this Ripple";
-        final String content1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content1 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -338,7 +348,8 @@ public class RippleViewTests {
         final String id2 = "ID2";
         final String origin2 = "test@tidal-app.org";
         final String subject2 = "The subject of this Ripple";
-        final String content2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content2 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -368,7 +379,8 @@ public class RippleViewTests {
         final String id1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "A";
-        final String content1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content1 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -388,7 +400,8 @@ public class RippleViewTests {
         final String id2 = "ID2";
         final String origin2 = "test@tidal-app.org";
         final String subject2 = "B";
-        final String content2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content2 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -418,7 +431,8 @@ public class RippleViewTests {
         final String id1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "B";
-        final String content1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content1 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -438,7 +452,8 @@ public class RippleViewTests {
         final String id2 = "ID2";
         final String origin2 = "test@tidal-app.org";
         final String subject2 = "A";
-        final String content2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content2 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -466,7 +481,8 @@ public class RippleViewTests {
         final String id1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "B";
-        final String content1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content1 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -494,7 +510,8 @@ public class RippleViewTests {
         final String id1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "Test subject";
-        final String content1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In"
+        final String content1 = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In"
                 + " elementum tortor vitae felis sollicitudin sed suscipit"
                 + " ligula molestie. Vestibulum tincidunt tincidunt mi, "
                 + "et pretium ligula venenatis amet. ";
@@ -511,22 +528,97 @@ public class RippleViewTests {
         }
     }
 
-    // /**
-    // * A very naive implementation of a contents extractor.
-    // *
-    // * @param htmlPage
-    // * @return
-    // */
-    // private String getContents(final String htmlPage) {
-    // assertNotNull(htmlPage);
-    // int start = htmlPage.indexOf("<div width=\"500px\"");
-    // start = htmlPage.indexOf('>', start);
-    // final int end = htmlPage.lastIndexOf("</div>");
-    // assertTrue(start != -1);
-    // assertTrue(end != -1);
-    //
-    // final String contents = htmlPage.substring(start + 1, end).trim();
-    //
-    // return contents.replaceAll("\\s+", " ");
-    // }
+    /**
+     * Test if the full message contents are shown in the preview label if the
+     * message is less than 100 characters long.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testPreviewLabel1() throws Exception {
+        final String id = "ID1";
+        final String origin = "test@tidal-app.org";
+        final String subject = "B";
+        final String content = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In elementum tortor vitae felis sollicitud";
+        final long received = 10000;
+
+        final RippleModel model = new RippleModel(id, origin, subject, content,
+                received);
+
+        setUp(model);
+        assertTrue(content.length() == 99);
+        assertEquals(" - ".concat(content), previewLabel.text());
+    }
+
+    /**
+     * Test if the full message contents are shown in the preview label if the
+     * message is 100 characters long.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testPreviewLabel2() throws Exception {
+        final String id = "ID1";
+        final String origin = "test@tidal-app.org";
+        final String subject = "B";
+        final String content = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In elementum tortor vitae felis "
+                + "sollicitudi";
+        final long received = 10000;
+
+        final RippleModel model = new RippleModel(id, origin, subject, content,
+                received);
+
+        setUp(model);
+        assertTrue(content.length() == 100);
+        assertEquals(" - ".concat(content), previewLabel.text());
+    }
+
+    /**
+     * Test if the full message contents are shown in the preview label if the
+     * message is greater than 100 characters long.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testPreviewLabel3() throws Exception {
+        final String id = "ID1";
+        final String origin = "test@tidal-app.org";
+        final String subject = "B";
+        final String content = "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. In elementum tortor vitae felis sollicitudin";
+        final long received = 10000;
+
+        final RippleModel model = new RippleModel(id, origin, subject, content,
+                received);
+
+        setUp(model);
+        assertTrue(content.length() == 101);
+        assertEquals(" - ".concat(content.substring(0, 100)).concat(" ..."),
+                previewLabel.text());
+    }
+
+    /**
+     * Test if there is no preview shown if there are no message contents.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testPreviewLabel4() throws Exception {
+        final String id = "ID1";
+        final String origin = "test@tidal-app.org";
+        final String subject = "B";
+        final String content = "";
+        final long received = 10000;
+
+        final RippleModel model = new RippleModel(id, origin, subject, content,
+                received);
+
+        setUp(model);
+
+        assertTrue(content.isEmpty());
+        assertEquals(content, previewLabel.text());
+    }
+
 }

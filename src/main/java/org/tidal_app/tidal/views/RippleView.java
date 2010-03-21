@@ -108,7 +108,7 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         if (!previewString.isEmpty()) {
             previewString = " - ".concat(previewString);
         }
-        if (previewString.length() >= 100) {
+        if (contentModel.getContent().length() > 100) {
             previewString = previewString.concat(" ...");
         }
 
