@@ -30,8 +30,8 @@ import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.tidal_app.tidal.views.models.RippleModel;
 import org.tidal_app.tidal.views.models.DropletModel;
+import org.tidal_app.tidal.views.models.RippleModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
@@ -55,15 +55,11 @@ public class DropletView extends DropShadowPanel {
      * Views
      */
     private transient JPanel ripplesPanel;
+    private transient JLabel nameLabel;
 
-    private static final Font HEADER_FONT =
-        new Font(Font.SANS_SERIF, Font.BOLD, 24);
+    private static final Font HEADER_FONT = new Font(Font.SANS_SERIF,
+            Font.BOLD, 24);
     private static final Color HEADER_FOREGROUND = new Color(50, 60, 70);
-
-    public DropletView() {
-        super(6, 0.5F);
-        initView();
-    }
 
     public DropletView(final DropletModel dropletModel) {
         super(6, 0.5F);
@@ -75,26 +71,26 @@ public class DropletView extends DropShadowPanel {
      * Initialize the view.
      */
     private void initView() {
-        assert (SwingUtilities.isEventDispatchThread());
+        assert SwingUtilities.isEventDispatchThread();
 
         setLayout(new MigLayout("wrap", "[grow 100]", "[]0[]"));
         setOpaque(false);
 
-        final JLabel dropletNameLabel =
-            new JLabel(dropletModel.getDropletName().toUpperCase());
-        dropletNameLabel.setForeground(HEADER_FOREGROUND);
-        dropletNameLabel.setFont(HEADER_FONT);
+        nameLabel = new JLabel(dropletModel.getDropletName().toUpperCase());
+        nameLabel.setForeground(HEADER_FOREGROUND);
+        nameLabel.setFont(HEADER_FONT);
+        nameLabel.setName("DropletViewNameLabel");
 
         // Construct header panel
-        final GradientPanel headerPanel =
-            new GradientPanel(new Color(235, 240, 250),
-                    new Color(215, 225, 235));
+        final GradientPanel headerPanel = new GradientPanel(new Color(235, 240,
+                250), new Color(215, 225, 235));
+        headerPanel.setName("DropletViewHeaderPanel");
         headerPanel.setLayout(new MigLayout("ins 0", "[]unrel push[][]"));
         headerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
                 .createMatteBorder(1, 1, 1, 1, new Color(178, 178, 178)),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
-        headerPanel.add(dropletNameLabel);
+        headerPanel.add(nameLabel);
 
         // Control buttons, one for delete, another for show/hide
         headerPanel.add(new JButton(), "w 24!, h 24!");
@@ -116,6 +112,7 @@ public class DropletView extends DropShadowPanel {
 
         // Construct content panel
         ripplesPanel = new JPanel();
+        ripplesPanel.setName("DropletViewRipplesPanel");
         ripplesPanel.setLayout(new MigLayout("wrap 1, gapy 1, ins 0",
                 "[grow 100]", "[]0"));
         ripplesPanel.setOpaque(false);
@@ -130,10 +127,10 @@ public class DropletView extends DropShadowPanel {
     public void setDropletModel(final DropletModel dropletModel) {
         assert SwingUtilities.isEventDispatchThread();
 
+        nameLabel.setText(dropletModel.getDropletName().toUpperCase());
+
         ripplesPanel.removeAll();
-
         this.dropletModel = dropletModel;
-
         final List<RippleView> rippleViews = new ArrayList<RippleView>();
 
         if (dropletModel != null) {

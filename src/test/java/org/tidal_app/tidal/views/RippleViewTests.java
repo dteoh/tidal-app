@@ -18,7 +18,6 @@ package org.tidal_app.tidal.views;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -520,12 +519,7 @@ public class RippleViewTests {
         final RippleModel model1 = new RippleModel(id1, origin1, subject1,
                 content1, received1);
 
-        try {
-            new RippleView(model1);
-            fail("No assertion detected.");
-        } catch (final Exception e) {
-            // Do nothing, test passed.
-        }
+        new RippleView(model1);
     }
 
     /**

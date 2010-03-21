@@ -176,10 +176,11 @@ public class DropletsViewController {
         for (final DropletModel dropletModel : dropletModels) {
             DropletView dv = dropletViews.get(dropletModel.getDropletName());
             if (dv == null) {
-                dv = new DropletView();
+                dv = new DropletView(dropletModel);
                 dropletViews.put(dropletModel.getDropletName(), dv);
+            } else {
+                dv.setDropletModel(dropletModel);
             }
-            dv.setDropletModel(dropletModel);
             dropletsPanel.add(dv, "growx, pushx");
         }
     }

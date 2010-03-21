@@ -48,8 +48,8 @@ public class AccessViewTests {
 
     @Before
     public void setUp() {
-        final JFrame testFrame =
-                GuiActionRunner.execute(new GuiQuery<JFrame>() {
+        final JFrame testFrame = GuiActionRunner
+                .execute(new GuiQuery<JFrame>() {
                     @Override
                     protected JFrame executeInEDT() throws Throwable {
                         final JFrame testFrame = new JFrame();
@@ -87,15 +87,15 @@ public class AccessViewTests {
         });
 
         // Set up test components
-        final JTextComponentFixture passwordField =
-                window.textBox("AccessViewPasswordField");
+        final JTextComponentFixture passwordField = window
+                .textBox("AccessViewPasswordField");
         passwordField.requireText("");
-        final JTextComponentFixture confirmationField =
-                window.textBox("AccessViewConfirmationField");
+        final JTextComponentFixture confirmationField = window
+                .textBox("AccessViewConfirmationField");
         confirmationField.requireText("");
 
-        final JButtonFixture unlockButton =
-                window.button("AccessViewUnlockButton");
+        final JButtonFixture unlockButton = window
+                .button("AccessViewUnlockButton");
         unlockButton.requireDisabled();
 
         // Run the tests
@@ -140,19 +140,19 @@ public class AccessViewTests {
         });
 
         // Set up test components
-        final JTextComponentFixture passwordField =
-                window.textBox("AccessViewPasswordField");
+        final JTextComponentFixture passwordField = window
+                .textBox("AccessViewPasswordField");
         passwordField.requireText("");
-        final JTextComponentFixture confirmationField =
-                window.textBox("AccessViewConfirmationField");
+        final JTextComponentFixture confirmationField = window
+                .textBox("AccessViewConfirmationField");
         confirmationField.requireText("");
 
-        final JButtonFixture unlockButton =
-                window.button("AccessViewUnlockButton");
+        final JButtonFixture unlockButton = window
+                .button("AccessViewUnlockButton");
         unlockButton.requireDisabled();
 
-        final ArgumentCaptor<AccessViewEvent> argument =
-                ArgumentCaptor.forClass(AccessViewEvent.class);
+        final ArgumentCaptor<AccessViewEvent> argument = ArgumentCaptor
+                .forClass(AccessViewEvent.class);
 
         final AccessViewListener mockListener = mock(AccessViewListener.class);
         accessView.addAccessViewListener(mockListener);
@@ -182,12 +182,12 @@ public class AccessViewTests {
         });
 
         // Set up test components
-        final JTextComponentFixture passwordField =
-                window.textBox("AccessViewPasswordField");
+        final JTextComponentFixture passwordField = window
+                .textBox("AccessViewPasswordField");
         passwordField.requireText("");
 
-        final JButtonFixture unlockButton =
-                window.button("AccessViewUnlockButton");
+        final JButtonFixture unlockButton = window
+                .button("AccessViewUnlockButton");
         unlockButton.requireEnabled();
 
         // Run the test
@@ -212,15 +212,15 @@ public class AccessViewTests {
         });
 
         // Set up test components
-        final JTextComponentFixture passwordField =
-                window.textBox("AccessViewPasswordField");
+        final JTextComponentFixture passwordField = window
+                .textBox("AccessViewPasswordField");
         passwordField.requireText("");
-        final JButtonFixture unlockButton =
-                window.button("AccessViewUnlockButton");
+        final JButtonFixture unlockButton = window
+                .button("AccessViewUnlockButton");
         unlockButton.requireEnabled();
 
-        final ArgumentCaptor<AccessViewEvent> argument =
-                ArgumentCaptor.forClass(AccessViewEvent.class);
+        final ArgumentCaptor<AccessViewEvent> argument = ArgumentCaptor
+                .forClass(AccessViewEvent.class);
 
         final AccessViewListener mockListener = mock(AccessViewListener.class);
         accessView.addAccessViewListener(mockListener);
