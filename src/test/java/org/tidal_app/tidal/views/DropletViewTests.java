@@ -204,4 +204,29 @@ public class DropletViewTests {
         ripplesPanel.requireEnabled();
         assertEquals(2, ripplesPanel.component().getComponentCount());
     }
+
+    /**
+     * Test if setting a model with two content models will display sorted
+     * ripples.
+     */
+    @Test
+    public void testSetDropletModel5() {
+
+    }
+
+    /**
+     * Test if adding a model will result in a merged display.
+     */
+    @Test
+    public void testAddDropletModel1() {
+
+    }
+
+    /**
+     * Test if adding a model will result in a merged and sorted display.
+     */
+    @Test
+    public void testAddDropletModel2() {
+
+    }
 }
