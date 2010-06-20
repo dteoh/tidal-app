@@ -28,7 +28,7 @@ import javax.swing.JPanel;
  */
 public class TiledImagePanel extends JPanel {
 
-    private transient Image background;
+    private Image background;
 
     public void setBackground(final Image background) {
         this.background = background;

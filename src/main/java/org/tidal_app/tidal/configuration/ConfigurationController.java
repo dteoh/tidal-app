@@ -55,20 +55,20 @@ public class ConfigurationController {
     /** Default property for retrieving user home directory */
     private static final String USER_HOME = "user.home";
 
-    private final static Logger LOGGER =
-        LoggerFactory.getLogger(ConfigurationController.class);
+    private final static Logger LOGGER = LoggerFactory
+            .getLogger(ConfigurationController.class);
 
     /** Contains master configuration information */
     private transient Configuration config;
     /** Symmetric key cryptography */
-    private transient final StrongTextEncryptor encryptor;
+    private final StrongTextEncryptor encryptor;
 
-    private transient final Set<Configurable> configurableInstances;
+    private final Set<Configurable> configurableInstances;
     /**
      * A state for determining if the user's configuration has been unlocked or
      * not
      */
-    private transient boolean configurationUnlocked;
+    private boolean configurationUnlocked;
 
     public ConfigurationController() {
         assert (!SwingUtilities.isEventDispatchThread());
@@ -209,7 +209,7 @@ public class ConfigurationController {
         }
 
         if (config.getAuthKeyDigest().isEmpty()
-            || config.getAuthKeyDigest() == null) {
+                || config.getAuthKeyDigest() == null) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
@@ -287,16 +287,16 @@ public class ConfigurationController {
         }
 
         if (config.getAuthKeyDigest().isEmpty()
-            || config.getAuthKeyDigest() == null) {
+                || config.getAuthKeyDigest() == null) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
         FileWriter fw = null;
         try {
             fw = new FileWriter(file);
-            final Yaml yaml =
-                new Yaml(new Dumper(new DropletsConfigurationsRepresenter(
-                        encryptor), new DumperOptions()));
+            final Yaml yaml = new Yaml(new Dumper(
+                    new DropletsConfigurationsRepresenter(encryptor),
+                    new DumperOptions()));
 
             final List<Object> allSettings = new LinkedList<Object>();
             for (final Configurable instance : configurableInstances) {
@@ -361,9 +361,8 @@ public class ConfigurationController {
         try {
             fr = new FileReader(file);
 
-            final Yaml yaml =
-                new Yaml(new Loader(new DropletsConfigurationsConstructor(
-                        encryptor)));
+            final Yaml yaml = new Yaml(new Loader(
+                    new DropletsConfigurationsConstructor(encryptor)));
             allSettings = yaml.loadAll(fr);
         } catch (final FileNotFoundException e) {
             LOGGER.error("File not found", e);
@@ -388,8 +387,7 @@ public class ConfigurationController {
     public boolean authorize(final String authKey) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        final StrongPasswordEncryptor passwordEncryptor =
-            new StrongPasswordEncryptor();
+        final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
         if (passwordEncryptor.checkPassword(authKey, config.getAuthKeyDigest())) {
             encryptor.setPassword(authKey);
             configurationUnlocked = true;
@@ -412,8 +410,7 @@ public class ConfigurationController {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
-        final StrongPasswordEncryptor passwordEncryptor =
-            new StrongPasswordEncryptor();
+        final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
         config.setAuthKeyDigest(passwordEncryptor.encryptPassword(newAuthKey));
 
         encryptor.setPassword(newAuthKey);

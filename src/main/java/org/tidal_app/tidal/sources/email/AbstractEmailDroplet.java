@@ -28,7 +28,7 @@ import org.tidal_app.tidal.sources.email.models.EmailSettings;
  */
 public abstract class AbstractEmailDroplet implements Droplet {
 
-    protected final transient EmailSettings settings;
+    protected final EmailSettings settings;
 
     protected AbstractEmailDroplet(final EmailSettings settings) {
         this.settings = settings;

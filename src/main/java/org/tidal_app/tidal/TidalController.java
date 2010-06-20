@@ -61,16 +61,16 @@ import foxtrot.Worker;
  */
 public class TidalController implements AccessViewListener {
 
-    private final static Logger LOGGER =
-        LoggerFactory.getLogger(TidalController.class);
+    private final static Logger LOGGER = LoggerFactory
+            .getLogger(TidalController.class);
 
     /** Views */
     /** This is the main application frame */
     private JFrame mainFrame;
     /** This is the main application frame's panel */
-    private transient JPanel mainFramePanel;
+    private JPanel mainFramePanel;
     /** This is the application's main panel */
-    private transient TiledImagePanel mainApplicationView;
+    private TiledImagePanel mainApplicationView;
 
     /** Controllers */
     private final MenuBarController menuBarController;
@@ -164,8 +164,8 @@ public class TidalController implements AccessViewListener {
                 mainApplicationView.setBackground(new Color(90, 100, 115));
                 mainApplicationView.setBackground(backgroundImage);
 
-                final DropShadowPanel menuBarPanel =
-                    new DropShadowPanel(6, 0.5F);
+                final DropShadowPanel menuBarPanel = new DropShadowPanel(6,
+                        0.5F);
                 menuBarPanel.setLayout(new MigLayout("", "0[grow]0", "0[]"));
                 menuBarPanel.add(menuBarController.getView(), "growx");
                 mainApplicationView.add(menuBarPanel, "pushx, growx, north");
@@ -177,8 +177,8 @@ public class TidalController implements AccessViewListener {
 
                 // END: Set up the main application view.
 
-                final JScrollPane mainScrollPane =
-                    new JScrollPane(mainFramePanel);
+                final JScrollPane mainScrollPane = new JScrollPane(
+                        mainFramePanel);
                 mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
                 mainScrollPane
                         .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -213,7 +213,7 @@ public class TidalController implements AccessViewListener {
         } catch (final Exception e) {
             LOGGER.error("Error saving application settings", e);
         }
-        System.exit(0); // NOPMD by Douglas Teoh on 15/03/10 7:59 PM
+        System.exit(0);
     }
 
     /**
@@ -228,6 +228,7 @@ public class TidalController implements AccessViewListener {
 
     /*
      * (non-Javadoc)
+     * 
      * @see
      * org.tidal_app.tidal.events.views.AccessViewListener#loginAttempted(org
      * .tidal_app.tidal.events.views.AccessViewEvent)
@@ -252,13 +253,12 @@ public class TidalController implements AccessViewListener {
 
                 @Override
                 protected Void doInBackground() throws Exception {
-                    final Iterable<Object> dropletSettings =
-                        configurationController.loadDropletSettings();
+                    final Iterable<Object> dropletSettings = configurationController
+                            .loadDropletSettings();
 
                     for (final Object settings : dropletSettings) {
                         if (settings instanceof EmailSettings) {
-                            final EmailSettings emailSettings =
-                                (EmailSettings) settings;
+                            final EmailSettings emailSettings = (EmailSettings) settings;
                             try {
                                 emailDropletsController
                                         .addEmailDroplet(emailSettings);
@@ -286,6 +286,7 @@ public class TidalController implements AccessViewListener {
 
     /*
      * (non-Javadoc)
+     * 
      * @see
      * org.tidal_app.tidal.events.views.AccessViewListener#setupPassword(org
      * .tidal_app.tidal.events.views.AccessViewEvent)

@@ -35,8 +35,8 @@ import javax.swing.JPanel;
  */
 public class DropShadowPanel extends JPanel {
 
-    private transient int size;
-    private transient float opacity;
+    private int size;
+    private float opacity;
 
     /**
      * Creates a new drop shadow panel.

@@ -58,13 +58,13 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
     private static final Font READING_DATE_FONT_STYLE = new Font(
             Font.SANS_SERIF, Font.PLAIN, 16);
     /** Model */
-    private transient final RippleModel contentModel;
+    private final RippleModel contentModel;
     /** View components */
-    private transient JLabel originLabel;
-    private transient JLabel subjectLabel;
-    private transient JLabel previewLabel;
-    private transient JLabel receivedLabel;
-    private transient JEditorPane contents;
+    private JLabel originLabel;
+    private JLabel subjectLabel;
+    private JLabel previewLabel;
+    private JLabel receivedLabel;
+    private JEditorPane contents;
 
     public RippleView(final RippleModel contentModel) {
         super();

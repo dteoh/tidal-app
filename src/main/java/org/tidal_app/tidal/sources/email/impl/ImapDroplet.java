@@ -48,11 +48,11 @@ import org.tidal_app.tidal.sources.email.models.EmailSettings;
  */
 public final class ImapDroplet extends AbstractEmailDroplet {
 
-    private static final Logger LOGGER =
-        LoggerFactory.getLogger(ImapDroplet.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(ImapDroplet.class);
 
-    private transient Store store = null;
-    private transient Folder inbox = null;
+    private Store store = null;
+    private Folder inbox = null;
 
     public static ImapDroplet create(final EmailSettings settings)
             throws DropletCreationException {
@@ -61,7 +61,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         final String protocol = settings.getProtocol();
         if (!"imap".equals(protocol) && !"imaps".equals(protocol)) {
             throw new DropletCreationException("Unsupported protocol: "
-                + protocol);
+                    + protocol);
         }
         return new ImapDroplet(settings);
     }
@@ -73,7 +73,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
         if (!"imap".equals(protocol) && !"imaps".equals(protocol)) {
             throw new DropletCreationException("Unsupported protocol: "
-                + protocol);
+                    + protocol);
         }
         return new ImapDroplet(host, protocol, username, password);
     }
@@ -102,7 +102,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             try {
                 // False, because deleted messages get expunged if true.
                 inbox.close(false);
-            } catch (MessagingException e) {
+            } catch (final MessagingException e) {
                 LOGGER.error("Destroy exception", e);
             }
         }
@@ -110,7 +110,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         if (store != null) {
             try {
                 store.close();
-            } catch (MessagingException e) {
+            } catch (final MessagingException e) {
                 LOGGER.error("Destroy exception", e);
             }
         }
@@ -130,10 +130,10 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                     .getPassword());
             inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_WRITE);
-        } catch (NoSuchProviderException e) {
+        } catch (final NoSuchProviderException e) {
             LOGGER.error("Init exception", e);
             throw new DropletInitException(e);
-        } catch (MessagingException e) {
+        } catch (final MessagingException e) {
             LOGGER.error("Init exception", e);
             throw new DropletInitException(e);
         }
@@ -148,35 +148,34 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         }
         try {
             // This search option will only download unread messages.
-            final FlagTerm searchOption =
-                new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+            final FlagTerm searchOption = new FlagTerm(new Flags(
+                    Flags.Flag.SEEN), false);
             final Message[] messages = inbox.search(searchOption);
 
             // Make ripples
-            final List<EmailRipple> unreadRipples =
-                new LinkedList<EmailRipple>();
+            final List<EmailRipple> unreadRipples = new LinkedList<EmailRipple>();
             for (int i = 0; i < messages.length; i++) {
                 final Address[] senderAddresses = messages[i].getFrom();
                 final String subject = messages[i].getSubject();
                 final Date received = messages[i].getReceivedDate();
 
                 final String contentType = messages[i].getContentType();
-                String content =
-                    "Only plaintext and HTML emails are supported.";
+                String content = "Only plaintext and HTML emails are supported.";
                 if ("text/plain".equalsIgnoreCase(contentType)
-                    || "text/html".equalsIgnoreCase(contentType)) {
+                        || "text/html".equalsIgnoreCase(contentType)) {
                     content = (String) messages[i].getContent();
                 }
 
                 unreadRipples.add(new EmailRipple(messages[i]
-                        .getMessageNumber(), senderAddresses.length > 0
-                    ? senderAddresses[0].toString() : "Unknown", subject,
-                        content, received.getTime()));
+                        .getMessageNumber(),
+                        senderAddresses.length > 0 ? senderAddresses[0]
+                                .toString() : "Unknown", subject, content,
+                        received.getTime()));
             }
             return unreadRipples;
-        } catch (MessagingException e) {
+        } catch (final MessagingException e) {
             LOGGER.error("Could not download messages", e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error("Could not download message content", e);
         }
         return null;

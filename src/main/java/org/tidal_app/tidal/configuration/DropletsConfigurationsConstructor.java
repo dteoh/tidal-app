@@ -33,7 +33,7 @@ import org.yaml.snakeyaml.nodes.Tag;
  */
 public class DropletsConfigurationsConstructor extends Constructor {
 
-    private transient final StrongTextEncryptor decryptor;
+    private final StrongTextEncryptor decryptor;
 
     public DropletsConfigurationsConstructor(final StrongTextEncryptor decryptor) {
         super();
@@ -49,6 +49,7 @@ public class DropletsConfigurationsConstructor extends Constructor {
     private class ConstructEmailSettings extends AbstractConstruct {
         /*
          * (non-Javadoc)
+         * 
          * @see
          * org.yaml.snakeyaml.constructor.Construct#construct(org.yaml.snakeyaml
          * .nodes.Node)

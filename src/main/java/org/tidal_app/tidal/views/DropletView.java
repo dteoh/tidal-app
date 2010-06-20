@@ -45,12 +45,12 @@ public class DropletView extends DropShadowPanel {
     /**
      * Models
      */
-    protected transient DropletModel dropletModel;
+    protected DropletModel dropletModel;
     /**
      * Views
      */
-    private transient JPanel ripplesPanel;
-    private transient JLabel nameLabel;
+    private JPanel ripplesPanel;
+    private JLabel nameLabel;
 
     private static final Font HEADER_FONT = new Font(Font.SANS_SERIF,
             Font.BOLD, 24);

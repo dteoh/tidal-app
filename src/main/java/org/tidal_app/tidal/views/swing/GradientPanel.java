@@ -32,8 +32,8 @@ import javax.swing.JPanel;
  */
 public class GradientPanel extends JPanel {
 
-    private transient final Color topGradient;
-    private transient final Color bottomGradient;
+    private final Color topGradient;
+    private final Color bottomGradient;
 
     /**
      * Creates a gradient panel with the two specified colors.

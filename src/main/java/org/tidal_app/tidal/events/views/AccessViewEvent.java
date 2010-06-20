@@ -26,7 +26,7 @@ import java.util.EventObject;
 public class AccessViewEvent extends EventObject {
 
     /** The password entered on the form */
-    private transient final String password;
+    private final String password;
 
     /**
      * @param source

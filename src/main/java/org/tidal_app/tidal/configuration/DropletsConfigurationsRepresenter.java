@@ -33,7 +33,7 @@ import org.yaml.snakeyaml.representer.Representer;
  */
 public class DropletsConfigurationsRepresenter extends Representer {
 
-    private transient final StrongTextEncryptor encryptor;
+    private final StrongTextEncryptor encryptor;
 
     public DropletsConfigurationsRepresenter(final StrongTextEncryptor encryptor) {
         super();
@@ -49,6 +49,7 @@ public class DropletsConfigurationsRepresenter extends Representer {
     private class RepresentEmailSettings implements Represent {
         /*
          * (non-Javadoc)
+         * 
          * @see
          * org.yaml.snakeyaml.representer.Represent#representData(java.lang.
          * Object)

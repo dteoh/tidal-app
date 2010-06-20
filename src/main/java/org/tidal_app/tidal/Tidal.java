@@ -30,7 +30,7 @@ import org.tidal_app.tidal.sources.email.EmailDropletsController;
  * 
  * @author Douglas Teoh
  */
-public class Tidal { // NOPMD by Douglas Teoh on 15/03/10 8:02 PM
+public class Tidal {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Tidal.class);
 
@@ -56,22 +56,19 @@ public class Tidal { // NOPMD by Douglas Teoh on 15/03/10 8:02 PM
         /*
          * These controllers are being instantiated here because they contain no
          * UI elements; as such, letting TidalController instantiate them is
-         * probably a bad idea a the classes will be instantiated in the EDT,
+         * probably a bad idea as the classes will be instantiated in the EDT,
          * which is not what we want.
          */
-        final ConfigurationController configurationController =
-            new ConfigurationController();
-        final EmailDropletsController emailDropletsController =
-            new EmailDropletsController();
+        final ConfigurationController configurationController = new ConfigurationController();
+        final EmailDropletsController emailDropletsController = new EmailDropletsController();
 
-        SwingUtilities.invokeLater(new Runnable() { // NOPMD by Douglas Teoh on
-                    // 15/03/10 8:01 PM
-                    @Override
-                    public void run() {
-                        new TidalController(configurationController,
-                                emailDropletsController);
-                    }
-                });
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new TidalController(configurationController,
+                        emailDropletsController);
+            }
+        });
     }
 
 }

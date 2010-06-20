@@ -46,15 +46,15 @@ import org.tidal_app.tidal.views.swing.GradientPanel;
  */
 public class AccessView extends DropShadowPanel {
 
-    private transient JLabel heading;
-    private transient JLabel information;
+    private JLabel heading;
+    private JLabel information;
 
-    private transient JPasswordField passwordField;
-    private transient JPasswordField confirmationField;
+    private JPasswordField passwordField;
+    private JPasswordField confirmationField;
 
-    private transient JButton unlockButton;
+    private JButton unlockButton;
 
-    private transient final List<AccessViewListener> listeners;
+    private final List<AccessViewListener> listeners;
 
     public AccessView() {
         super(6, 0.5F);
