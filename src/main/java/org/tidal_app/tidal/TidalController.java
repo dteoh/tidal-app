@@ -38,12 +38,12 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.configuration.ConfigurationController;
-import org.tidal_app.tidal.events.views.AccessViewEvent;
-import org.tidal_app.tidal.events.views.AccessViewListener;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.sources.email.EmailDropletsController;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
+import org.tidal_app.tidal.views.events.AccessViewEvent;
+import org.tidal_app.tidal.views.events.AccessViewListener;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
@@ -230,7 +230,7 @@ public class TidalController implements AccessViewListener {
      * (non-Javadoc)
      * 
      * @see
-     * org.tidal_app.tidal.events.views.AccessViewListener#loginAttempted(org
+     * org.tidal_app.tidal.views.events.AccessViewListener#loginAttempted(org
      * .tidal_app.tidal.events.views.AccessViewEvent)
      */
     @Override
@@ -288,7 +288,7 @@ public class TidalController implements AccessViewListener {
      * (non-Javadoc)
      * 
      * @see
-     * org.tidal_app.tidal.events.views.AccessViewListener#setupPassword(org
+     * org.tidal_app.tidal.views.events.AccessViewListener#setupPassword(org
      * .tidal_app.tidal.events.views.AccessViewEvent)
      */
     @Override

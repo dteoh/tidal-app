@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.events.views;
+package org.tidal_app.tidal.views.events;
 
 import org.tidal_app.tidal.views.AccessView;
 

@@ -33,8 +33,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.tidal_app.tidal.events.views.AccessViewEvent;
-import org.tidal_app.tidal.events.views.AccessViewListener;
+import org.tidal_app.tidal.views.events.AccessViewEvent;
+import org.tidal_app.tidal.views.events.AccessViewListener;
 
 /**
  * Tests the AccessView class.

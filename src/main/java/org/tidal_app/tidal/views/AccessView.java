@@ -34,8 +34,8 @@ import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.tidal_app.tidal.events.views.AccessViewEvent;
-import org.tidal_app.tidal.events.views.AccessViewListener;
+import org.tidal_app.tidal.views.events.AccessViewEvent;
+import org.tidal_app.tidal.views.events.AccessViewListener;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
