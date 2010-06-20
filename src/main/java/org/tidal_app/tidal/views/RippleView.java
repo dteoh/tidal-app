@@ -39,7 +39,9 @@ import org.tidal_app.tidal.views.models.RippleModel;
  * 
  * @author Douglas Teoh
  */
-public class RippleView extends JPanel implements Comparable<RippleView> {
+public class RippleView extends JPanel
+// implements Comparable<RippleView>
+{
 
     // Colors for the various message states
     private static final Color SEEN_BG_COLOR = new Color(245, 250, 250);
@@ -72,6 +74,10 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         this.contentModel = contentModel;
         initView();
         addMouseListener(new RippleViewMouseAdapter());
+    }
+
+    public boolean hasSameModel(final RippleModel model) {
+        return contentModel.equals(model);
     }
 
     /**
@@ -205,24 +211,24 @@ public class RippleView extends JPanel implements Comparable<RippleView> {
         }
     }
 
-    /**
-     * Compares RippleView based on received date (newest first) then subject.
-     * 
-     * @param other
-     *            RippleView to compare against.
-     */
-    @Override
-    public int compareTo(final RippleView other) {
-        if (other == null) {
-            return -1;
-        }
-        if (contentModel.getReceived() < other.contentModel.getReceived()) {
-            return 1;
-        }
-        if (contentModel.getReceived() > other.contentModel.getReceived()) {
-            return -1;
-        }
-        return contentModel.getSubject().compareTo(
-                other.contentModel.getSubject());
-    }
+    // /**
+    // * Compares RippleView based on received date (newest first) then subject.
+    // *
+    // * @param other
+    // * RippleView to compare against.
+    // */
+    // @Override
+    // public int compareTo(final RippleView other) {
+    // if (other == null) {
+    // return -1;
+    // }
+    // if (contentModel.getReceived() < other.contentModel.getReceived()) {
+    // return 1;
+    // }
+    // if (contentModel.getReceived() > other.contentModel.getReceived()) {
+    // return -1;
+    // }
+    // return contentModel.getSubject().compareTo(
+    // other.contentModel.getSubject());
+    // }
 }

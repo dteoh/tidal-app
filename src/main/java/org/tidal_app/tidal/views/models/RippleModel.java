@@ -16,33 +16,13 @@
 
 package org.tidal_app.tidal.views.models;
 
-public class RippleModel {
+public class RippleModel implements Comparable<RippleModel> {
 
     private final Object id;
     private final String origin;
     private final String subject;
     private final String content;
     private final long received;
-
-    public Object getId() {
-        return id;
-    }
-
-    public String getOrigin() {
-        return origin;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public long getReceived() {
-        return received;
-    }
 
     /**
      * @param id
@@ -64,4 +44,105 @@ public class RippleModel {
         this.content = content;
         this.received = received;
     }
+
+    public Object getId() {
+        return id;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public long getReceived() {
+        return received;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((content == null) ? 0 : content.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((origin == null) ? 0 : origin.hashCode());
+        result = prime * result + (int) (received ^ (received >>> 32));
+        result = prime * result + ((subject == null) ? 0 : subject.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RippleModel other = (RippleModel) obj;
+        if (content == null) {
+            if (other.content != null) {
+                return false;
+            }
+        } else if (!content.equals(other.content)) {
+            return false;
+        }
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (origin == null) {
+            if (other.origin != null) {
+                return false;
+            }
+        } else if (!origin.equals(other.origin)) {
+            return false;
+        }
+        if (received != other.received) {
+            return false;
+        }
+        if (subject == null) {
+            if (other.subject != null) {
+                return false;
+            }
+        } else if (!subject.equals(other.subject)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Compares based on received date (newest first) then subject.
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(final RippleModel other) {
+        if (other == null) {
+            return -1;
+        }
+
+        if (getReceived() < other.getReceived()) {
+            return 1;
+        }
+
+        if (getReceived() > other.getReceived()) {
+            return -1;
+        }
+
+        return getSubject().compareTo(other.getSubject());
+    }
+
 }

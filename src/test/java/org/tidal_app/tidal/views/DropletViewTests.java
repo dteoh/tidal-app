@@ -17,6 +17,7 @@
 package org.tidal_app.tidal.views;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import javax.swing.JFrame;
 
@@ -207,11 +208,47 @@ public class DropletViewTests {
 
     /**
      * Test if setting a model with two content models will display sorted
-     * ripples.
+     * ripples according to received time in descending order (most recent
+     * first).
      */
     @Test
     public void testSetDropletModel5() {
+        final String id1 = "ID1";
+        final String origin1 = "test@tidal-app.org";
+        final String subject1 = "A";
+        final String content1 = "First";
+        final long received1 = 10000;
+        final RippleModel model1 = new RippleModel(id1, origin1, subject1,
+                content1, received1);
 
+        final String id2 = "ID2";
+        final String origin2 = "test@tidal-app.org";
+        final String subject2 = "B";
+        final String content2 = "Most recent";
+        final long received2 = 20000;
+        final RippleModel model2 = new RippleModel(id2, origin2, subject2,
+                content2, received2);
+
+        final DropletModel newModel = new DropletModel("Two models", model1,
+                model2);
+
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                view.setDropletModel(newModel);
+            }
+        });
+
+        final JPanelFixture ripplesPanel = window
+                .panel("DropletViewRipplesPanel");
+
+        final RippleView rv1 = (RippleView) ripplesPanel.component()
+                .getComponent(0);
+        assertTrue(rv1.hasSameModel(model2));
+
+        final RippleView rv2 = (RippleView) ripplesPanel.component()
+                .getComponent(1);
+        assertTrue(rv2.hasSameModel(model1));
     }
 
     /**
@@ -219,6 +256,55 @@ public class DropletViewTests {
      */
     @Test
     public void testAddDropletModel1() {
+        final String id1 = "ID1";
+        final String origin1 = "test@tidal-app.org";
+        final String subject1 = "A";
+        final String content1 = "First";
+        final long received1 = 10000;
+        final RippleModel model1 = new RippleModel(id1, origin1, subject1,
+                content1, received1);
+
+        final String id2 = "ID2";
+        final String origin2 = "test@tidal-app.org";
+        final String subject2 = "B";
+        final String content2 = "Most recent";
+        final long received2 = 20000;
+        final RippleModel model2 = new RippleModel(id2, origin2, subject2,
+                content2, received2);
+
+        final DropletModel newModel = new DropletModel("Two models", model1,
+                model2);
+
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                view.setDropletModel(newModel);
+            }
+        });
+
+        final String id3 = "ID3";
+        final String origin3 = "test@tidal-app.org";
+        final String subject3 = "B";
+        final String content3 = "Most recent";
+        final long received3 = 15000;
+        final RippleModel model3 = new RippleModel(id3, origin3, subject3,
+                content3, received3);
+
+        final DropletModel newestModel = new DropletModel("One model", model3);
+
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                view.addDropletModel(newestModel);
+            }
+        });
+
+        final JPanelFixture ripplesPanel = window
+                .panel("DropletViewRipplesPanel");
+
+        ripplesPanel.requireVisible();
+        ripplesPanel.requireEnabled();
+        assertEquals(3, ripplesPanel.component().getComponentCount());
 
     }
 
@@ -227,6 +313,62 @@ public class DropletViewTests {
      */
     @Test
     public void testAddDropletModel2() {
+        final String id1 = "ID1";
+        final String origin1 = "test@tidal-app.org";
+        final String subject1 = "A";
+        final String content1 = "First";
+        final long received1 = 10000;
+        final RippleModel model1 = new RippleModel(id1, origin1, subject1,
+                content1, received1);
 
+        final String id2 = "ID2";
+        final String origin2 = "test@tidal-app.org";
+        final String subject2 = "B";
+        final String content2 = "Most recent";
+        final long received2 = 20000;
+        final RippleModel model2 = new RippleModel(id2, origin2, subject2,
+                content2, received2);
+
+        final DropletModel newModel = new DropletModel("Two models", model1,
+                model2);
+
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                view.setDropletModel(newModel);
+            }
+        });
+
+        final String id3 = "ID3";
+        final String origin3 = "test@tidal-app.org";
+        final String subject3 = "B";
+        final String content3 = "Most recent";
+        final long received3 = 15000;
+        final RippleModel model3 = new RippleModel(id3, origin3, subject3,
+                content3, received3);
+
+        final DropletModel newestModel = new DropletModel("One model", model3);
+
+        GuiActionRunner.execute(new GuiTask() {
+            @Override
+            protected void executeInEDT() throws Throwable {
+                view.addDropletModel(newestModel);
+            }
+        });
+
+        final JPanelFixture ripplesPanel = window
+                .panel("DropletViewRipplesPanel");
+
+        final RippleView rv1 = (RippleView) ripplesPanel.component()
+                .getComponent(0);
+        assertTrue(rv1.hasSameModel(model2));
+
+        final RippleView rv2 = (RippleView) ripplesPanel.component()
+                .getComponent(1);
+        assertTrue(rv2.hasSameModel(model3));
+
+        final RippleView rv3 = (RippleView) ripplesPanel.component()
+                .getComponent(2);
+        assertTrue(rv3.hasSameModel(model1));
     }
 }

@@ -17,10 +17,8 @@
 package org.tidal_app.tidal.views;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -93,18 +91,6 @@ public class DropletView extends DropShadowPanel {
 
         add(headerPanel, "pushx, growx");
 
-        final List<RippleView> rippleViews = new ArrayList<RippleView>();
-
-        if (dropletModel != null) {
-            for (final RippleModel contentModel : dropletModel
-                    .getDropletContents()) {
-                final RippleView rippleView = new RippleView(contentModel);
-                rippleViews.add(rippleView);
-            }
-
-            Collections.sort(rippleViews);
-        }
-
         // Construct content panel
         ripplesPanel = new JPanel();
         ripplesPanel.setName("DropletViewRipplesPanel");
@@ -112,34 +98,61 @@ public class DropletView extends DropShadowPanel {
                 "[grow 100]", "[]0"));
         ripplesPanel.setOpaque(false);
 
-        for (final RippleView rippleView : rippleViews) {
-            ripplesPanel.add(rippleView, "pushx, growx");
-        }
-
         add(ripplesPanel, "pushx, growx");
-    }
-
-    public void setDropletModel(final DropletModel dropletModel) {
-        assert SwingUtilities.isEventDispatchThread();
-
-        nameLabel.setText(dropletModel.getDropletName().toUpperCase());
-
-        ripplesPanel.removeAll();
-        this.dropletModel = dropletModel;
-        final List<RippleView> rippleViews = new ArrayList<RippleView>();
 
         if (dropletModel != null) {
             for (final RippleModel contentModel : dropletModel
                     .getDropletContents()) {
-                final RippleView rippleView = new RippleView(contentModel);
-                rippleViews.add(rippleView);
+                ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
             }
+        }
+    }
 
-            Collections.sort(rippleViews);
+    public void setDropletModel(final DropletModel model) {
+        assert SwingUtilities.isEventDispatchThread();
+
+        nameLabel.setText(model.getDropletName().toUpperCase());
+
+        ripplesPanel.removeAll();
+        dropletModel = model;
+
+        if (model != null) {
+            for (final RippleModel contentModel : model.getDropletContents()) {
+                ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
+            }
+        }
+    }
+
+    public void addDropletModel(final DropletModel model) {
+        assert SwingUtilities.isEventDispatchThread();
+
+        final Component[] oldRippleViews = ripplesPanel.getComponents();
+        int ripple = 0;
+
+        if (oldRippleViews.length == 0) {
+            setDropletModel(model);
+            return;
         }
 
-        for (final RippleView rippleView : rippleViews) {
-            ripplesPanel.add(rippleView, "pushx, growx");
+        if (model != null) {
+            ripplesPanel.removeAll();
+            dropletModel = dropletModel.mergeWith(model);
+
+            for (final RippleModel contentModel : dropletModel
+                    .getDropletContents()) {
+                RippleView oldView = null;
+                if (ripple < oldRippleViews.length) {
+                    oldView = (RippleView) oldRippleViews[ripple];
+                }
+                if (oldView != null && oldView.hasSameModel(contentModel)) {
+                    ripplesPanel.add(oldView, "pushx, growx");
+                    ripple++;
+                } else {
+                    ripplesPanel.add(new RippleView(contentModel),
+                            "pushx, growx");
+                }
+            }
         }
+
     }
 }
