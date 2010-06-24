@@ -21,7 +21,7 @@ package org.tidal_app.tidal.sources.email.models;
  * 
  * @author Douglas Teoh
  */
-public class EmailSettings implements Cloneable {
+public class EmailSettings {
 
     private String host;
     private String protocol;
@@ -76,12 +76,12 @@ public class EmailSettings implements Cloneable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((host == null) ? 0 : host.hashCode());
-        result =
-            prime * result + ((password == null) ? 0 : password.hashCode());
-        result =
-            prime * result + ((protocol == null) ? 0 : protocol.hashCode());
-        result =
-            prime * result + ((username == null) ? 0 : username.hashCode());
+        result = prime * result
+                + ((password == null) ? 0 : password.hashCode());
+        result = prime * result
+                + ((protocol == null) ? 0 : protocol.hashCode());
+        result = prime * result
+                + ((username == null) ? 0 : username.hashCode());
         return result;
     }
 
@@ -128,8 +128,7 @@ public class EmailSettings implements Cloneable {
         return true;
     }
 
-    @Override
-    public Object clone() {
+    public EmailSettings makeCopy() {
         return new EmailSettings(this);
     }
 

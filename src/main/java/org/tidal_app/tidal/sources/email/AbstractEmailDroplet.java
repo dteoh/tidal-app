@@ -48,7 +48,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
     }
 
     public Object getSettings() {
-        return settings.clone();
+        return settings.makeCopy();
     }
 
     public abstract void init() throws DropletInitException;
