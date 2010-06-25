@@ -34,6 +34,7 @@ import javax.mail.internet.MimeMessage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.jvnet.mock_javamail.Mailbox;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
@@ -55,6 +56,7 @@ public class ImapDropletTests {
     @After
     public void tearDown() {
         settings = null;
+        Mailbox.clearAll();
     }
 
     /**
@@ -167,8 +169,8 @@ public class ImapDropletTests {
         final Properties props = System.getProperties();
         final Session session = Session.getInstance(props, null);
 
-        final MimeMessage msg = new MimeMessage(session);
         try {
+            final MimeMessage msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress("unittests@tidal-app.org"));
             msg.setRecipients(Message.RecipientType.TO, "tester@tidal-app.org");
             msg.setSentDate(Calendar.getInstance().getTime());
@@ -190,6 +192,153 @@ public class ImapDropletTests {
         final Iterator<EmailRipple> it = ripples.iterator();
         assertTrue(it.hasNext());
         it.next();
+        assertFalse(it.hasNext());
+    }
+
+    /**
+     * Test retrieving ripples when there are two.
+     */
+    @Test
+    public void testGetRipples3() {
+        final Properties props = System.getProperties();
+        final Session session = Session.getInstance(props, null);
+
+        try {
+            final MimeMessage m1 = new MimeMessage(session);
+            m1.setFrom(new InternetAddress("unittests@tidal-app.org"));
+            m1.setRecipients(Message.RecipientType.TO, "tester@tidal-app.org");
+            m1.setSentDate(Calendar.getInstance().getTime());
+            m1.setSubject("Unit test email 1");
+            m1.setContent("Unit test email for testGetRipples3", "text/plain");
+            Transport.send(m1);
+
+            final MimeMessage m2 = new MimeMessage(session);
+            m2.setFrom(new InternetAddress("unittests@tidal-app.org"));
+            m2.setRecipients(Message.RecipientType.TO, "tester@tidal-app.org");
+            m2.setSentDate(Calendar.getInstance().getTime());
+            m2.setSubject("Unit test email 2");
+            m2.setContent("Unit test email for testGetRipples3", "text/plain");
+            Transport.send(m2);
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+
+        ImapDroplet droplet = null;
+        try {
+            droplet = ImapDroplet.create(settings);
+            droplet.init();
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+        final Iterable<EmailRipple> ripples = droplet.getRipples();
+        final Iterator<EmailRipple> it = ripples.iterator();
+        assertTrue(it.hasNext());
+        it.next();
+        assertTrue(it.hasNext());
+        it.next();
+        assertFalse(it.hasNext());
+    }
+
+    /**
+     * Test retrieving ripples one after another. I.e. send one email, retrieve
+     * it, send another, retrieve both.
+     */
+    @Test
+    public void testGetRipples4() {
+        final Properties props = System.getProperties();
+        final Session session = Session.getInstance(props, null);
+
+        try {
+            final MimeMessage msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress("unittests@tidal-app.org"));
+            msg.setRecipients(Message.RecipientType.TO, "tester@tidal-app.org");
+            msg.setSentDate(Calendar.getInstance().getTime());
+            msg.setSubject("Unit test email 1");
+            msg.setContent("Unit test email for testGetRipples4", "text/plain");
+            Transport.send(msg);
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+
+        ImapDroplet droplet = null;
+        try {
+            droplet = ImapDroplet.create(settings);
+            droplet.init();
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+        Iterable<EmailRipple> ripples = droplet.getRipples();
+        Iterator<EmailRipple> it = ripples.iterator();
+        assertTrue(it.hasNext());
+        it.next();
+        assertFalse(it.hasNext());
+
+        try {
+            final MimeMessage msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress("unittests@tidal-app.org"));
+            msg.setRecipients(Message.RecipientType.TO, "tester@tidal-app.org");
+            msg.setSentDate(Calendar.getInstance().getTime());
+            msg.setSubject("Unit test email 2");
+            msg.setContent("Unit test email for testGetRipples4", "text/plain");
+            Transport.send(msg);
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+
+        ripples = droplet.getRipples();
+        it = ripples.iterator();
+        assertTrue(it.hasNext());
+        it.next();
+        assertTrue(it.hasNext());
+        it.next();
+        assertFalse(it.hasNext());
+    }
+
+    /**
+     * Test retrieving ripples contents.
+     */
+    @Test
+    public void testGetRipples5() {
+        final Properties props = System.getProperties();
+        final Session session = Session.getInstance(props, null);
+
+        final String fromAddr = "unittests@tidal-app.org";
+        final String toAddr = "tester@tidal-app.org";
+        final String subject = "testGetRipples5";
+        final String contents = "Unit test email for testGetRipples5.";
+        final long time = 150000;
+
+        try {
+            final MimeMessage msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress(fromAddr));
+            msg.setRecipients(Message.RecipientType.TO, toAddr);
+            final Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(time);
+            msg.setSentDate(cal.getTime());
+            msg.setSubject(subject);
+            msg.setContent(contents, "text/plain");
+            Transport.send(msg);
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+
+        ImapDroplet droplet = null;
+        try {
+            droplet = ImapDroplet.create(settings);
+            droplet.init();
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+        final Iterable<EmailRipple> ripples = droplet.getRipples();
+        final Iterator<EmailRipple> it = ripples.iterator();
+        assertTrue(it.hasNext());
+
+        final EmailRipple ripple = it.next();
+        assertEquals(fromAddr, ripple.getSender());
+        assertEquals(subject, ripple.getSubject());
+        assertEquals(contents, ripple.getContent());
+        assertEquals(time, ripple.getEpochSentTime());
+
         assertFalse(it.hasNext());
     }
 }

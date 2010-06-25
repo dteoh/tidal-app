@@ -161,8 +161,9 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
                 final String contentType = messages[i].getContentType();
                 String content = "Only plaintext and HTML emails are supported.";
-                if ("text/plain".equalsIgnoreCase(contentType)
-                        || "text/html".equalsIgnoreCase(contentType)) {
+                if (contentType != null
+                        && (contentType.contains("text/plain") || contentType
+                                .contains("text/html"))) {
                     content = (String) messages[i].getContent();
                 }
 
