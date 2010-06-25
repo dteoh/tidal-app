@@ -47,7 +47,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
         return settings.getUsername();
     }
 
-    public Object getSettings() {
+    public EmailSettings getSettings() {
         return settings.makeCopy();
     }
 

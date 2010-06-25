@@ -97,7 +97,7 @@ public class EmailDropletsController {
         for (EmailRipple ripple : droplet.getRipples()) {
             contentModel.add(new RippleModel(ripple.getId(), ripple
                     .getSender(), ripple.getSubject(), ripple.getContent(),
-                    ripple.getReceivedDate()));
+                    ripple.getSentDate()));
         }
         return new DropletModel(droplet.getUsername(), contentModel.iterator());
     }
@@ -112,7 +112,7 @@ public class EmailDropletsController {
             for (EmailRipple ripple : droplet.getRipples()) {
                 contentModel.add(new RippleModel(ripple.getId(), ripple
                         .getSender(), ripple.getSubject(), ripple.getContent(),
-                        ripple.getReceivedDate()));
+                        ripple.getSentDate()));
             }
             allModels
                     .add(new DropletModel(droplet.getUsername(), contentModel));

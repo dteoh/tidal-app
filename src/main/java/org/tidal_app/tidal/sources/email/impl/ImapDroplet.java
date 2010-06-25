@@ -157,7 +157,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             for (int i = 0; i < messages.length; i++) {
                 final Address[] senderAddresses = messages[i].getFrom();
                 final String subject = messages[i].getSubject();
-                final Date received = messages[i].getReceivedDate();
+                final Date sent = messages[i].getSentDate();
 
                 final String contentType = messages[i].getContentType();
                 String content = "Only plaintext and HTML emails are supported.";
@@ -169,8 +169,8 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                 unreadRipples.add(new EmailRipple(messages[i]
                         .getMessageNumber(),
                         senderAddresses.length > 0 ? senderAddresses[0]
-                                .toString() : "Unknown", subject, content,
-                        received.getTime()));
+                                .toString() : "Unknown", subject, content, sent
+                                .getTime()));
             }
             return unreadRipples;
         } catch (final MessagingException e) {

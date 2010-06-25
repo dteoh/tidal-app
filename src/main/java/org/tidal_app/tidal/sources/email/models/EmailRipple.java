@@ -27,7 +27,7 @@ public class EmailRipple implements Comparable<EmailRipple> {
     private final String sender;
     private final String subject;
     private final String content;
-    private final long receivedDate;
+    private final long sentDate;
 
     public int getId() {
         return id;
@@ -41,8 +41,8 @@ public class EmailRipple implements Comparable<EmailRipple> {
         return subject;
     }
 
-    public long getReceivedDate() {
-        return receivedDate;
+    public long getSentDate() {
+        return sentDate;
     }
 
     public String getContent() {
@@ -60,17 +60,17 @@ public class EmailRipple implements Comparable<EmailRipple> {
      *            subject of email
      * @param content
      *            email contents
-     * @param receivedDate
-     *            when was the email received
+     * @param sentDate
+     *            when was the email sent
      */
     public EmailRipple(final int id, final String sender, final String subject,
-            final String content, final long receivedDate) {
+            final String content, final long sentDate) {
         super();
         this.id = id;
         this.sender = sender;
         this.subject = subject;
         this.content = content;
-        this.receivedDate = receivedDate;
+        this.sentDate = sentDate;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class EmailRipple implements Comparable<EmailRipple> {
         int result = 1;
         result = prime * result + ((content == null) ? 0 : content.hashCode());
         result = prime * result + id;
-        result = prime * result + (int) (receivedDate ^ (receivedDate >>> 32));
+        result = prime * result + (int) (sentDate ^ (sentDate >>> 32));
         result = prime * result + ((sender == null) ? 0 : sender.hashCode());
         result = prime * result + ((subject == null) ? 0 : subject.hashCode());
         return result;
@@ -107,7 +107,7 @@ public class EmailRipple implements Comparable<EmailRipple> {
         if (id != other.id) {
             return false;
         }
-        if (receivedDate != other.receivedDate) {
+        if (sentDate != other.sentDate) {
             return false;
         }
         if (sender == null) {
@@ -130,10 +130,10 @@ public class EmailRipple implements Comparable<EmailRipple> {
     @Override
     public int compareTo(final EmailRipple other) {
         // Want newer messages first.
-        if (receivedDate < other.receivedDate) {
+        if (sentDate < other.sentDate) {
             return 1;
         }
-        if (receivedDate > other.receivedDate) {
+        if (sentDate > other.sentDate) {
             return -1;
         }
         if (id < other.id) {

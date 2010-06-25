@@ -16,26 +16,180 @@
 
 package org.tidal_app.tidal.sources.email.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
+import org.tidal_app.tidal.sources.email.models.EmailRipple;
+import org.tidal_app.tidal.sources.email.models.EmailSettings;
 
 public class ImapDropletTests {
 
-    /**
-     * No email-password pair specified, use own. Do not commit.
-     * 
-     * @throws DropletInitException
-     * @throws DropletCreationException
-     */
-    @Test
-    public void testGetRipples() throws DropletInitException,
-            DropletCreationException {
-        ImapDroplet d = ImapDroplet.create("", "", "", "");
+    private EmailSettings settings;
 
-        d.init();
-        d.getRipples();
-        d.destroy();
+    @Before
+    public void setUp() {
+        settings = new EmailSettings();
+        settings.setHost("tidal-app.org");
+        settings.setPassword("password");
+        settings.setProtocol("imap");
+        settings.setUsername("tester");
     }
 
+    @After
+    public void tearDown() {
+        settings = null;
+    }
+
+    /**
+     * Test creating droplet from EmailSettings.
+     */
+    @Test
+    public void testCreate1() {
+        try {
+            final ImapDroplet droplet = ImapDroplet.create(settings);
+            assertEquals(settings, droplet.getSettings());
+        } catch (final DropletCreationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Test creating droplet from EmailSettings attributes.
+     */
+    @Test
+    public void testCreate2() {
+        try {
+            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
+                    settings.getProtocol(), settings.getUsername(), settings
+                            .getPassword());
+            assertEquals(settings, droplet.getSettings());
+        } catch (final DropletCreationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Test support for "imap" protocol.
+     */
+    @Test
+    public void testCreate3() {
+        try {
+            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
+                    "imap", settings.getUsername(), settings.getPassword());
+        } catch (final DropletCreationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Test support for "imaps" protocol.
+     */
+    @Test
+    public void testCreate4() {
+        try {
+            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
+                    "imaps", settings.getUsername(), settings.getPassword());
+        } catch (final DropletCreationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Test support for other protocols.
+     */
+    @Test
+    public void testCreate5() {
+        try {
+            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
+                    "pop3", settings.getUsername(), settings.getPassword());
+            fail("Expecting DropletCreationException.");
+        } catch (final DropletCreationException e) {
+            // Pass.
+        }
+    }
+
+    /**
+     * Test ability to initialize connection to mailbox.
+     */
+    @Test
+    public void testInit() {
+        ImapDroplet droplet = null;
+        try {
+            droplet = ImapDroplet.create(settings);
+        } catch (final DropletCreationException e) {
+            fail(e.getMessage());
+        }
+        try {
+            droplet.init();
+        } catch (final DropletInitException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Test retrieving ripples when there are none.
+     */
+    @Test
+    public void testGetRipples1() {
+        ImapDroplet droplet = null;
+        try {
+            droplet = ImapDroplet.create(settings);
+            droplet.init();
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+        final Iterable<EmailRipple> ripples = droplet.getRipples();
+        assertFalse(ripples.iterator().hasNext());
+    }
+
+    /**
+     * Test retrieving ripples when there is one.
+     */
+    @Test
+    public void testGetRipples2() {
+        final Properties props = System.getProperties();
+        final Session session = Session.getInstance(props, null);
+
+        final MimeMessage msg = new MimeMessage(session);
+        try {
+            msg.setFrom(new InternetAddress("unittests@tidal-app.org"));
+            msg.setRecipients(Message.RecipientType.TO, "tester@tidal-app.org");
+            msg.setSentDate(Calendar.getInstance().getTime());
+            msg.setSubject("Unit test email");
+            msg.setContent("Unit test email for testGetRipples2", "text/plain");
+            Transport.send(msg);
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+
+        ImapDroplet droplet = null;
+        try {
+            droplet = ImapDroplet.create(settings);
+            droplet.init();
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+        final Iterable<EmailRipple> ripples = droplet.getRipples();
+        final Iterator<EmailRipple> it = ripples.iterator();
+        assertTrue(it.hasNext());
+        it.next();
+        assertFalse(it.hasNext());
+    }
 }
