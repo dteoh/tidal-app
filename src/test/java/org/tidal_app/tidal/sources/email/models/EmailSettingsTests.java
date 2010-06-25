@@ -17,6 +17,8 @@
 package org.tidal_app.tidal.sources.email.models;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -146,7 +148,7 @@ public class EmailSettingsTests {
      */
     @Test
     public void testEqualsObject1() {
-        assertEquals(true, model.equals(model));
+        assertTrue(model.equals(model));
     }
 
     /**
@@ -156,7 +158,7 @@ public class EmailSettingsTests {
      */
     @Test
     public void testEqualsObject2() {
-        assertEquals(false, model.equals(null));
+        assertFalse(model.equals(null));
     }
 
     /**
@@ -168,8 +170,8 @@ public class EmailSettingsTests {
     public void testEqualsObject3() {
         final EmailSettings another = model.makeCopy();
 
-        assertEquals(true, model.equals(another));
-        assertEquals(true, another.equals(model));
+        assertTrue(model.equals(another));
+        assertTrue(another.equals(model));
     }
 
     /**
@@ -182,8 +184,8 @@ public class EmailSettingsTests {
         final EmailSettings another = model.makeCopy();
         another.setHost("newhost");
 
-        assertEquals(false, model.equals(another));
-        assertEquals(false, "newhost".equals(model.getHost()));
+        assertFalse(model.equals(another));
+        assertFalse("newhost".equals(model.getHost()));
     }
 
     /**
@@ -196,8 +198,8 @@ public class EmailSettingsTests {
         final EmailSettings another = model.makeCopy();
         another.setPassword("newpass");
 
-        assertEquals(false, model.equals(another));
-        assertEquals(false, "newpass".equals(model.getPassword()));
+        assertFalse(model.equals(another));
+        assertFalse("newpass".equals(model.getPassword()));
     }
 
     /**
@@ -210,8 +212,8 @@ public class EmailSettingsTests {
         final EmailSettings another = model.makeCopy();
         another.setProtocol("newproto");
 
-        assertEquals(false, model.equals(another));
-        assertEquals(false, "newproto".equals(model.getProtocol()));
+        assertFalse(model.equals(another));
+        assertFalse("newproto".equals(model.getProtocol()));
     }
 
     /**
@@ -224,7 +226,7 @@ public class EmailSettingsTests {
         final EmailSettings another = model.makeCopy();
         another.setUsername("newuser");
 
-        assertEquals(false, model.equals(another));
-        assertEquals(false, "newuser".equals(model.getUsername()));
+        assertFalse(model.equals(another));
+        assertFalse("newuser".equals(model.getUsername()));
     }
 }

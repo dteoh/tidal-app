@@ -17,6 +17,7 @@
 package org.tidal_app.tidal.views.models;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -105,7 +106,7 @@ public class RippleModelTests {
      */
     @Test
     public void testEqualsObject1() {
-        assertEquals(true, model.equals(model));
+        assertTrue(model.equals(model));
     }
 
     /**
@@ -115,7 +116,7 @@ public class RippleModelTests {
      */
     @Test
     public void testEqualsObject2() {
-        assertEquals(false, model.equals(null));
+        assertFalse(model.equals(null));
     }
 
     /**
