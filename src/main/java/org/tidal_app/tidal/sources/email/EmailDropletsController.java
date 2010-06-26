@@ -27,8 +27,8 @@ import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
-import org.tidal_app.tidal.views.models.RippleModel;
 import org.tidal_app.tidal.views.models.DropletModel;
+import org.tidal_app.tidal.views.models.RippleModel;
 
 public class EmailDropletsController {
 
@@ -50,74 +50,123 @@ public class EmailDropletsController {
      *             AbstractEmailDroplet implementations.
      * @return the created AbstractEmailDroplet.
      */
-    public synchronized AbstractEmailDroplet addEmailDroplet(
+    public AbstractEmailDroplet addEmailDroplet(
             final EmailSettings emailSettings) throws DropletCreationException {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        // Determine what type of droplet to build based on the given protocol.
-        final String protocol = emailSettings.getProtocol();
-        if (protocol.equalsIgnoreCase("imap")
-            || protocol.equalsIgnoreCase("imaps")) {
-            ImapDroplet imapsDroplet = ImapDroplet.create(emailSettings);
-            droplets.put(imapsDroplet.getUsername(), imapsDroplet);
-            return imapsDroplet;
-        } else {
-            StringBuilder sb = new StringBuilder("Unknown protocol \"");
-            sb.append(protocol);
-            sb.append("\"");
-            throw new DropletCreationException(sb.toString());
+        synchronized (this) {
+            // Determine what type of droplet to build based on the given
+            // protocol.
+            final String protocol = emailSettings.getProtocol();
+            if (protocol.equalsIgnoreCase("imap")
+                    || protocol.equalsIgnoreCase("imaps")) {
+                // IMAP(S) protocol
+                final ImapDroplet imapsDroplet = ImapDroplet
+                        .create(emailSettings);
+
+                // Disallow overwriting existing mappings.
+                if (droplets.containsKey(emailSettings.getUsername())) {
+                    throw new DropletCreationException(
+                            "Duplicate AbstractEmailDroplet for "
+                                    + emailSettings.getUsername());
+                }
+
+                droplets.put(imapsDroplet.getUsername(), imapsDroplet);
+                return imapsDroplet;
+            } else {
+                // Unknown/unsupported protocols.
+                final StringBuilder sb = new StringBuilder(
+                        "Unknown protocol \"");
+                sb.append(protocol);
+                sb.append("\"");
+                throw new DropletCreationException(sb.toString());
+            }
         }
     }
 
-    public synchronized void addEmailDroplet(final AbstractEmailDroplet droplet) {
+    public void addEmailDroplet(final AbstractEmailDroplet droplet)
+            throws DropletCreationException {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        droplets.put(droplet.getUsername(), droplet);
+        synchronized (this) {
+            // Disallow overwriting existing mappings.
+            if (droplets.containsKey(droplet.getUsername())) {
+                throw new DropletCreationException(
+                        "Duplicate AbstractEmailDroplet for "
+                                + droplet.getUsername());
+            }
+            droplets.put(droplet.getUsername(), droplet);
+        }
+
     }
 
-    public synchronized void removeEmailDroplet(final String dropletUsername) {
+    /**
+     * Removes and destroys a droplet being managed by the controller.
+     * 
+     * @param dropletUsername
+     *            username identifying the droplet to be destroyed.
+     * @return true if the droplet exists and is destroyed, false otherwise.
+     */
+    public boolean destroyEmailDroplet(final String dropletUsername) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        AbstractEmailDroplet abstractEmailDroplet = droplets.remove(dropletUsername);
-        if (abstractEmailDroplet != null) {
-            abstractEmailDroplet.destroy();
+        synchronized (this) {
+            final AbstractEmailDroplet abstractEmailDroplet = droplets
+                    .remove(dropletUsername);
+            if (abstractEmailDroplet != null) {
+                abstractEmailDroplet.destroy();
+                return true;
+            }
         }
+        return false;
     }
 
-    public synchronized DropletModel getDropletModel(
-            final String dropletUsername) {
+    /**
+     * TODO: Replace with callback mechanism.
+     * 
+     * @param dropletUsername
+     * @return
+     */
+    public DropletModel getDropletModel(final String dropletUsername) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        AbstractEmailDroplet droplet = droplets.get(dropletUsername);
-        if (droplet == null) {
-            return null;
-        }
-        List<RippleModel> contentModel =
-            new LinkedList<RippleModel>();
-        for (EmailRipple ripple : droplet.getRipples()) {
-            contentModel.add(new RippleModel(ripple.getId(), ripple
-                    .getSender(), ripple.getSubject(), ripple.getContent(),
-                    ripple.getEpochSentTime()));
-        }
-        return new DropletModel(droplet.getUsername(), contentModel.iterator());
-    }
-
-    public synchronized Iterable<DropletModel> getAllDropletModels() {
-        assert (!SwingUtilities.isEventDispatchThread());
-
-        List<DropletModel> allModels = new LinkedList<DropletModel>();
-        for (AbstractEmailDroplet droplet : droplets.values()) {
-            List<RippleModel> contentModel =
-                new LinkedList<RippleModel>();
-            for (EmailRipple ripple : droplet.getRipples()) {
+        synchronized (this) {
+            final AbstractEmailDroplet droplet = droplets.get(dropletUsername);
+            if (droplet == null) {
+                return null;
+            }
+            final List<RippleModel> contentModel = new LinkedList<RippleModel>();
+            for (final EmailRipple ripple : droplet.getRipples()) {
                 contentModel.add(new RippleModel(ripple.getId(), ripple
                         .getSender(), ripple.getSubject(), ripple.getContent(),
                         ripple.getEpochSentTime()));
             }
-            allModels
-                    .add(new DropletModel(droplet.getUsername(), contentModel));
+            return new DropletModel(droplet.getUsername(), contentModel);
         }
-        return allModels;
+    }
+
+    /**
+     * TODO: replace with callback mechanism.
+     * 
+     * @return
+     */
+    public Iterable<DropletModel> getAllDropletModels() {
+        assert (!SwingUtilities.isEventDispatchThread());
+
+        synchronized (this) {
+            final List<DropletModel> allModels = new LinkedList<DropletModel>();
+            for (final AbstractEmailDroplet droplet : droplets.values()) {
+                final List<RippleModel> contentModel = new LinkedList<RippleModel>();
+                for (final EmailRipple ripple : droplet.getRipples()) {
+                    contentModel.add(new RippleModel(ripple.getId(), ripple
+                            .getSender(), ripple.getSubject(), ripple
+                            .getContent(), ripple.getEpochSentTime()));
+                }
+                allModels.add(new DropletModel(droplet.getUsername(),
+                        contentModel));
+            }
+            return allModels;
+        }
     }
 
 }
