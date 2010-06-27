@@ -21,6 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,39 +96,45 @@ public final class ConfigurationController {
         if (homeDirectory == null) {
             return false;
         }
+
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
         configFile = new File(configFile, TIDALRC);
         if (!configFile.exists()) {
             return false;
         }
-        return loadMainSettings(configFile);
+
+        boolean result = false;
+        Reader fr = null;
+        try {
+            fr = new FileReader(configFile);
+            result = loadMainSettings(fr);
+        } catch (final FileNotFoundException e) {
+            LOGGER.error("Expecting file to exist.", e);
+        } finally {
+            IOUtils.closeQuietly(fr);
+        }
+        return result;
     }
 
     /**
      * Load the given config file. If the file doesn't exist, the current loaded
      * config is unchanged.
      * 
-     * @param file
+     * @param reader
      * @return true if the settings can be loaded, false otherwise.
      */
-    public boolean loadMainSettings(final File file) {
+    public boolean loadMainSettings(final Reader reader) {
         assert (!SwingUtilities.isEventDispatchThread());
 
         boolean result = false;
-        FileReader fr = null;
         try {
-            fr = new FileReader(file);
             final Yaml yaml = new Yaml();
-            config = (Configuration) yaml.load(fr);
+            config = (Configuration) yaml.load(reader);
             if (config != null) {
                 result = true;
             }
-        } catch (final FileNotFoundException e) {
-            LOGGER.error("File not found", e);
         } catch (final ClassCastException e) {
             LOGGER.error("Incorrect config file", e);
-        } finally {
-            IOUtils.closeQuietly(fr);
         }
         return result;
     }
@@ -150,19 +158,33 @@ public final class ConfigurationController {
             LOGGER.error("No home directory");
             return;
         }
+
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
         configFile = new File(configFile, TIDALRC);
-        saveMainSettings(configFile);
+        // mkdirs first because if the directory does not exist, then file
+        // creation fails.
+        configFile.mkdirs();
+
+        Writer fw = null;
+        try {
+            fw = new FileWriter(configFile);
+            saveMainSettings(fw);
+        } catch (final IOException e) {
+            LOGGER.error("Cannot write program settings.", e);
+        } finally {
+            IOUtils.closeQuietly(fw);
+        }
     }
 
     /**
-     * Save the configuration file to the given file path.
+     * Outputs the main configuration to the given writer.
      * 
-     * @param file
+     * @param writer
+     *            Writer to output to.
      * @throws UnsecuredException
      *             if no authorization key is set.
      */
-    public void saveMainSettings(final File file) throws UnsecuredException {
+    public void saveMainSettings(final Writer writer) throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
 
         if (!configurationUnlocked) {
@@ -174,19 +196,8 @@ public final class ConfigurationController {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
-        FileWriter fw = null;
-        try {
-            // mkdir first because if the directory does not exist, then file
-            // creation fails.
-            file.getParentFile().mkdir();
-            fw = new FileWriter(file);
-            final Yaml yaml = new Yaml();
-            yaml.dump(config, fw);
-        } catch (final IOException e) {
-            LOGGER.error("Cannot write config", e);
-        } finally {
-            IOUtils.closeQuietly(fw);
-        }
+        final Yaml yaml = new Yaml();
+        yaml.dump(config, writer);
     }
 
     /**
@@ -204,19 +215,31 @@ public final class ConfigurationController {
             LOGGER.error("No home directory");
             return;
         }
+
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
         configFile = new File(configFile, DROPLETSRC);
-        saveDropletSettings(configFile);
+        configFile.mkdirs();
+
+        Writer fw = null;
+        try {
+            fw = new FileWriter(configFile);
+            saveDropletSettings(fw);
+        } catch (final IOException e) {
+            LOGGER.error("Cannot save droplet settings.", e);
+        } finally {
+            IOUtils.closeQuietly(fw);
+        }
     }
 
     /**
      * Saves all current Droplet settings to the given file.
      * 
-     * @param file
+     * @param writer
      * @throws UnsecuredException
      *             if there is no authorization key
      */
-    public void saveDropletSettings(final File file) throws UnsecuredException {
+    public void saveDropletSettings(final Writer writer)
+            throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
 
         if (!configurationUnlocked) {
@@ -228,30 +251,22 @@ public final class ConfigurationController {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(file);
-            final Yaml yaml = new Yaml(new Dumper(
-                    new DropletsConfigurationsRepresenter(encryptor),
-                    new DumperOptions()));
+        final Yaml yaml = new Yaml(new Dumper(
+                new DropletsConfigurationsRepresenter(encryptor),
+                new DumperOptions()));
 
-            final List<Object> allSettings = new LinkedList<Object>();
-            for (final Configurable instance : configurableInstances) {
-                allSettings.add(instance.getSettings());
-            }
-
-            yaml.dumpAll(allSettings.iterator(), fw);
-        } catch (final IOException e) {
-            LOGGER.error("Cannot write droplet settings", e);
-        } finally {
-            IOUtils.closeQuietly(fw);
+        final List<Object> allSettings = new LinkedList<Object>();
+        for (final Configurable instance : configurableInstances) {
+            allSettings.add(instance.getSettings());
         }
+
+        yaml.dumpAll(allSettings.iterator(), writer);
     }
 
     /**
      * Load all droplet settings from the default droplets configuration file.
      * 
-     * @return settings if the file was loaded, {@code null} otherwise.
+     * @return settings if the file was loaded, empty iteration otherwise.
      */
     public Iterable<Object> loadDropletSettings() {
         assert (!SwingUtilities.isEventDispatchThread());
@@ -259,35 +274,41 @@ public final class ConfigurationController {
         final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
             LOGGER.error("No home directory");
-            return null;
+            return new LinkedList<Object>();
         }
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
         configFile = new File(configFile, DROPLETSRC);
-        return loadDropletSettings(configFile);
+
+        Iterable<Object> result = null;
+        Reader fr = null;
+        try {
+            fr = new FileReader(configFile);
+            result = loadDropletSettings(fr);
+        } catch (final FileNotFoundException e) {
+            LOGGER.error("Expecting file to exist.", e);
+            result = new LinkedList<Object>();
+        } finally {
+            IOUtils.closeQuietly(fr);
+        }
+
+        return result;
     }
 
     /**
      * Load all droplet settings from the given file.
      * 
-     * @param file
+     * @param reader
      * @return droplet settings if the file was loaded, {@code null} otherwise.
      */
-    public Iterable<Object> loadDropletSettings(final File file) {
+    public Iterable<Object> loadDropletSettings(final Reader reader) {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        FileReader fr = null;
         Iterable<Object> allSettings = null;
-        try {
-            fr = new FileReader(file);
 
-            final Yaml yaml = new Yaml(new Loader(
-                    new DropletsConfigurationsConstructor(encryptor)));
-            allSettings = yaml.loadAll(fr);
-        } catch (final FileNotFoundException e) {
-            LOGGER.error("File not found", e);
-        } finally {
-            IOUtils.closeQuietly(fr);
-        }
+        final Yaml yaml = new Yaml(new Loader(
+                new DropletsConfigurationsConstructor(encryptor)));
+        allSettings = yaml.loadAll(reader);
+
         return allSettings;
     }
 
