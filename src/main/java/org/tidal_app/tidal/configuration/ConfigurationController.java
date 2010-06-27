@@ -45,7 +45,7 @@ import org.yaml.snakeyaml.Yaml;
  * 
  * @author Douglas Teoh
  */
-public class ConfigurationController {
+public final class ConfigurationController {
 
     /** Default file name for droplet settings */
     private static final String DROPLETSRC = "dropletsrc";
@@ -60,7 +60,7 @@ public class ConfigurationController {
             .getLogger(ConfigurationController.class);
 
     /** Contains master configuration information */
-    private transient Configuration config;
+    private Configuration config;
     /** Symmetric key cryptography */
     private final StrongTextEncryptor encryptor;
 
