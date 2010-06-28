@@ -141,7 +141,8 @@ public final class ConfigurationController {
 
     /**
      * Saves the main program's configuration settings to the default
-     * configuration file.
+     * configuration file. Settings are only saved if the settings are unlocked
+     * by the user.
      * 
      * @throws UnsecuredException
      *             if no authorization key is set.
@@ -187,10 +188,6 @@ public final class ConfigurationController {
     public void saveMainSettings(final Writer writer) throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        if (!configurationUnlocked) {
-            return;
-        }
-
         if (config.getAuthKeyDigest().isEmpty()
                 || config.getAuthKeyDigest() == null) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
@@ -201,9 +198,11 @@ public final class ConfigurationController {
     }
 
     /**
-     * Saves the user's droplet settings in the default location.
+     * Saves the user's droplet settings in the default location. Settings are
+     * only saved if the settings are unlocked by the user.
      * 
      * @throws UnsecuredException
+     *             if no authorization key is set.
      */
     public void saveDropletSettings() throws UnsecuredException {
         if (!configurationUnlocked) {
@@ -236,15 +235,11 @@ public final class ConfigurationController {
      * 
      * @param writer
      * @throws UnsecuredException
-     *             if there is no authorization key
+     *             if no authorization key is set.
      */
     public void saveDropletSettings(final Writer writer)
             throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
-
-        if (!configurationUnlocked) {
-            return;
-        }
 
         if (config.getAuthKeyDigest().isEmpty()
                 || config.getAuthKeyDigest() == null) {
@@ -335,6 +330,7 @@ public final class ConfigurationController {
      * 
      * @param newAuthKey
      * @throws UnsecuredException
+     *             if no authorization key is set.
      */
     public void changeAuthorizationKey(final String newAuthKey)
             throws UnsecuredException {
