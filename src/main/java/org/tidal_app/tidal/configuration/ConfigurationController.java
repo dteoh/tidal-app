@@ -117,10 +117,10 @@ public final class ConfigurationController {
     }
 
     /**
-     * Load the given config file. If the file doesn't exist, the current loaded
-     * config is unchanged.
+     * Load main program settings from the given reader.
      * 
      * @param reader
+     *            Input reader.
      * @return true if the settings can be loaded, false otherwise.
      */
     public boolean loadMainSettings(final Reader reader) {
@@ -131,7 +131,10 @@ public final class ConfigurationController {
             final Yaml yaml = new Yaml();
             config = (Configuration) yaml.load(reader);
             if (config != null) {
-                result = true;
+                if (config.getAuthKeyDigest() != null
+                        && !config.getAuthKeyDigest().isEmpty()) {
+                    result = true;
+                }
             }
         } catch (final ClassCastException e) {
             LOGGER.error("Incorrect config file", e);
@@ -188,8 +191,8 @@ public final class ConfigurationController {
     public void saveMainSettings(final Writer writer) throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        if (config.getAuthKeyDigest().isEmpty()
-                || config.getAuthKeyDigest() == null) {
+        if (config.getAuthKeyDigest() == null
+                || config.getAuthKeyDigest().isEmpty()) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
@@ -231,18 +234,19 @@ public final class ConfigurationController {
     }
 
     /**
-     * Saves all current Droplet settings to the given file.
+     * Outputs all current Droplet settings to the given writer.
      * 
      * @param writer
+     *            Output writer.
      * @throws UnsecuredException
-     *             if no authorization key is set.
+     *             If no authorization key is set.
      */
     public void saveDropletSettings(final Writer writer)
             throws UnsecuredException {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        if (config.getAuthKeyDigest().isEmpty()
-                || config.getAuthKeyDigest() == null) {
+        if (config.getAuthKeyDigest() == null
+                || config.getAuthKeyDigest().isEmpty()) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
@@ -348,13 +352,51 @@ public final class ConfigurationController {
         configurationUnlocked = true;
     }
 
-    public void addConfigurable(final Configurable instance) {
+    /**
+     * Add a Configurable object for tracking by the controller. The object is
+     * assumed to be a droplet, as such, the object will be serialized to the
+     * droplet settings file.
+     * 
+     * @param instance
+     *            The object to track.
+     * @return true if the object is being tracked. false if the object is null
+     *         or if the object is already being tracked (some other object is
+     *         equal to the given object).
+     */
+    public boolean addConfigurable(final Configurable instance) {
         assert (!SwingUtilities.isEventDispatchThread());
+
+        if (instance == null) {
+            return false;
+        }
+
+        if (configurableInstances.contains(instance)) {
+            return false;
+        }
+
         configurableInstances.add(instance);
+        return true;
     }
 
-    public void removeConfigurable(final Configurable instance) {
+    /**
+     * Remove a Configurable object from the controller.
+     * 
+     * @param instance
+     *            The object to remove.
+     * @return true if the object was removed. false if the given object is null
+     *         or if it is not being tracked by the controller.
+     */
+    public boolean removeConfigurable(final Configurable instance) {
         assert (!SwingUtilities.isEventDispatchThread());
+
+        if (instance == null) {
+            return false;
+        }
+
+        if (!configurableInstances.contains(instance)) {
+            return false;
+        }
         configurableInstances.remove(instance);
+        return true;
     }
 }
