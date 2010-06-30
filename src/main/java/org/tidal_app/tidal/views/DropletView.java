@@ -111,12 +111,12 @@ public class DropletView extends DropShadowPanel {
     public void setDropletModel(final DropletModel model) {
         assert SwingUtilities.isEventDispatchThread();
 
-        nameLabel.setText(model.getDropletName().toUpperCase());
-
-        ripplesPanel.removeAll();
-        dropletModel = model;
-
         if (model != null) {
+            nameLabel.setText(model.getDropletName().toUpperCase());
+
+            ripplesPanel.removeAll();
+            dropletModel = model;
+
             for (final RippleModel contentModel : model.getDropletContents()) {
                 ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
             }
