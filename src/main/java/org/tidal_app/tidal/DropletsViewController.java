@@ -18,6 +18,8 @@ package org.tidal_app.tidal;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComponent;
@@ -167,7 +169,9 @@ public class DropletsViewController {
     public void updateDropletViews(final DropletModel... dropletModels) {
         assert (SwingUtilities.isEventDispatchThread());
 
-        updateDropletViews(dropletModels);
+        final List<DropletModel> models = new LinkedList<DropletModel>();
+
+        updateDropletViews(models);
     }
 
     public void updateDropletViews(final Iterable<DropletModel> dropletModels) {
