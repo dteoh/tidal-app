@@ -93,8 +93,8 @@ public class ImapDropletTests {
     @Test
     public void testCreate3() {
         try {
-            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
-                    "imap", settings.getUsername(), settings.getPassword());
+            ImapDroplet.create(settings.getHost(), "imap", settings
+                    .getUsername(), settings.getPassword());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
         }
@@ -106,8 +106,8 @@ public class ImapDropletTests {
     @Test
     public void testCreate4() {
         try {
-            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
-                    "imaps", settings.getUsername(), settings.getPassword());
+            ImapDroplet.create(settings.getHost(), "imaps", settings
+                    .getUsername(), settings.getPassword());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
         }
@@ -119,8 +119,8 @@ public class ImapDropletTests {
     @Test
     public void testCreate5() {
         try {
-            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
-                    "pop3", settings.getUsername(), settings.getPassword());
+            ImapDroplet.create(settings.getHost(), "pop3", settings
+                    .getUsername(), settings.getPassword());
             fail("Expecting DropletCreationException.");
         } catch (final DropletCreationException e) {
             // Pass.
