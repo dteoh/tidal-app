@@ -186,4 +186,144 @@ public class RippleModelTests {
         assertTrue(model.compareTo(null) < 0);
     }
 
+    /**
+     * Reflexive property.
+     */
+    @Test
+    public void testEquals1() {
+        assertTrue(model.equals(model));
+    }
+
+    /**
+     * Symmetric property.
+     */
+    @Test
+    public void testEquals2() {
+        final RippleModel model2 = new RippleModel(id, origin, subject,
+                content, received);
+        assertTrue(model.equals(model2));
+        assertTrue(model2.equals(model));
+    }
+
+    /**
+     * Transitive property.
+     */
+    @Test
+    public void testEquals3() {
+        final RippleModel model2 = new RippleModel(id, origin, subject,
+                content, received);
+        final RippleModel model3 = new RippleModel(id, origin, subject,
+                content, received);
+
+        assertTrue(model.equals(model2));
+        assertTrue(model2.equals(model3));
+        assertTrue(model.equals(model3));
+    }
+
+    /**
+     * Inequality against null.
+     */
+    @Test
+    public void testEquals4() {
+        assertFalse(model.equals(null));
+    }
+
+    /**
+     * Incompatible class.
+     */
+    @Test
+    public void testEquals5() {
+        assertFalse(model.equals("string"));
+    }
+
+    /**
+     * Null content.
+     */
+    @Test
+    public void testEquals6() {
+        final RippleModel model2 = new RippleModel(id, origin, subject, null,
+                received);
+        assertFalse(model.equals(model2));
+    }
+
+    /**
+     * Different content.
+     */
+    @Test
+    public void testEquals7() {
+        final RippleModel model2 = new RippleModel(id, origin, subject, "Blah",
+                received);
+        assertFalse(model.equals(model2));
+    }
+
+    /**
+     * Null ID.
+     */
+    @Test
+    public void testEquals8() {
+        final RippleModel model2 = new RippleModel(null, origin, subject,
+                content, received);
+        assertFalse(model.equals(model2));
+    }
+
+    /**
+     * Different ID.
+     */
+    @Test
+    public void testEquals9() {
+        final RippleModel model2 = new RippleModel("Blah", origin, subject,
+                content, received);
+        assertFalse(model.equals(model2));
+    }
+
+    /**
+     * Null origin.
+     */
+    @Test
+    public void testEquals10() {
+        final RippleModel model2 = new RippleModel(id, null, subject, content,
+                received);
+        assertFalse(model.equals(model2));
+    }
+
+    /**
+     * Different origin.
+     */
+    @Test
+    public void testEquals11() {
+        final RippleModel model2 = new RippleModel(id, "Blah", subject,
+                content, received);
+        assertFalse(model.equals(model2));
+    }
+
+    /**
+     * Different received.
+     */
+    @Test
+    public void testEquals12() {
+        final RippleModel model2 = new RippleModel(id, origin, subject,
+                content, received + 1);
+        assertFalse(model.equals(model2));
+    }
+
+    /**
+     * Null subject.
+     */
+    @Test
+    public void testEquals13() {
+        final RippleModel model2 = new RippleModel(id, origin, null, content,
+                received);
+        assertFalse(model.equals(model2));
+    }
+
+    /**
+     * Different subject.
+     */
+    @Test
+    public void testEquals14() {
+        final RippleModel model2 = new RippleModel(id, origin, "Blah", content,
+                received);
+        assertFalse(model.equals(model2));
+    }
+
 }
