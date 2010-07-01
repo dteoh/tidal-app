@@ -85,31 +85,6 @@ public class DropletModel {
      *            Contents of the view model.
      */
     public DropletModel(final String dropletName,
-            final Iterator<RippleModel> dropletContents) {
-        this.dropletName = dropletName;
-
-        final List<RippleModel> models = new ArrayList<RippleModel>();
-        while (dropletContents.hasNext()) {
-            models.add(dropletContents.next());
-        }
-        Collections.sort(models);
-
-        final ImmutableList.Builder<RippleModel> modelBuilder = ImmutableList
-                .builder();
-        modelBuilder.addAll(models);
-
-        this.dropletContents = modelBuilder.build();
-    }
-
-    /**
-     * Creates a new droplet view model.
-     * 
-     * @param dropletName
-     *            Name of the droplet.
-     * @param dropletContents
-     *            Contents of the view model.
-     */
-    public DropletModel(final String dropletName,
             final Iterable<RippleModel> dropletContents) {
         this.dropletName = dropletName;
 
@@ -198,7 +173,8 @@ public class DropletModel {
      * 
      * @param other
      *            model to merge with.
-     * @return a new droplet model merged with the given model.
+     * @return a new droplet model merged with the given model. Does not return
+     *         a new model if other is null.
      */
     public DropletModel mergeWith(final DropletModel other) {
         if (other != null) {
