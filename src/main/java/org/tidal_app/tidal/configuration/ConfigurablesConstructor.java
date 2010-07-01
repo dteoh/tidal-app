@@ -31,11 +31,11 @@ import org.yaml.snakeyaml.nodes.Tag;
  * 
  * @author Douglas Teoh
  */
-public class DropletsConfigurationsConstructor extends Constructor {
+public final class ConfigurablesConstructor extends Constructor {
 
     private final StrongTextEncryptor decryptor;
 
-    public DropletsConfigurationsConstructor(final StrongTextEncryptor decryptor) {
+    public ConfigurablesConstructor(final StrongTextEncryptor decryptor) {
         super();
         this.decryptor = decryptor;
         yamlConstructors.put(new Tag("!email"), new ConstructEmailSettings());
@@ -46,7 +46,7 @@ public class DropletsConfigurationsConstructor extends Constructor {
      * 
      * @author Douglas Teoh
      */
-    private class ConstructEmailSettings extends AbstractConstruct {
+    private final class ConstructEmailSettings extends AbstractConstruct {
         /*
          * (non-Javadoc)
          * 

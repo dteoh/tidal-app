@@ -22,16 +22,16 @@ package org.tidal_app.tidal.configuration.models;
  * 
  * @author Douglas Teoh
  */
-public class Configuration {
+public final class Configuration {
 
-    private String authKeyDigest;
+    private final String authKeyDigest;
+
+    public Configuration(final String authKeyDigest) {
+        this.authKeyDigest = authKeyDigest;
+    }
 
     public String getAuthKeyDigest() {
         return authKeyDigest;
-    }
-
-    public void setAuthKeyDigest(final String authKeyDigest) {
-        this.authKeyDigest = authKeyDigest;
     }
 
     @Override

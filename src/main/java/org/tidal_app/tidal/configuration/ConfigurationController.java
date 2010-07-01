@@ -35,6 +35,7 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tidal_app.tidal.configuration.models.Configurable;
 import org.tidal_app.tidal.configuration.models.Configuration;
 import org.tidal_app.tidal.exceptions.UnsecuredException;
 import org.yaml.snakeyaml.Dumper;
@@ -76,7 +77,6 @@ public final class ConfigurationController {
     public ConfigurationController() {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        config = new Configuration();
         encryptor = new StrongTextEncryptor();
         configurableInstances = new HashSet<Configurable>();
 
@@ -128,7 +128,8 @@ public final class ConfigurationController {
 
         boolean result = false;
         try {
-            final Yaml yaml = new Yaml();
+            final Yaml yaml = new Yaml(new Loader(
+                    new ConfigurationConstructor()));
             config = (Configuration) yaml.load(reader);
             if (config != null) {
                 if (config.getAuthKeyDigest() != null
@@ -196,7 +197,8 @@ public final class ConfigurationController {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
-        final Yaml yaml = new Yaml();
+        final Yaml yaml = new Yaml(new Dumper(new ConfigurationRepresenter(),
+                new DumperOptions()));
         yaml.dump(config, writer);
     }
 
@@ -250,9 +252,8 @@ public final class ConfigurationController {
             throw new UnsecuredException("Authorisation key cannot be blank.");
         }
 
-        final Yaml yaml = new Yaml(new Dumper(
-                new DropletsConfigurationsRepresenter(encryptor),
-                new DumperOptions()));
+        final Yaml yaml = new Yaml(new Dumper(new ConfigurablesRepresenter(
+                encryptor), new DumperOptions()));
 
         final List<Object> allSettings = new LinkedList<Object>();
         for (final Configurable instance : configurableInstances) {
@@ -304,8 +305,8 @@ public final class ConfigurationController {
 
         Iterable<Object> allSettings = null;
 
-        final Yaml yaml = new Yaml(new Loader(
-                new DropletsConfigurationsConstructor(encryptor)));
+        final Yaml yaml = new Yaml(new Loader(new ConfigurablesConstructor(
+                encryptor)));
         allSettings = yaml.loadAll(reader);
 
         return allSettings;
@@ -345,7 +346,8 @@ public final class ConfigurationController {
         }
 
         final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
-        config.setAuthKeyDigest(passwordEncryptor.encryptPassword(newAuthKey));
+        config = new Configuration(passwordEncryptor
+                .encryptPassword(newAuthKey));
 
         encryptor.setPassword(newAuthKey);
 

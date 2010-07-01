@@ -16,7 +16,7 @@
 
 package org.tidal_app.tidal.sources;
 
-import org.tidal_app.tidal.configuration.Configurable;
+import org.tidal_app.tidal.configuration.models.Configurable;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 
 /**

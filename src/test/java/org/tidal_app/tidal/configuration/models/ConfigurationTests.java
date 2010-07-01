@@ -18,9 +18,9 @@ package org.tidal_app.tidal.configuration.models;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -33,25 +33,30 @@ public class ConfigurationTests {
 
     private Configuration config;
 
-    @Before
-    public void setUp() {
-        config = new Configuration();
-    }
-
     @After
     public void tearDown() {
         config = null;
     }
 
     @Test
-    public void testGetAuthKeyDigest() {
+    public void testGetAuthKeyDigest1() {
+        config = new Configuration(null);
         assertNull(config.getAuthKeyDigest());
     }
 
     @Test
-    public void testSetAuthKeyDigest() {
-        config.setAuthKeyDigest("TESTKEY");
+    public void testGetAuthKeyDigest2() {
+        config = new Configuration("TESTKEY");
         assertEquals("TESTKEY", config.getAuthKeyDigest());
+    }
+
+    /**
+     * Test the contract for object equals.
+     */
+    @Test
+    public void equalsContract() {
+        EqualsVerifier.forClass(Configuration.class).verify();
+
     }
 
 }

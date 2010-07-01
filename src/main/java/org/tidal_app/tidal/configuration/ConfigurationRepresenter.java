@@ -19,34 +19,27 @@ package org.tidal_app.tidal.configuration;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.jasypt.util.text.StrongTextEncryptor;
-import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.configuration.models.Configuration;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * This class contains all custom representers for the various Droplets.
+ * Custom representer for the main program's configuration file.
  * 
  * @author Douglas Teoh
+ * 
  */
-public class DropletsConfigurationsRepresenter extends Representer {
+public final class ConfigurationRepresenter extends Representer {
 
-    private final StrongTextEncryptor encryptor;
-
-    public DropletsConfigurationsRepresenter(final StrongTextEncryptor encryptor) {
+    public ConfigurationRepresenter() {
         super();
-        this.encryptor = encryptor;
-        representers.put(EmailSettings.class, new RepresentEmailSettings());
+        representers.put(Configuration.class, new RepresentConfiguration());
     }
 
-    /**
-     * Used to serialize an {@link EmailSettings} object.
-     * 
-     * @author Douglas Teoh
-     */
-    private class RepresentEmailSettings implements Represent {
+    private final class RepresentConfiguration implements Represent {
+
         /*
          * (non-Javadoc)
          * 
@@ -57,14 +50,12 @@ public class DropletsConfigurationsRepresenter extends Representer {
         @SuppressWarnings("unchecked")
         @Override
         public Node representData(final Object obj) {
-            final EmailSettings settings = (EmailSettings) obj;
+            final Configuration config = (Configuration) obj;
             final Map enc = new TreeMap();
-            enc.put("host", settings.getHost());
-            enc.put("prot", settings.getProtocol());
-            enc.put("user", encryptor.encrypt(settings.getUsername()));
-            enc.put("pass", encryptor.encrypt(settings.getPassword()));
-            return representMapping(new Tag("!email"), enc, true);
+            enc.put("digest", config.getAuthKeyDigest());
+            return representMapping(new Tag("!config"), enc, true);
         }
+
     }
 
 }

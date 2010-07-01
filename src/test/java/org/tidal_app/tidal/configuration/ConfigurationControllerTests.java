@@ -19,10 +19,11 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.tidal_app.tidal.configuration.Configurable;
-import org.tidal_app.tidal.configuration.ConfigurationController;
+import org.tidal_app.tidal.configuration.models.Configurable;
 import org.tidal_app.tidal.configuration.models.Configuration;
 import org.tidal_app.tidal.exceptions.UnsecuredException;
+import org.yaml.snakeyaml.Dumper;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 /*
@@ -54,8 +55,7 @@ public class ConfigurationControllerTests {
 
     @Before
     public void setUp() {
-        config = new Configuration();
-        config.setAuthKeyDigest("digest");
+        config = new Configuration("digest");
 
         controller = new ConfigurationController();
     }
@@ -76,7 +76,8 @@ public class ConfigurationControllerTests {
         final PipedReader pr = new PipedReader();
         final PipedWriter pw = new PipedWriter(pr);
 
-        final Yaml yaml = new Yaml();
+        final Yaml yaml = new Yaml(new Dumper(new ConfigurationRepresenter(),
+                new DumperOptions()));
         yaml.dump(config, pw);
         pw.close();
 
@@ -118,8 +119,9 @@ public class ConfigurationControllerTests {
         final PipedReader pr = new PipedReader();
         final PipedWriter pw = new PipedWriter(pr);
 
-        final Yaml yaml = new Yaml();
-        config.setAuthKeyDigest(null);
+        final Yaml yaml = new Yaml(new Dumper(new ConfigurationRepresenter(),
+                new DumperOptions()));
+        config = new Configuration(null);
         yaml.dump(config, pw);
         pw.close();
 
@@ -137,8 +139,9 @@ public class ConfigurationControllerTests {
         final PipedReader pr = new PipedReader();
         final PipedWriter pw = new PipedWriter(pr);
 
-        final Yaml yaml = new Yaml();
-        config.setAuthKeyDigest("");
+        final Yaml yaml = new Yaml(new Dumper(new ConfigurationRepresenter(),
+                new DumperOptions()));
+        config = new Configuration("");
         yaml.dump(config, pw);
         pw.close();
 
@@ -176,7 +179,8 @@ public class ConfigurationControllerTests {
         final StringWriter swExpected = new StringWriter();
         final StringWriter swActual = new StringWriter();
 
-        final Yaml yaml = new Yaml();
+        final Yaml yaml = new Yaml(new Dumper(new ConfigurationRepresenter(),
+                new DumperOptions()));
         yaml.dump(config, swExpected);
 
         controller.saveMainSettings(swActual);
@@ -190,7 +194,7 @@ public class ConfigurationControllerTests {
      */
     @Test
     public void testSaveMainSettingsWriter2() {
-        config.setAuthKeyDigest("");
+        config = new Configuration("");
         field("config").ofType(Configuration.class).in(controller).set(config);
 
         final StringWriter swActual = new StringWriter();
@@ -208,7 +212,7 @@ public class ConfigurationControllerTests {
      */
     @Test
     public void testSaveMainSettingsWriter3() {
-        config.setAuthKeyDigest(null);
+        config = new Configuration(null);
         field("config").ofType(Configuration.class).in(controller).set(config);
 
         final StringWriter swActual = new StringWriter();
@@ -411,7 +415,7 @@ public class ConfigurationControllerTests {
      */
     @Test
     public void testSaveDropletSettingsWriter4() {
-        config.setAuthKeyDigest("");
+        config = new Configuration("");
         field("config").ofType(Configuration.class).in(controller).set(config);
 
         final StringWriter sw = new StringWriter();
@@ -429,7 +433,7 @@ public class ConfigurationControllerTests {
      */
     @Test
     public void testSaveDropletSettingsWriter5() {
-        config.setAuthKeyDigest(null);
+        config = new Configuration(null);
         field("config").ofType(Configuration.class).in(controller).set(config);
 
         final StringWriter sw = new StringWriter();
@@ -447,7 +451,7 @@ public class ConfigurationControllerTests {
      */
     @Test
     public void testSaveDropletSettingsWriter6() {
-        config.setAuthKeyDigest("");
+        config = new Configuration("");
         field("config").ofType(Configuration.class).in(controller).set(config);
 
         final Configurable mockConf = mock(Configurable.class);
@@ -474,7 +478,7 @@ public class ConfigurationControllerTests {
      */
     @Test
     public void testSaveDropletSettingsWriter7() {
-        config.setAuthKeyDigest(null);
+        config = new Configuration(null);
         field("config").ofType(Configuration.class).in(controller).set(config);
 
         final Configurable mockConf = mock(Configurable.class);
