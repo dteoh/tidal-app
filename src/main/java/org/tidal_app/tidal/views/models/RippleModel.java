@@ -16,7 +16,7 @@
 
 package org.tidal_app.tidal.views.models;
 
-public class RippleModel implements Comparable<RippleModel> {
+public final class RippleModel implements Comparable<RippleModel> {; 
 
     private final Object id;
     private final String origin;
