@@ -21,7 +21,7 @@ package org.tidal_app.tidal.sources.email.models;
  * 
  * @author douglas
  */
-public class EmailRipple implements Comparable<EmailRipple> {
+public final class EmailRipple implements Comparable<EmailRipple> {
 
     private final int id;
     private final String sender;

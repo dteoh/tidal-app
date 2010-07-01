@@ -21,7 +21,7 @@ package org.tidal_app.tidal.sources.email.models;
  * 
  * @author Douglas Teoh
  */
-public class EmailSettings {
+public final class EmailSettings {
 
     private String host;
     private String protocol;
