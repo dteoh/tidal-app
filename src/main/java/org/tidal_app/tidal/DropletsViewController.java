@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal;
 
+import static org.tidal_app.tidal.util.EDTUtils.inEDT;
+
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +71,7 @@ public class DropletsViewController {
     }
 
     public void updateDropletViews(final DropletModel... dropletModels) {
-        assert (SwingUtilities.isEventDispatchThread());
+        inEDT();
 
         final List<DropletModel> models = Lists.newLinkedList();
 
@@ -77,7 +79,7 @@ public class DropletsViewController {
     }
 
     public void updateDropletViews(final Iterable<DropletModel> dropletModels) {
-        assert (SwingUtilities.isEventDispatchThread());
+        inEDT();
 
         for (final DropletModel dropletModel : dropletModels) {
             DropletView dv = dropletViews.get(dropletModel.getDropletName());

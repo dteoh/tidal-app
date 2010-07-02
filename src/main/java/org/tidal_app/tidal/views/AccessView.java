@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.views;
 
+import static org.tidal_app.tidal.util.EDTUtils.inEDT;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -29,7 +31,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -67,7 +68,7 @@ public final class AccessView extends DropShadowPanel {
      * Initialize the view.
      */
     private void initView() {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         setLayout(new MigLayout("", "[grow]", "[]0[]0[]"));
 
@@ -101,7 +102,7 @@ public final class AccessView extends DropShadowPanel {
      * Display the first run screen.
      */
     public void showFirstRun() {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         // TODO externalise this text
         heading.setText("First run");
@@ -167,7 +168,7 @@ public final class AccessView extends DropShadowPanel {
      * Display the login screen.
      */
     public void showLogin() {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         // TODO externalise this text
         heading.setText("Unlock Tidal");
@@ -200,7 +201,7 @@ public final class AccessView extends DropShadowPanel {
      * @param message
      */
     public void displayMessage(final String message) {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
         information.setText(message);
     }
 
@@ -251,7 +252,7 @@ public final class AccessView extends DropShadowPanel {
      * @param password
      */
     private void fireLoginAttemptedEvent(final String password) {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
         final AccessViewEvent event = new AccessViewEvent(this, password);
         for (final AccessViewListener listener : listeners) {
             listener.loginAttempted(event);
@@ -264,7 +265,7 @@ public final class AccessView extends DropShadowPanel {
      * @param password
      */
     private void fireSetupPasswordEvent(final String password) {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
         final AccessViewEvent event = new AccessViewEvent(this, password);
         for (final AccessViewListener listener : listeners) {
             listener.setupPassword(event);

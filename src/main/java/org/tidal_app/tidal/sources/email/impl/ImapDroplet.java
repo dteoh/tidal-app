@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.sources.email.impl;
 
+import static org.tidal_app.tidal.util.EDTUtils.outsideEDT;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +32,6 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
-import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
     public static ImapDroplet create(final EmailSettings settings)
             throws DropletCreationException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         final String protocol = settings.getProtocol();
         if (!"imap".equals(protocol) && !"imaps".equals(protocol)) {
@@ -70,7 +71,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     public static ImapDroplet create(final String host, final String protocol,
             final String username, final String password)
             throws DropletCreationException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (!"imap".equals(protocol) && !"imaps".equals(protocol)) {
             throw new DropletCreationException("Unsupported protocol: "
@@ -97,7 +98,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
     @Override
     public void destroy() {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (inbox != null) {
             try {
@@ -119,7 +120,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
     @Override
     public void init() throws DropletInitException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         final Properties props = System.getProperties();
         final Session session = Session.getInstance(props, null);
@@ -142,7 +143,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
     @Override
     public Iterable<EmailRipple> getRipples() {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (inbox == null) {
             return Lists.newLinkedList();

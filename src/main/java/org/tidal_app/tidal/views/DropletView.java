@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.views;
 
+import static org.tidal_app.tidal.util.EDTUtils.inEDT;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -24,7 +26,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -64,7 +65,7 @@ public final class DropletView extends DropShadowPanel {
      * Initialize the view.
      */
     private void initView() {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         setLayout(new MigLayout("wrap", "[grow 100]", "[]0[]"));
         setOpaque(false);
@@ -109,7 +110,7 @@ public final class DropletView extends DropShadowPanel {
     }
 
     public void setDropletModel(final DropletModel model) {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         if (model != null) {
             nameLabel.setText(model.getDropletName().toUpperCase());
@@ -124,7 +125,7 @@ public final class DropletView extends DropShadowPanel {
     }
 
     public void addDropletModel(final DropletModel model) {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         final Component[] oldRippleViews = ripplesPanel.getComponents();
         int ripple = 0;

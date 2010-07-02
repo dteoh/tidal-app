@@ -30,6 +30,7 @@ import org.fest.swing.fixture.JPanelFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tidal_app.tidal.exceptions.EDTViolationException;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 
@@ -112,7 +113,7 @@ public class DropletViewTests {
     /**
      * Test if the view enforces its creation as being originated from the EDT.
      */
-    @Test(expected = AssertionError.class)
+    @Test(expected = EDTViolationException.class)
     public void testInitView1() {
         new DropletView(model);
     }
@@ -120,7 +121,7 @@ public class DropletViewTests {
     /**
      * Test if we can only set the droplet model from within the EDT.
      */
-    @Test(expected = AssertionError.class)
+    @Test(expected = EDTViolationException.class)
     public void testSetDropletModel1() {
         view.setDropletModel(model);
     }

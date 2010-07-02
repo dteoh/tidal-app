@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.configuration;
 
+import static org.tidal_app.tidal.util.EDTUtils.outsideEDT;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -25,8 +27,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.IOUtils;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -76,7 +76,7 @@ public final class ConfigurationController {
     private boolean configurationUnlocked;
 
     public ConfigurationController() {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         encryptor = new StrongTextEncryptor();
         configurableInstances = Sets.newHashSet();
@@ -91,7 +91,7 @@ public final class ConfigurationController {
      * @return true if the settings can be loaded, false otherwise.
      */
     public boolean loadMainSettings() {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
@@ -125,7 +125,7 @@ public final class ConfigurationController {
      * @return true if the settings can be loaded, false otherwise.
      */
     public boolean loadMainSettings(final Reader reader) {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         boolean result = false;
         try {
@@ -153,7 +153,7 @@ public final class ConfigurationController {
      *             if no authorization key is set.
      */
     public void saveMainSettings() throws UnsecuredException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (!configurationUnlocked) {
             return;
@@ -191,7 +191,7 @@ public final class ConfigurationController {
      *             if no authorization key is set.
      */
     public void saveMainSettings(final Writer writer) throws UnsecuredException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (config.getAuthKeyDigest() == null
                 || config.getAuthKeyDigest().isEmpty()) {
@@ -246,7 +246,7 @@ public final class ConfigurationController {
      */
     public void saveDropletSettings(final Writer writer)
             throws UnsecuredException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (config.getAuthKeyDigest() == null
                 || config.getAuthKeyDigest().isEmpty()) {
@@ -270,7 +270,7 @@ public final class ConfigurationController {
      * @return settings if the file was loaded, empty iteration otherwise.
      */
     public Iterable<Object> loadDropletSettings() {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
@@ -302,7 +302,7 @@ public final class ConfigurationController {
      * @return droplet settings if the file was loaded, {@code null} otherwise.
      */
     public Iterable<Object> loadDropletSettings(final Reader reader) {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         Iterable<Object> allSettings = null;
 
@@ -320,7 +320,7 @@ public final class ConfigurationController {
      * @return true if authorized, false otherwise.
      */
     public boolean authorize(final String authKey) {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
         if (passwordEncryptor.checkPassword(authKey, config.getAuthKeyDigest())) {
@@ -340,7 +340,7 @@ public final class ConfigurationController {
      */
     public void changeAuthorizationKey(final String newAuthKey)
             throws UnsecuredException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (newAuthKey == null || newAuthKey.isEmpty()) {
             throw new UnsecuredException("Authorisation key cannot be blank.");
@@ -367,7 +367,7 @@ public final class ConfigurationController {
      *         equal to the given object).
      */
     public boolean addConfigurable(final Configurable instance) {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (instance == null) {
             return false;
@@ -390,7 +390,7 @@ public final class ConfigurationController {
      *         or if it is not being tracked by the controller.
      */
     public boolean removeConfigurable(final Configurable instance) {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         if (instance == null) {
             return false;

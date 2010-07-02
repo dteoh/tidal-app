@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.views;
 
+import static org.tidal_app.tidal.util.EDTUtils.inEDT;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GradientPaint;
@@ -26,7 +28,6 @@ import java.awt.Paint;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -54,7 +55,7 @@ public final class MenuBarView extends GradientPanel {
      * Initialize the view.
      */
     private void initView() {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         setLayout(new MigLayout());
         // setBackground(MENUBAR_BACKGROUND);

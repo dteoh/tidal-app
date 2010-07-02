@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.views;
 
+import static org.tidal_app.tidal.util.EDTUtils.inEDT;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -27,7 +29,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.text.html.HTMLDocument;
 
 import net.miginfocom.swing.MigLayout;
@@ -82,7 +83,7 @@ public final class RippleView extends JPanel {
      * Initialize the view.
      */
     private void initView() {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         setLayout(new MigLayout("hidemode 1, wrap 3", "[215][grow 100][115]",
                 ""));
@@ -152,7 +153,7 @@ public final class RippleView extends JPanel {
      * Hides or shows the message, depending on previous state.
      */
     private void showHideMessage() {
-        assert SwingUtilities.isEventDispatchThread();
+        inEDT();
 
         if (contents.isVisible()) {
             // Hide the contents of the message

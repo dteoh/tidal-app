@@ -33,6 +33,7 @@ import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.junit.After;
 import org.junit.Test;
+import org.tidal_app.tidal.exceptions.EDTViolationException;
 import org.tidal_app.tidal.views.models.RippleModel;
 
 /**
@@ -215,7 +216,7 @@ public class RippleViewTests {
     /**
      * Test if the view enforces its creation as being originated from the EDT.
      */
-    @Test(expected = AssertionError.class)
+    @Test(expected = EDTViolationException.class)
     public void testInitView1() {
         final String id1 = "ID1";
         final String origin1 = "test@tidal-app.org";

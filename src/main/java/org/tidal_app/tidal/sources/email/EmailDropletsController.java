@@ -16,10 +16,10 @@
 
 package org.tidal_app.tidal.sources.email;
 
+import static org.tidal_app.tidal.util.EDTUtils.outsideEDT;
+
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.SwingUtilities;
 
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
@@ -36,7 +36,7 @@ public class EmailDropletsController {
     private final Map<String, AbstractEmailDroplet> droplets;
 
     public EmailDropletsController() {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         droplets = Maps.newTreeMap();
     }
@@ -53,7 +53,7 @@ public class EmailDropletsController {
      */
     public AbstractEmailDroplet addEmailDroplet(
             final EmailSettings emailSettings) throws DropletCreationException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         synchronized (this) {
             // Determine what type of droplet to build based on the given
@@ -87,7 +87,7 @@ public class EmailDropletsController {
 
     public void addEmailDroplet(final AbstractEmailDroplet droplet)
             throws DropletCreationException {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         synchronized (this) {
             // Disallow overwriting existing mappings.
@@ -109,7 +109,7 @@ public class EmailDropletsController {
      * @return true if the droplet exists and is destroyed, false otherwise.
      */
     public boolean destroyEmailDroplet(final String dropletUsername) {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         synchronized (this) {
             final AbstractEmailDroplet abstractEmailDroplet = droplets
@@ -129,7 +129,7 @@ public class EmailDropletsController {
      * @return
      */
     public DropletModel getDropletModel(final String dropletUsername) {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         synchronized (this) {
             final AbstractEmailDroplet droplet = droplets.get(dropletUsername);
@@ -155,7 +155,7 @@ public class EmailDropletsController {
      * @return
      */
     public Iterable<DropletModel> getAllDropletModels() {
-        assert (!SwingUtilities.isEventDispatchThread());
+        outsideEDT();
 
         synchronized (this) {
             final List<DropletModel> allModels = Lists.newLinkedList();
