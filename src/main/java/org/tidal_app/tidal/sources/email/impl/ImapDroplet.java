@@ -180,6 +180,6 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         } catch (final IOException e) {
             LOGGER.error("Could not download message content", e);
         }
-        return null;
+        return Lists.newLinkedList();
     }
 }
