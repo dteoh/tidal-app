@@ -38,7 +38,7 @@ import org.tidal_app.tidal.views.swing.GradientPanel;
  * 
  * @author Douglas Teoh
  */
-public class DropletView extends DropShadowPanel {
+public final class DropletView extends DropShadowPanel {
 
     /**
      * Models

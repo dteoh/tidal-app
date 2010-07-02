@@ -39,7 +39,7 @@ import org.tidal_app.tidal.views.models.RippleModel;
  * 
  * @author Douglas Teoh
  */
-public class RippleView extends JPanel {
+public final class RippleView extends JPanel {
 
     // Colors for the various message states
     private static final Color SEEN_BG_COLOR = new Color(245, 250, 250);

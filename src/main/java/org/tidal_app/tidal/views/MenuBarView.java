@@ -37,7 +37,7 @@ import org.tidal_app.tidal.views.swing.GradientPanel;
  * 
  * @author Douglas Teoh
  */
-public class MenuBarView extends GradientPanel {
+public final class MenuBarView extends GradientPanel {
 
     /*
      * Colors
