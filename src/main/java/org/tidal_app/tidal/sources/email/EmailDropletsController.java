@@ -18,7 +18,6 @@ package org.tidal_app.tidal.sources.email;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.swing.SwingUtilities;
 
@@ -30,6 +29,7 @@ import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class EmailDropletsController {
 
@@ -38,7 +38,7 @@ public class EmailDropletsController {
     public EmailDropletsController() {
         assert (!SwingUtilities.isEventDispatchThread());
 
-        droplets = new TreeMap<String, AbstractEmailDroplet>();
+        droplets = Maps.newTreeMap();
     }
 
     /**
