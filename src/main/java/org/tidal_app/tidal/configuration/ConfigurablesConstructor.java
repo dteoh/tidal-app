@@ -83,11 +83,8 @@ public final class ConfigurablesConstructor extends Constructor {
                 password = decryptor.decrypt(password);
             }
 
-            final EmailSettings settings = new EmailSettings();
-            settings.setHost(host);
-            settings.setProtocol(protocol);
-            settings.setUsername(username);
-            settings.setPassword(password);
+            final EmailSettings settings = new EmailSettings(host, protocol,
+                    username, password);
             return settings;
         }
 

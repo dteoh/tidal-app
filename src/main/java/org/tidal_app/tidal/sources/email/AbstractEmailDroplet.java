@@ -28,7 +28,7 @@ import org.tidal_app.tidal.sources.email.models.EmailSettings;
  */
 public abstract class AbstractEmailDroplet implements Droplet {
 
-    protected final EmailSettings settings;
+    protected EmailSettings settings;
 
     protected AbstractEmailDroplet(final EmailSettings settings) {
         this.settings = settings;
@@ -36,11 +36,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
 
     protected AbstractEmailDroplet(final String host, final String protocol,
             final String username, final String password) {
-        settings = new EmailSettings();
-        settings.setHost(host);
-        settings.setPassword(password);
-        settings.setProtocol(protocol);
-        settings.setUsername(username);
+        settings = new EmailSettings(host, protocol, username, password);
     }
 
     public String getUsername() {
@@ -48,7 +44,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
     }
 
     public EmailSettings getSettings() {
-        return settings.makeCopy();
+        return settings;
     }
 
     public abstract void init() throws DropletInitException;

@@ -23,52 +23,44 @@ package org.tidal_app.tidal.sources.email.models;
  */
 public final class EmailSettings {
 
-    private String host;
-    private String protocol;
-    private String username;
-    private String password;
+    private final String host;
+    private final String protocol;
+    private final String username;
+    private final String password;
 
-    public EmailSettings() {
-        // Default constructor.
-    }
-
-    private EmailSettings(final EmailSettings other) {
-        host = other.host;
-        protocol = other.protocol;
-        username = other.username;
-        password = other.password;
+    /**
+     * 
+     * @param host
+     *            host address
+     * @param protocol
+     *            email protocol
+     * @param username
+     *            username
+     * @param password
+     *            password
+     */
+    public EmailSettings(final String host, final String protocol,
+            final String username, final String password) {
+        this.host = host;
+        this.protocol = protocol;
+        this.username = username;
+        this.password = password;
     }
 
     public String getHost() {
         return host;
     }
 
-    public void setHost(final String host) {
-        this.host = host;
-    }
-
     public String getProtocol() {
         return protocol;
-    }
-
-    public void setProtocol(final String protocol) {
-        this.protocol = protocol;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(final String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(final String password) {
-        this.password = password;
     }
 
     @Override
@@ -126,10 +118,6 @@ public final class EmailSettings {
             return false;
         }
         return true;
-    }
-
-    public EmailSettings makeCopy() {
-        return new EmailSettings(this);
     }
 
 }

@@ -37,14 +37,15 @@ public class EmailDropletsControllerTests {
     private EmailSettings settings;
     private EmailDropletsController controller;
 
+    private final String hostName = "tidal-app.org";
+    private final String imapProtocol = "imap";
+    private final String testUser = "tester";
+    private final String testPassword = "password";
+
     @Before
     public void setUp() {
-        settings = new EmailSettings();
-        settings.setHost("tidal-app.org");
-        settings.setPassword("password");
-        settings.setProtocol("imap");
-        settings.setUsername("tester");
-
+        settings = new EmailSettings(hostName, imapProtocol, testUser,
+                testPassword);
         controller = new EmailDropletsController();
     }
 
@@ -60,7 +61,8 @@ public class EmailDropletsControllerTests {
     @Test
     public void testAddEmailDropletEmailSettings1() {
         try {
-            settings.setProtocol("imap");
+            settings = new EmailSettings(hostName, "imap", testUser,
+                    testPassword);
             final AbstractEmailDroplet droplet = controller
                     .addEmailDroplet(settings);
             assertEquals(ImapDroplet.class, droplet.getClass());
@@ -75,7 +77,8 @@ public class EmailDropletsControllerTests {
     @Test
     public void testAddEmailDropletEmailSettings2() {
         try {
-            settings.setProtocol("imaps");
+            settings = new EmailSettings(hostName, "imaps", testUser,
+                    testPassword);
             final AbstractEmailDroplet droplet = controller
                     .addEmailDroplet(settings);
             assertEquals(ImapDroplet.class, droplet.getClass());
@@ -90,7 +93,8 @@ public class EmailDropletsControllerTests {
     @Test
     public void testAddEmailDropletEmailSettings3() {
         try {
-            settings.setProtocol("unknown");
+            settings = new EmailSettings(hostName, "unknown", testUser,
+                    testPassword);
             controller.addEmailDroplet(settings);
             fail("Expecting DropletCreationException.");
         } catch (final DropletCreationException e) {
@@ -104,7 +108,8 @@ public class EmailDropletsControllerTests {
     @Test
     public void testAddEmailDropletEmailSettings4() {
         try {
-            settings.setProtocol("imap");
+            settings = new EmailSettings(hostName, "imap", testUser,
+                    testPassword);
             controller.addEmailDroplet(settings);
             controller.addEmailDroplet(settings);
             fail("Expecting DropletCreationException.");

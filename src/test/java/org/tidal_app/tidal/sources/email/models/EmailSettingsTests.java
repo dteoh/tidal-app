@@ -17,8 +17,7 @@
 package org.tidal_app.tidal.sources.email.models;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,11 +45,7 @@ public class EmailSettingsTests {
         protocol = "imaps";
         username = "tester@tidal-app.org";
 
-        model = new EmailSettings();
-        model.setHost(host);
-        model.setPassword(password);
-        model.setProtocol(protocol);
-        model.setUsername(username);
+        model = new EmailSettings(host, protocol, username, password);
     }
 
     @After
@@ -64,20 +59,8 @@ public class EmailSettingsTests {
     }
 
     @Test
-    public void testSetHost() {
-        model.setHost("internet");
-        assertEquals("internet", model.getHost());
-    }
-
-    @Test
     public void testGetProtocol() {
         assertEquals(protocol, model.getProtocol());
-    }
-
-    @Test
-    public void testSetProtocol() {
-        model.setProtocol("pop3");
-        assertEquals("pop3", model.getProtocol());
     }
 
     @Test
@@ -86,168 +69,16 @@ public class EmailSettingsTests {
     }
 
     @Test
-    public void testSetUsername() {
-        model.setUsername("another@tidal-app.org");
-        assertEquals("another@tidal-app.org", model.getUsername());
-    }
-
-    @Test
     public void testGetPassword() {
         assertEquals(password, model.getPassword());
     }
 
-    @Test
-    public void testSetPassword() {
-        model.setPassword("abc123");
-        assertEquals("abc123", model.getPassword());
-    }
-
     /**
      * Reflexive property.
      */
     @Test
-    public void testEqualsObject1() {
-        assertTrue(model.equals(model));
+    public void testEqualsContract() {
+        EqualsVerifier.forClass(EmailSettings.class).verify();
     }
 
-    /**
-     * Transitive property.
-     */
-    @Test
-    public void testEqualsObject2() {
-        final EmailSettings model2 = new EmailSettings();
-        model2.setHost(host);
-        model2.setPassword(password);
-        model2.setProtocol(protocol);
-        model2.setUsername(username);
-
-        final EmailSettings model3 = new EmailSettings();
-        model3.setHost(host);
-        model3.setPassword(password);
-        model3.setProtocol(protocol);
-        model3.setUsername(username);
-
-        assertTrue(model.equals(model2));
-        assertTrue(model2.equals(model3));
-        assertTrue(model.equals(model3));
-    }
-
-    /**
-     * Reflexive property.
-     */
-    @Test
-    public void testEqualsObject3() {
-        final EmailSettings another = model.makeCopy();
-
-        assertTrue(model.equals(another));
-        assertTrue(another.equals(model));
-    }
-
-    /**
-     * Inequality with null.
-     */
-    @Test
-    public void testEqualsObject4() {
-        assertFalse(model.equals(null));
-    }
-
-    /**
-     * Incompatible class with null.
-     */
-    @Test
-    public void testEqualsObject5() {
-        assertFalse(model.equals("string"));
-    }
-
-    /**
-     * Different host.
-     */
-    @Test
-    public void testEqualsObject6() {
-        final EmailSettings another = model.makeCopy();
-        another.setHost("newhost");
-
-        assertFalse(model.equals(another));
-        assertFalse("newhost".equals(model.getHost()));
-    }
-
-    /**
-     * Null host.
-     */
-    @Test
-    public void testEqualsObject7() {
-        final EmailSettings another = model.makeCopy();
-        another.setHost(null);
-
-        assertFalse(model.equals(another));
-    }
-
-    /**
-     * Different password.
-     */
-    @Test
-    public void testEqualsObject8() {
-        final EmailSettings another = model.makeCopy();
-        another.setPassword("newpass");
-
-        assertFalse(model.equals(another));
-        assertFalse("newpass".equals(model.getPassword()));
-    }
-
-    /**
-     * null password.
-     */
-    @Test
-    public void testEqualsObject9() {
-        final EmailSettings another = model.makeCopy();
-        another.setPassword(null);
-
-        assertFalse(model.equals(another));
-    }
-
-    /**
-     * Different protocol.
-     */
-    @Test
-    public void testEqualsObject10() {
-        final EmailSettings another = model.makeCopy();
-        another.setProtocol("newproto");
-
-        assertFalse(model.equals(another));
-        assertFalse("newproto".equals(model.getProtocol()));
-    }
-
-    /**
-     * Null protocol.
-     */
-    @Test
-    public void testEqualsObject11() {
-        final EmailSettings another = model.makeCopy();
-        another.setProtocol(null);
-
-        assertFalse(model.equals(another));
-    }
-
-    /**
-     * Different username.
-     */
-    @Test
-    public void testEqualsObject12() {
-        final EmailSettings another = model.makeCopy();
-        another.setUsername("newuser");
-
-        assertFalse(model.equals(another));
-        assertFalse("newuser".equals(model.getUsername()));
-    }
-
-    /**
-     * Null username.
-     */
-    @Test
-    public void testEqualsObject13() {
-        final EmailSettings another = model.makeCopy();
-        another.setUsername(null);
-
-        assertFalse(model.equals(another));
-    }
 }

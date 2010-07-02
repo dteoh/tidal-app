@@ -44,13 +44,15 @@ public class ImapDropletTests {
 
     private EmailSettings settings;
 
+    private final String hostName = "tidal-app.org";
+    private final String imapProtocol = "imap";
+    private final String testUser = "tester";
+    private final String testPassword = "password";
+
     @Before
     public void setUp() {
-        settings = new EmailSettings();
-        settings.setHost("tidal-app.org");
-        settings.setPassword("password");
-        settings.setProtocol("imap");
-        settings.setUsername("tester");
+        settings = new EmailSettings(hostName, imapProtocol, testUser,
+                testPassword);
     }
 
     @After
