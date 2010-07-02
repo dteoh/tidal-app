@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.configuration.ConfigurationController;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
+import org.tidal_app.tidal.exceptions.UnsecuredException;
 import org.tidal_app.tidal.sources.email.EmailDropletsController;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
@@ -65,24 +66,24 @@ public class TidalController implements AccessViewListener {
             .getLogger(TidalController.class);
 
     /** Views */
-    /** This is the main application frame */
+    /** This is the main application frame. */
     private JFrame mainFrame;
-    /** This is the main application frame's panel */
+    /** This is the main application frame's panel. */
     private JPanel mainFramePanel;
-    /** This is the application's main panel */
-    private TiledImagePanel mainApplicationView;
+    /** This is the application's main panel. */
+    private TiledImagePanel appPanel;
 
     /** Controllers */
     private final MenuBarController menuBarController;
     private final DropletsViewController dropletsViewController;
-    private final ConfigurationController configurationController;
-    private final EmailDropletsController emailDropletsController;
+    private final ConfigurationController configController;
+    private final EmailDropletsController emailController;
 
     public TidalController(
             final ConfigurationController configurationController,
             final EmailDropletsController emailDropletsController) {
-        this.configurationController = configurationController;
-        this.emailDropletsController = emailDropletsController;
+        configController = configurationController;
+        emailController = emailDropletsController;
         menuBarController = new MenuBarController();
         dropletsViewController = new DropletsViewController();
         initView();
@@ -158,22 +159,22 @@ public class TidalController implements AccessViewListener {
 
                 // START: Set up the main application view.
 
-                mainApplicationView = new TiledImagePanel();
-                mainApplicationView.setLayout(new MigLayout("ins 0, wrap",
-                        "[grow]", "[grow]"));
-                mainApplicationView.setBackground(new Color(90, 100, 115));
-                mainApplicationView.setBackground(backgroundImage);
+                appPanel = new TiledImagePanel();
+                appPanel.setLayout(new MigLayout("ins 0, wrap", "[grow]",
+                        "[grow]"));
+                appPanel.setBackground(new Color(90, 100, 115));
+                appPanel.setBackground(backgroundImage);
 
                 final DropShadowPanel menuBarPanel = new DropShadowPanel(6,
                         0.5F);
                 menuBarPanel.setLayout(new MigLayout("", "0[grow]0", "0[]"));
                 menuBarPanel.add(menuBarController.getView(), "growx");
-                mainApplicationView.add(menuBarPanel, "pushx, growx, north");
+                appPanel.add(menuBarPanel, "pushx, growx, north");
 
-                mainApplicationView.add(dropletsViewController.getView(),
+                appPanel.add(dropletsViewController.getView(),
                         "pushx, growx, north");
 
-                mainFramePanel.add(mainApplicationView, "MAIN_VIEW");
+                mainFramePanel.add(appPanel, "MAIN_VIEW");
 
                 // END: Set up the main application view.
 
@@ -205,8 +206,8 @@ public class TidalController implements AccessViewListener {
             Worker.post(new Task() {
                 @Override
                 public Object run() throws Exception {
-                    configurationController.saveMainSettings();
-                    configurationController.saveDropletSettings();
+                    configController.saveMainSettings();
+                    configController.saveDropletSettings();
                     return null;
                 }
             });
@@ -223,7 +224,7 @@ public class TidalController implements AccessViewListener {
      * @return true if this is the first run, false otherwise.
      */
     private boolean isFirstRun() {
-        return !configurationController.loadMainSettings();
+        return !configController.loadMainSettings();
     }
 
     /*
@@ -238,7 +239,7 @@ public class TidalController implements AccessViewListener {
         final boolean passwordOK = (Boolean) Worker.post(new Job() {
             @Override
             public Object run() {
-                return configurationController.authorize(evt.getPassword());
+                return configController.authorize(evt.getPassword());
             }
         });
 
@@ -253,16 +254,15 @@ public class TidalController implements AccessViewListener {
 
                 @Override
                 protected Void doInBackground() throws Exception {
-                    final Iterable<Object> dropletSettings = configurationController
+                    final Iterable<Object> dropletSettings = configController
                             .loadDropletSettings();
 
                     for (final Object settings : dropletSettings) {
                         if (settings instanceof EmailSettings) {
-                            final EmailSettings emailSettings = (EmailSettings) settings;
+                            EmailSettings emailSettings = (EmailSettings) settings;
                             try {
-                                emailDropletsController
-                                        .addEmailDroplet(emailSettings);
-                                publish(emailDropletsController
+                                emailController.addEmailDroplet(emailSettings);
+                                publish(emailController
                                         .getDropletModel(emailSettings
                                                 .getUsername()));
                             } catch (final DropletCreationException e) {
@@ -274,7 +274,7 @@ public class TidalController implements AccessViewListener {
                 }
             }.execute();
 
-            final CardLayout cards = (CardLayout) mainFramePanel.getLayout();
+            CardLayout cards = (CardLayout) mainFramePanel.getLayout();
             cards.show(mainFramePanel, "MAIN_VIEW");
 
             // TODO start timing thread.
@@ -294,27 +294,36 @@ public class TidalController implements AccessViewListener {
     @Override
     public void setupPassword(final AccessViewEvent evt) {
         // Try setting Tidal up with the given password.
-        boolean passwordOK = false;
-        try {
-            passwordOK = (Boolean) Worker.post(new Task() {
-                @Override
-                public Object run() throws Exception {
-                    configurationController.changeAuthorizationKey(evt
-                            .getPassword());
-                    return true;
+        new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                boolean passwordOK = false;
+                try {
+                    configController.changeAuthorizationKey(evt.getPassword());
+                    passwordOK = true;
+                } catch (final UnsecuredException e) {
+                    LOGGER.error("Setup password error", e);
                 }
-            });
-        } catch (final Exception e) {
-            LOGGER.error("Setup password error", e);
-        }
+                return passwordOK;
+            }
 
-        if (passwordOK) {
-            final CardLayout cards = (CardLayout) mainFramePanel.getLayout();
-            cards.show(mainFramePanel, "MAIN_VIEW");
-        } else {
-            final AccessView accessView = (AccessView) evt.getSource();
-            accessView.displayMessage("Password cannot be blank.");
-        }
+            @Override
+            protected void done() {
+                try {
+                    final boolean passwordOK = get();
+
+                    if (passwordOK) {
+                        CardLayout cards = (CardLayout) mainFramePanel
+                                .getLayout();
+                        cards.show(mainFramePanel, "MAIN_VIEW");
+                    } else {
+                        AccessView accessView = (AccessView) evt.getSource();
+                        accessView.displayMessage("Password cannot be blank.");
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
     }
-
 }

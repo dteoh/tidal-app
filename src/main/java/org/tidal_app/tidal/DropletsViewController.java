@@ -16,7 +16,6 @@
 
 package org.tidal_app.tidal;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -28,13 +27,9 @@ import net.miginfocom.swing.MigLayout;
 
 import org.tidal_app.tidal.views.DropletView;
 import org.tidal_app.tidal.views.models.DropletModel;
-import org.tidal_app.tidal.views.models.RippleModel;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import foxtrot.Job;
-import foxtrot.Worker;
 
 /**
  * Used to manage the various droplets.
@@ -48,15 +43,8 @@ public class DropletsViewController {
 
     private final Map<String, DropletView> dropletViews;
 
-    @SuppressWarnings("unchecked")
     public DropletsViewController() {
-        dropletViews = (Map<String, DropletView>) Worker.post(new Job() {
-            @Override
-            public Object run() {
-                return Maps.newHashMap();
-            }
-        });
-
+        dropletViews = Maps.newHashMap();
         initView();
     }
 
@@ -66,93 +54,6 @@ public class DropletsViewController {
             public void run() {
                 dropletsPanel = new JPanel(new MigLayout("wrap", "[grow 100]"));
                 dropletsPanel.setOpaque(false);
-
-                // TODO testing only, must remove.
-                final DropletModel m = new DropletModel(
-                        "Test",
-                        new RippleModel(
-                                1,
-                                "Douglas Teoh",
-                                "Just a test email",
-                                "Lorem ipsum dolor sit amet, consectetur "
-                                        + "adipiscing elit. Etiam felis leo, elementum "
-                                        + "interdum interdum at, mollis sed nibh. Mauris "
-                                        + "laoreet metus sed massa sagittis tempor. "
-                                        + "Pellentesque diam est, adipiscing non vehicula id,"
-                                        + " aliquet eget ligula. Aenea scelerisque dictum"
-                                        + " nulla eget semper. Sed dapibus accumsan ligula "
-                                        + "eget faucibus. Donec vitae interdum neque. Aliquam"
-                                        + " sed erat vitae dui lacinia tincidunt a eu velit."
-                                        + " Suspendisse in nulla sit amet urna semper "
-                                        + "tincidunt pharetra at neque. Pellentesque et "
-                                        + "turpis eget urna aliquet elementum at sed massa. "
-                                        + "Fusce facilisis lorem id mi lobortis in rhoncus "
-                                        + "urna viverra. Praesent pulvinar volutpat urna."
-                                        + "\nCras molestie sollicitudin ultrices. In quis est"
-                                        + " sit amet dolor egestas interdum. Vestibulum "
-                                        + "consectetur enim ultricies nisl tristique varius. "
-                                        + "Etiam et nunc non odio dapibus scelerisque. Cum "
-                                        + "sociis natoque penatibus et magnis dis parturient "
-                                        + "montes, nascetur ridiculus mus. Mauris nec volutpat"
-                                        + " elit. Nulla eget diam nibh, ac lobortis nunc. Ut "
-                                        + "at lectus enim. Etiam quis ipsum dolor. Proin "
-                                        + "luctus lorem id purus venenatis imperdiet eget "
-                                        + "varius est. Morbi non lacinia neque. Maecenas "
-                                        + "lobortis ligula vel magna blandit pellentesque. ",
-                                Calendar.getInstance().getTimeInMillis()),
-                        new RippleModel(
-                                1,
-                                "Tester",
-                                "Another test email",
-                                "Email contents are supposed to be truncated after 50 characters, are the contents being truncated in the preview?",
-                                Calendar.getInstance().getTimeInMillis()));
-
-                final DropletModel n = new DropletModel(
-                        "Another",
-                        new RippleModel(
-                                1,
-                                "Douglas Teoh",
-                                "Just a test email",
-                                "Lorem ipsum dolor sit amet, consectetur "
-                                        + "adipiscing elit. Etiam felis leo, elementum "
-                                        + "interdum interdum at, mollis sed nibh. Mauris "
-                                        + "laoreet metus sed massa sagittis tempor. "
-                                        + "Pellentesque diam est, adipiscing non vehicula id,"
-                                        + " aliquet eget ligula. Aenea scelerisque dictum"
-                                        + " nulla eget semper. Sed dapibus accumsan ligula "
-                                        + "eget faucibus. Donec vitae interdum neque. Aliquam"
-                                        + " sed erat vitae dui lacinia tincidunt a eu velit."
-                                        + " Suspendisse in nulla sit amet urna semper "
-                                        + "tincidunt pharetra at neque. Pellentesque et "
-                                        + "turpis eget urna aliquet elementum at sed massa. "
-                                        + "Fusce facilisis lorem id mi lobortis in rhoncus "
-                                        + "urna viverra. Praesent pulvinar volutpat urna."
-                                        + "\nCras molestie sollicitudin ultrices. In quis est"
-                                        + " sit amet dolor egestas interdum. Vestibulum "
-                                        + "consectetur enim ultricies nisl tristique varius. "
-                                        + "Etiam et nunc non odio dapibus scelerisque. Cum "
-                                        + "sociis natoque penatibus et magnis dis parturient "
-                                        + "montes, nascetur ridiculus mus. Mauris nec volutpat"
-                                        + " elit. Nulla eget diam nibh, ac lobortis nunc. Ut "
-                                        + "at lectus enim. Etiam quis ipsum dolor. Proin "
-                                        + "luctus lorem id purus venenatis imperdiet eget "
-                                        + "varius est. Morbi non lacinia neque. Maecenas "
-                                        + "lobortis ligula vel magna blandit pellentesque. ",
-                                Calendar.getInstance().getTimeInMillis() - 50000),
-                        new RippleModel(
-                                1,
-                                "Tester",
-                                "Another test email",
-                                "Email contents are supposed to be truncated after 50 characters, are the contents being truncated in the preview?",
-                                Calendar.getInstance().getTimeInMillis() + 50000));
-
-                // TODO remove
-                final DropletView view1 = new DropletView(m);
-                final DropletView view2 = new DropletView(n);
-
-                // TODO remove
-                dropletsPanel.add(view1, "growx, pushx");
-                dropletsPanel.add(view2, "growx, pushx");
             }
         };
 
