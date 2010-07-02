@@ -40,6 +40,8 @@ import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 
+import com.google.common.collect.Iterables;
+
 public class ImapDropletTests {
 
     private EmailSettings settings;
@@ -159,8 +161,7 @@ public class ImapDropletTests {
         } catch (final Exception e) {
             fail(e.getMessage());
         }
-        final Iterable<EmailRipple> ripples = droplet.getRipples();
-        assertFalse(ripples.iterator().hasNext());
+        assertTrue(Iterables.isEmpty(droplet.getRipples()));
     }
 
     /**
@@ -190,11 +191,7 @@ public class ImapDropletTests {
         } catch (final Exception e) {
             fail(e.getMessage());
         }
-        final Iterable<EmailRipple> ripples = droplet.getRipples();
-        final Iterator<EmailRipple> it = ripples.iterator();
-        assertTrue(it.hasNext());
-        it.next();
-        assertFalse(it.hasNext());
+        assertEquals(1, Iterables.size(droplet.getRipples()));
     }
 
     /**
@@ -232,13 +229,8 @@ public class ImapDropletTests {
         } catch (final Exception e) {
             fail(e.getMessage());
         }
-        final Iterable<EmailRipple> ripples = droplet.getRipples();
-        final Iterator<EmailRipple> it = ripples.iterator();
-        assertTrue(it.hasNext());
-        it.next();
-        assertTrue(it.hasNext());
-        it.next();
-        assertFalse(it.hasNext());
+
+        assertEquals(2, Iterables.size(droplet.getRipples()));
     }
 
     /**
@@ -269,11 +261,8 @@ public class ImapDropletTests {
         } catch (final Exception e) {
             fail(e.getMessage());
         }
-        Iterable<EmailRipple> ripples = droplet.getRipples();
-        Iterator<EmailRipple> it = ripples.iterator();
-        assertTrue(it.hasNext());
-        it.next();
-        assertFalse(it.hasNext());
+
+        assertEquals(1, Iterables.size(droplet.getRipples()));
 
         try {
             final MimeMessage msg = new MimeMessage(session);
@@ -287,13 +276,7 @@ public class ImapDropletTests {
             fail(e.getMessage());
         }
 
-        ripples = droplet.getRipples();
-        it = ripples.iterator();
-        assertTrue(it.hasNext());
-        it.next();
-        assertTrue(it.hasNext());
-        it.next();
-        assertFalse(it.hasNext());
+        assertEquals(2, Iterables.size(droplet.getRipples()));
     }
 
     /**
