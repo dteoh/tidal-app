@@ -326,4 +326,16 @@ public class ImapDropletTests {
 
         assertFalse(it.hasNext());
     }
+
+    @Test
+    public void testDestroy() {
+        ImapDroplet droplet = null;
+        try {
+            droplet = ImapDroplet.create(settings);
+            droplet.init();
+        } catch (final Exception e) {
+            fail(e.getMessage());
+        }
+        droplet.destroy();
+    }
 }
