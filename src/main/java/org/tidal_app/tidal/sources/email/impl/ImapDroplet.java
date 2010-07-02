@@ -18,7 +18,6 @@ package org.tidal_app.tidal.sources.email.impl;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -40,6 +39,8 @@ import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.sources.email.AbstractEmailDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+
+import com.google.common.collect.Lists;
 
 /**
  * This Droplet is used to handle IMAP/IMAPS email services.
@@ -144,7 +145,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         assert (!SwingUtilities.isEventDispatchThread());
 
         if (inbox == null) {
-            return null;
+            return Lists.newLinkedList();
         }
         try {
             // This search option will only download unread messages.
@@ -153,7 +154,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             final Message[] messages = inbox.search(searchOption);
 
             // Make ripples
-            final List<EmailRipple> unreadRipples = new LinkedList<EmailRipple>();
+            final List<EmailRipple> unreadRipples = Lists.newLinkedList();
             for (int i = 0; i < messages.length; i++) {
                 final Address[] senderAddresses = messages[i].getFrom();
                 final String subject = messages[i].getSubject();

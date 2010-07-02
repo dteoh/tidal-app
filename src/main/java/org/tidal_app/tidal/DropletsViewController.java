@@ -17,8 +17,6 @@
 package org.tidal_app.tidal;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +29,9 @@ import net.miginfocom.swing.MigLayout;
 import org.tidal_app.tidal.views.DropletView;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import foxtrot.Job;
 import foxtrot.Worker;
@@ -52,7 +53,7 @@ public class DropletsViewController {
         dropletViews = (Map<String, DropletView>) Worker.post(new Job() {
             @Override
             public Object run() {
-                return new HashMap<String, DropletView>();
+                return Maps.newHashMap();
             }
         });
 
@@ -169,7 +170,7 @@ public class DropletsViewController {
     public void updateDropletViews(final DropletModel... dropletModels) {
         assert (SwingUtilities.isEventDispatchThread());
 
-        final List<DropletModel> models = new LinkedList<DropletModel>();
+        final List<DropletModel> models = Lists.newLinkedList();
 
         updateDropletViews(models);
     }

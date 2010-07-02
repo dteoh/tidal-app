@@ -23,7 +23,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -39,12 +38,14 @@ import org.tidal_app.tidal.views.events.AccessViewListener;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
+import com.google.common.collect.Lists;
+
 /**
  * This view displays a login-style screen.
  * 
  * @author Douglas Teoh
  */
-public class AccessView extends DropShadowPanel {
+public final class AccessView extends DropShadowPanel {
 
     private JLabel heading;
     private JLabel information;
@@ -58,7 +59,7 @@ public class AccessView extends DropShadowPanel {
 
     public AccessView() {
         super(6, 0.5F);
-        listeners = new LinkedList<AccessViewListener>();
+        listeners = Lists.newLinkedList();
         initView();
     }
 
@@ -217,7 +218,7 @@ public class AccessView extends DropShadowPanel {
             Arrays.fill(confirmationField.getPassword(), '0');
         }
 
-        // FIXME This isn't the best way of passing passwords around.
+        // FIXME This may not be the best way of passing passwords around.
         final String password = new String(passwordField.getPassword());
         if (firstRun) {
             fireSetupPasswordEvent(password);

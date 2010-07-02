@@ -16,7 +16,6 @@
 
 package org.tidal_app.tidal.sources.email;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,6 +28,8 @@ import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
+
+import com.google.common.collect.Lists;
 
 public class EmailDropletsController {
 
@@ -132,10 +133,13 @@ public class EmailDropletsController {
 
         synchronized (this) {
             final AbstractEmailDroplet droplet = droplets.get(dropletUsername);
+
             if (droplet == null) {
                 return null;
             }
-            final List<RippleModel> contentModel = new LinkedList<RippleModel>();
+
+            final List<RippleModel> contentModel = Lists.newLinkedList();
+
             for (final EmailRipple ripple : droplet.getRipples()) {
                 contentModel.add(new RippleModel(ripple.getId(), ripple
                         .getSender(), ripple.getSubject(), ripple.getContent(),
@@ -154,9 +158,11 @@ public class EmailDropletsController {
         assert (!SwingUtilities.isEventDispatchThread());
 
         synchronized (this) {
-            final List<DropletModel> allModels = new LinkedList<DropletModel>();
+            final List<DropletModel> allModels = Lists.newLinkedList();
+
             for (final AbstractEmailDroplet droplet : droplets.values()) {
-                final List<RippleModel> contentModel = new LinkedList<RippleModel>();
+                final List<RippleModel> contentModel = Lists.newLinkedList();
+
                 for (final EmailRipple ripple : droplet.getRipples()) {
                     contentModel.add(new RippleModel(ripple.getId(), ripple
                             .getSender(), ripple.getSubject(), ripple

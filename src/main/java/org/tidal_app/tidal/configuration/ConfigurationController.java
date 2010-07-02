@@ -23,8 +23,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +40,9 @@ import org.yaml.snakeyaml.Dumper;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.Yaml;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * This class is responsible for managing program configuration.
@@ -78,7 +79,7 @@ public final class ConfigurationController {
         assert (!SwingUtilities.isEventDispatchThread());
 
         encryptor = new StrongTextEncryptor();
-        configurableInstances = new HashSet<Configurable>();
+        configurableInstances = Sets.newHashSet();
 
         configurationUnlocked = false;
     }
@@ -255,7 +256,7 @@ public final class ConfigurationController {
         final Yaml yaml = new Yaml(new Dumper(new ConfigurablesRepresenter(
                 encryptor), new DumperOptions()));
 
-        final List<Object> allSettings = new LinkedList<Object>();
+        final List<Object> allSettings = Lists.newLinkedList();
         for (final Configurable instance : configurableInstances) {
             allSettings.add(instance.getSettings());
         }
@@ -274,7 +275,7 @@ public final class ConfigurationController {
         final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
             LOGGER.error("No home directory");
-            return new LinkedList<Object>();
+            return Lists.newLinkedList();
         }
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
         configFile = new File(configFile, DROPLETSRC);
@@ -286,7 +287,7 @@ public final class ConfigurationController {
             result = loadDropletSettings(fr);
         } catch (final FileNotFoundException e) {
             LOGGER.error("Expecting file to exist.", e);
-            result = new LinkedList<Object>();
+            result = Lists.newLinkedList();
         } finally {
             IOUtils.closeQuietly(fr);
         }
