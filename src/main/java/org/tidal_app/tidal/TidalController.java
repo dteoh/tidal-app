@@ -49,7 +49,6 @@ import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
-import foxtrot.Job;
 import foxtrot.Task;
 import foxtrot.Worker;
 
@@ -74,18 +73,18 @@ public class TidalController implements AccessViewListener {
     private TiledImagePanel appPanel;
 
     /** Controllers */
-    private final MenuBarController menuBarController;
-    private final DropletsViewController dropletsViewController;
-    private final ConfigurationController configController;
-    private final EmailDropletsController emailController;
+    private final MenuBarController menuBarC;
+    private final DropletsViewController dropletsViewC;
+    private final ConfigurationController configC;
+    private final EmailDropletsController emailC;
 
     public TidalController(
             final ConfigurationController configurationController,
             final EmailDropletsController emailDropletsController) {
-        configController = configurationController;
-        emailController = emailDropletsController;
-        menuBarController = new MenuBarController();
-        dropletsViewController = new DropletsViewController();
+        configC = configurationController;
+        emailC = emailDropletsController;
+        menuBarC = new MenuBarController();
+        dropletsViewC = new DropletsViewController();
         initView();
     }
 
@@ -168,11 +167,10 @@ public class TidalController implements AccessViewListener {
                 final DropShadowPanel menuBarPanel = new DropShadowPanel(6,
                         0.5F);
                 menuBarPanel.setLayout(new MigLayout("", "0[grow]0", "0[]"));
-                menuBarPanel.add(menuBarController.getView(), "growx");
+                menuBarPanel.add(menuBarC.getView(), "growx");
                 appPanel.add(menuBarPanel, "pushx, growx, north");
 
-                appPanel.add(dropletsViewController.getView(),
-                        "pushx, growx, north");
+                appPanel.add(dropletsViewC.getView(), "pushx, growx, north");
 
                 mainFramePanel.add(appPanel, "MAIN_VIEW");
 
@@ -206,8 +204,8 @@ public class TidalController implements AccessViewListener {
             Worker.post(new Task() {
                 @Override
                 public Object run() throws Exception {
-                    configController.saveMainSettings();
-                    configController.saveDropletSettings();
+                    configC.saveMainSettings();
+                    configC.saveDropletSettings();
                     return null;
                 }
             });
@@ -224,7 +222,7 @@ public class TidalController implements AccessViewListener {
      * @return true if this is the first run, false otherwise.
      */
     private boolean isFirstRun() {
-        return !configController.loadMainSettings();
+        return !configC.loadMainSettings();
     }
 
     /*
@@ -236,52 +234,59 @@ public class TidalController implements AccessViewListener {
      */
     @Override
     public void loginAttempted(final AccessViewEvent evt) {
-        final boolean passwordOK = (Boolean) Worker.post(new Job() {
+        new SwingWorker<Boolean, DropletModel>() {
             @Override
-            public Object run() {
-                return configController.authorize(evt.getPassword());
-            }
-        });
+            protected Boolean doInBackground() throws Exception {
 
-        if (passwordOK) {
-            new SwingWorker<Void, DropletModel>() {
-                @Override
-                protected void process(
-                        final List<DropletModel> dropletModelChunks) {
-                    dropletsViewController
-                            .updateDropletViews(dropletModelChunks);
+                boolean passwordOK = configC.authorize(evt.getPassword());
+
+                if (!passwordOK) {
+                    return passwordOK;
                 }
 
-                @Override
-                protected Void doInBackground() throws Exception {
-                    final Iterable<Object> dropletSettings = configController
-                            .loadDropletSettings();
+                final Iterable<Object> dropletSettings = configC
+                        .loadDropletSettings();
 
-                    for (final Object settings : dropletSettings) {
-                        if (settings instanceof EmailSettings) {
-                            EmailSettings emailSettings = (EmailSettings) settings;
-                            try {
-                                emailController.addEmailDroplet(emailSettings);
-                                publish(emailController
-                                        .getDropletModel(emailSettings
-                                                .getUsername()));
-                            } catch (final DropletCreationException e) {
-                                LOGGER.error("Cannot create droplet", e);
-                            }
+                for (final Object settings : dropletSettings) {
+                    if (settings instanceof EmailSettings) {
+                        EmailSettings emailSettings = (EmailSettings) settings;
+                        try {
+                            emailC.addEmailDroplet(emailSettings);
+                            publish(emailC.getDropletModel(emailSettings
+                                    .getUsername()));
+                        } catch (final DropletCreationException e) {
+                            LOGGER.error("Cannot create droplet", e);
                         }
                     }
-                    return null;
                 }
-            }.execute();
+                return passwordOK;
+            }
 
-            CardLayout cards = (CardLayout) mainFramePanel.getLayout();
-            cards.show(mainFramePanel, "MAIN_VIEW");
+            @Override
+            protected void process(final List<DropletModel> dropletModelChunks) {
+                dropletsViewC.updateDropletViews(dropletModelChunks);
+            }
 
-            // TODO start timing thread.
-        } else {
-            final AccessView accessView = (AccessView) evt.getSource();
-            accessView.displayMessage("Incorrect password.");
-        }
+            @Override
+            protected void done() {
+                try {
+                    // Unlocked config successfully.
+                    if (get()) {
+                        CardLayout cards = (CardLayout) mainFramePanel
+                                .getLayout();
+                        cards.show(mainFramePanel, "MAIN_VIEW");
+
+                        // TODO start timing thread.
+                    } else {
+                        AccessView accessView = (AccessView) evt.getSource();
+                        accessView.displayMessage("Incorrect password.");
+                    }
+                } catch (final Exception e) {
+                    LOGGER.error("GUI update error", e);
+                }
+
+            }
+        }.execute();
     }
 
     /*
@@ -299,7 +304,7 @@ public class TidalController implements AccessViewListener {
             protected Boolean doInBackground() throws Exception {
                 boolean passwordOK = false;
                 try {
-                    configController.changeAuthorizationKey(evt.getPassword());
+                    configC.changeAuthorizationKey(evt.getPassword());
                     passwordOK = true;
                 } catch (final UnsecuredException e) {
                     LOGGER.error("Setup password error", e);
@@ -321,7 +326,7 @@ public class TidalController implements AccessViewListener {
                         accessView.displayMessage("Password cannot be blank.");
                     }
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("GUI update error", e);
                 }
             }
         }.execute();
