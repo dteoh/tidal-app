@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -582,6 +583,87 @@ public class ConfigurationControllerTests {
         assertFalse(it.hasNext());
 
         pr.close();
+    }
+
+    /**
+     * Test authorizing access with correct password.
+     */
+    @Test
+    public void testAuthorize1() {
+        String password = "p@sSW0rD.";
+        StrongPasswordEncryptor enc = new StrongPasswordEncryptor();
+        config = new Configuration(enc.encryptPassword(password));
+        field("config").ofType(Configuration.class).in(controller).set(config);
+
+        assertTrue(controller.authorize(password));
+    }
+
+    /**
+     * Test authorizing access with incorrect password.
+     */
+    @Test
+    public void testAuthorize2() {
+        String password = "p@sSW0rD.";
+        StrongPasswordEncryptor enc = new StrongPasswordEncryptor();
+        config = new Configuration(enc.encryptPassword(password));
+        field("config").ofType(Configuration.class).in(controller).set(config);
+
+        assertFalse(controller.authorize("password"));
+    }
+
+    /**
+     * Test changing the authorization key to null.
+     */
+    @Test
+    public void testChangeAuthorizationKey1() {
+        String password = "p@sSW0rD.";
+        StrongPasswordEncryptor enc = new StrongPasswordEncryptor();
+        config = new Configuration(enc.encryptPassword(password));
+        field("config").ofType(Configuration.class).in(controller).set(config);
+
+        try {
+            controller.changeAuthorizationKey(null);
+            fail("Expecting UnsecuredException.");
+        } catch (final UnsecuredException e) {
+            // Test passed.
+        }
+    }
+
+    /**
+     * Test changing the authorization key to empty string.
+     */
+    @Test
+    public void testChangeAuthorizationKey2() {
+        String password = "p@sSW0rD.";
+        StrongPasswordEncryptor enc = new StrongPasswordEncryptor();
+        config = new Configuration(enc.encryptPassword(password));
+        field("config").ofType(Configuration.class).in(controller).set(config);
+
+        try {
+            controller.changeAuthorizationKey("");
+            fail("Expecting UnsecuredException.");
+        } catch (final UnsecuredException e) {
+            // Test passed.
+        }
+    }
+
+    /**
+     * Test changing the authorization key to something valid.
+     */
+    @Test
+    public void testChangeAuthorizationKey3() {
+        String password = "p@sSW0rD.";
+        StrongPasswordEncryptor enc = new StrongPasswordEncryptor();
+        config = new Configuration(enc.encryptPassword(password));
+        field("config").ofType(Configuration.class).in(controller).set(config);
+
+        String newPassword = "n3wP@sSW0rD.";
+        try {
+            controller.changeAuthorizationKey(newPassword);
+            assertTrue(controller.authorize(newPassword));
+        } catch (final UnsecuredException e) {
+            fail(e.getMessage());
+        }
     }
 
 }
