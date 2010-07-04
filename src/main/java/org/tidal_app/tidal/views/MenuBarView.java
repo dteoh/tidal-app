@@ -20,10 +20,6 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Paint;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -45,9 +41,11 @@ public final class MenuBarView extends GradientPanel {
      */
     private static final Color APP_NAME_FOREGROUND = new Color(255, 255, 255);
     private static final Color APP_VERSION_FOREGROUND = new Color(176, 176, 176);
+    private static final Color BAR_BOTTOM_COLOR = new Color(0, 55, 125);
+    private static final Color BAR_TOP_COLOR = new Color(0, 100, 175);
 
     public MenuBarView() {
-        super(new Color(0, 100, 175), new Color(0, 55, 125));
+        super(BAR_TOP_COLOR, BAR_BOTTOM_COLOR);
         initView();
     }
 
@@ -58,7 +56,6 @@ public final class MenuBarView extends GradientPanel {
         inEDT();
 
         setLayout(new MigLayout());
-        // setBackground(MENUBAR_BACKGROUND);
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0, 35,
                 110)));
 
@@ -72,26 +69,11 @@ public final class MenuBarView extends GradientPanel {
         appName.setForeground(APP_NAME_FOREGROUND);
         add(appName);
 
-        // Application version number
+        // TODO: Externalize application version number
         final JLabel appVersion = new JLabel("0.1-dev");
         appVersion.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 22));
         appVersion.setForeground(APP_VERSION_FOREGROUND);
         add(appVersion);
     }
 
-    @Override
-    protected void paintComponent(final Graphics g) {
-        final Graphics2D g2 = (Graphics2D) g;
-        final GradientPaint gradient = new GradientPaint(0, 0, new Color(0,
-                100, 175), 0, getHeight(), new Color(0, 55, 125));
-
-        // Store old state.
-        final Paint oldPaint = g2.getPaint();
-
-        g2.setPaint(gradient);
-        g2.fillRect(0, 0, getWidth(), getHeight());
-
-        // Restore old state.
-        g2.setPaint(oldPaint);
-    }
 }
