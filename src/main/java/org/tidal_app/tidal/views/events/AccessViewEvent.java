@@ -23,7 +23,7 @@ import java.util.EventObject;
  * 
  * @author Douglas Teoh
  */
-public class AccessViewEvent extends EventObject {
+public final class AccessViewEvent extends EventObject {
 
     /** The password entered on the form */
     private final String password;

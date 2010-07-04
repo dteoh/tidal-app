@@ -20,6 +20,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.tidal_app.tidal.views.MenuBarView;
+import org.tidal_app.tidal.views.events.MenuBarViewListener;
 
 /**
  * This class is responsible for managing the menu bar view and events generated
@@ -51,6 +52,26 @@ public class MenuBarController {
 
     public JComponent getView() {
         return menuBar;
+    }
+
+    public void addMenuBarViewListener(final MenuBarViewListener listener) {
+        Runnable swingTask = new Runnable() {
+            @Override
+            public void run() {
+                menuBar.addMenuBarViewListener(listener);
+            }
+        };
+        SwingUtilities.invokeLater(swingTask);
+    }
+
+    public void removeMenuBarViewListener(final MenuBarViewListener listener) {
+        Runnable swingTask = new Runnable() {
+            @Override
+            public void run() {
+                menuBar.removeMenuBarViewListener(listener);
+            }
+        };
+        SwingUtilities.invokeLater(swingTask);
     }
 
 }

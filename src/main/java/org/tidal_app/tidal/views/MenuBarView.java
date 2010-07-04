@@ -20,6 +20,9 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -27,7 +30,11 @@ import javax.swing.JLabel;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.tidal_app.tidal.views.events.MenuBarViewEvent;
+import org.tidal_app.tidal.views.events.MenuBarViewListener;
 import org.tidal_app.tidal.views.swing.GradientPanel;
+
+import com.google.common.collect.Sets;
 
 /**
  * Used to create a custom menu bar.
@@ -36,16 +43,18 @@ import org.tidal_app.tidal.views.swing.GradientPanel;
  */
 public final class MenuBarView extends GradientPanel {
 
-    /*
-     * Colors
-     */
+    /** Colors */
     private static final Color APP_NAME_FOREGROUND = new Color(255, 255, 255);
     private static final Color APP_VERSION_FOREGROUND = new Color(176, 176, 176);
     private static final Color BAR_BOTTOM_COLOR = new Color(0, 55, 125);
     private static final Color BAR_TOP_COLOR = new Color(0, 100, 175);
+    private static final Color BAR_BORDER_COLOR = new Color(0, 35, 110);
+
+    private final Set<MenuBarViewListener> listeners;
 
     public MenuBarView() {
         super(BAR_TOP_COLOR, BAR_BOTTOM_COLOR);
+        listeners = Sets.newHashSet();
         initView();
     }
 
@@ -56,12 +65,18 @@ public final class MenuBarView extends GradientPanel {
         inEDT();
 
         setLayout(new MigLayout());
-        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0, 35,
-                110)));
+        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BAR_BORDER_COLOR));
 
-        // This button will act like a menu.
-        // TODO Add custom icon, make custom events.
-        add(new JButton(), "w 32!, h 32!");
+        // TODO Add custom icon
+        final JButton menuButton = new JButton();
+        menuButton.setName("MenuBarViewMenuButton");
+        menuButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                handleMenuButtonAction(e);
+            }
+        });
+        add(menuButton, "w 32!, h 32!");
 
         // Application name
         final JLabel appName = new JLabel("Tidal");
@@ -74,6 +89,21 @@ public final class MenuBarView extends GradientPanel {
         appVersion.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 22));
         appVersion.setForeground(APP_VERSION_FOREGROUND);
         add(appVersion);
+    }
+
+    private void handleMenuButtonAction(final ActionEvent evt) {
+        MenuBarViewEvent newEvent = new MenuBarViewEvent(this);
+        for (MenuBarViewListener listener : listeners) {
+            listener.menuButtonClicked(newEvent);
+        }
+    }
+
+    public void addMenuBarViewListener(final MenuBarViewListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeMenuBarViewListener(final MenuBarViewListener listener) {
+        listeners.remove(listener);
     }
 
 }

@@ -16,29 +16,18 @@
 
 package org.tidal_app.tidal.views.events;
 
-import org.tidal_app.tidal.views.AccessView;
-
 /**
- * Interface for listeners interested in events from {@link AccessView}.
- * 
  * @author Douglas Teoh
+ * 
  */
-public interface AccessViewListener {
+public interface MenuBarViewListener {
 
     /**
-     * User attempted to unlock Tidal using the given password.
+     * User clicked on the menu bar icon.
      * 
      * @param evt
      *            source event.
      */
-    void loginAttempted(AccessViewEvent evt);
-
-    /**
-     * First time usage of Tidal, user chose the given password.
-     * 
-     * @param evt
-     *            source event.
-     */
-    void setupPassword(AccessViewEvent evt);
+    void menuButtonClicked(MenuBarViewEvent evt);
 
 }

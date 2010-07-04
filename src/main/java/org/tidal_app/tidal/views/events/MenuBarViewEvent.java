@@ -16,29 +16,21 @@
 
 package org.tidal_app.tidal.views.events;
 
-import org.tidal_app.tidal.views.AccessView;
+import java.util.EventObject;
 
 /**
- * Interface for listeners interested in events from {@link AccessView}.
+ * Event object for menu bar events.
  * 
  * @author Douglas Teoh
+ * 
  */
-public interface AccessViewListener {
+public final class MenuBarViewEvent extends EventObject {
 
     /**
-     * User attempted to unlock Tidal using the given password.
-     * 
-     * @param evt
-     *            source event.
+     * @param source
      */
-    void loginAttempted(AccessViewEvent evt);
-
-    /**
-     * First time usage of Tidal, user chose the given password.
-     * 
-     * @param evt
-     *            source event.
-     */
-    void setupPassword(AccessViewEvent evt);
+    public MenuBarViewEvent(final Object source) {
+        super(source);
+    }
 
 }
