@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
 import org.tidal_app.tidal.views.DropletView;
+import org.tidal_app.tidal.views.DropletsView;
 import org.tidal_app.tidal.views.models.DropletModel;
 
 import com.google.common.collect.Lists;
@@ -38,7 +39,7 @@ import com.google.common.collect.Maps;
  * 
  * @author Douglas Teoh
  */
-public class DropletsViewController {
+public class DropletsViewController implements DropletsView {
 
     /** View objects */
     private JPanel dropletsPanel;

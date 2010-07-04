@@ -49,7 +49,7 @@ import com.google.common.collect.Sets;
  * 
  * @author Douglas Teoh
  */
-public final class ConfigurationController {
+public final class ConfigurationController implements SaveConfigurable {
 
     /** Default file name for droplet settings */
     private static final String DROPLETSRC = "dropletsrc";
