@@ -45,6 +45,8 @@ import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
 import org.tidal_app.tidal.views.events.AccessViewEvent;
 import org.tidal_app.tidal.views.events.AccessViewListener;
+import org.tidal_app.tidal.views.events.MenuBarViewEvent;
+import org.tidal_app.tidal.views.events.MenuBarViewListener;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
@@ -60,7 +62,7 @@ import foxtrot.Worker;
  * 
  * @author Douglas Teoh
  */
-public class TidalController implements AccessViewListener {
+public class TidalController implements AccessViewListener, MenuBarViewListener {
 
     private final static Logger LOGGER = LoggerFactory
             .getLogger(TidalController.class);
@@ -86,6 +88,7 @@ public class TidalController implements AccessViewListener {
         emailC = emailDropletsController;
         menuBarC = new MenuBarController();
         dropletsViewC = new DropletsViewController();
+        menuBarC.addMenuBarViewListener(this);
         initView();
     }
 
@@ -280,7 +283,6 @@ public class TidalController implements AccessViewListener {
             final AccessView accessView = (AccessView) evt.getSource();
             accessView.displayMessage("Incorrect password.");
         }
-
     }
 
     /*
@@ -324,5 +326,18 @@ public class TidalController implements AccessViewListener {
                 }
             }
         }.execute();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.tidal_app.tidal.views.events.MenuBarViewListener#menuButtonClicked
+     * (org.tidal_app.tidal.views.events.MenuBarViewEvent)
+     */
+    @Override
+    public void menuButtonClicked(final MenuBarViewEvent evt) {
+        // TODO Auto-generated method stub
+
     }
 }
