@@ -16,9 +16,7 @@
 
 package org.tidal_app.tidal;
 
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,32 +41,13 @@ public class Tidal {
         // Set the application to use system UI LnF.
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (final ClassNotFoundException e) {
-            LOGGER.error("Look and feel error", e);
-        } catch (final InstantiationException e) {
-            LOGGER.error("Look and feel error", e);
-        } catch (final IllegalAccessException e) {
-            LOGGER.error("Look and feel error", e);
-        } catch (final UnsupportedLookAndFeelException e) {
+        } catch (final Exception e) {
             LOGGER.error("Look and feel error", e);
         }
 
-        /*
-         * These controllers are being instantiated here because they contain no
-         * UI elements; as such, letting TidalController instantiate them is
-         * probably a bad idea as the classes will be instantiated in the EDT,
-         * which is not what we want.
-         */
-        final ConfigurationController configurationController = new ConfigurationController();
-        final EmailDropletsController emailDropletsController = new EmailDropletsController();
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new TidalController(configurationController,
-                        emailDropletsController);
-            }
-        });
+        ConfigurationController configurationC = new ConfigurationController();
+        EmailDropletsController emailDropletsC = new EmailDropletsController();
+        new TidalController(configurationC, emailDropletsC);
     }
 
 }
