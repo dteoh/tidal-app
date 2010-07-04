@@ -49,6 +49,7 @@ import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
+import foxtrot.Job;
 import foxtrot.Task;
 import foxtrot.Worker;
 
@@ -234,59 +235,52 @@ public class TidalController implements AccessViewListener {
      */
     @Override
     public void loginAttempted(final AccessViewEvent evt) {
-        new SwingWorker<Boolean, DropletModel>() {
+        final boolean passwordOK = (Boolean) Worker.post(new Job() {
             @Override
-            protected Boolean doInBackground() throws Exception {
+            public Object run() {
+                return configC.authorize(evt.getPassword());
+            }
+        });
 
-                boolean passwordOK = configC.authorize(evt.getPassword());
-
-                if (!passwordOK) {
-                    return passwordOK;
+        if (passwordOK) {
+            new SwingWorker<Void, DropletModel>() {
+                @Override
+                protected void process(
+                        final List<DropletModel> dropletModelChunks) {
+                    dropletsViewC.updateDropletViews(dropletModelChunks);
                 }
 
-                final Iterable<Object> dropletSettings = configC
-                        .loadDropletSettings();
+                @Override
+                protected Void doInBackground() throws Exception {
+                    final Iterable<Object> dropletSettings = configC
+                            .loadDropletSettings();
 
-                for (final Object settings : dropletSettings) {
-                    if (settings instanceof EmailSettings) {
-                        EmailSettings emailSettings = (EmailSettings) settings;
-                        try {
-                            emailC.addEmailDroplet(emailSettings);
-                            publish(emailC.getDropletModel(emailSettings
-                                    .getUsername()));
-                        } catch (final DropletCreationException e) {
-                            LOGGER.error("Cannot create droplet", e);
+                    for (final Object settings : dropletSettings) {
+                        if (settings instanceof EmailSettings) {
+                            EmailSettings emailSettings = (EmailSettings) settings;
+                            try {
+                                emailC.addEmailDroplet(emailSettings);
+                                publish(emailC.getDropletModel(emailSettings
+                                        .getUsername()));
+                            } catch (final DropletCreationException e) {
+                                LOGGER.error("Cannot create droplet", e);
+                            }
                         }
                     }
-                }
-                return passwordOK;
-            }
-
-            @Override
-            protected void process(final List<DropletModel> dropletModelChunks) {
-                dropletsViewC.updateDropletViews(dropletModelChunks);
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    // Unlocked config successfully.
-                    if (get()) {
-                        CardLayout cards = (CardLayout) mainFramePanel
-                                .getLayout();
-                        cards.show(mainFramePanel, "MAIN_VIEW");
-
-                        // TODO start timing thread.
-                    } else {
-                        AccessView accessView = (AccessView) evt.getSource();
-                        accessView.displayMessage("Incorrect password.");
-                    }
-                } catch (final Exception e) {
-                    LOGGER.error("GUI update error", e);
+                    return null;
                 }
 
-            }
-        }.execute();
+                @Override
+                protected void done() {
+                    CardLayout cards = (CardLayout) mainFramePanel.getLayout();
+                    cards.show(mainFramePanel, "MAIN_VIEW");
+                }
+            }.execute();
+        } else {
+            final AccessView accessView = (AccessView) evt.getSource();
+            accessView.displayMessage("Incorrect password.");
+        }
+
     }
 
     /*
