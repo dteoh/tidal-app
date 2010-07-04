@@ -166,10 +166,10 @@ public final class ConfigurationController implements SaveConfigurable {
         }
 
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
-        configFile = new File(configFile, TIDALRC);
         // mkdirs first because if the directory does not exist, then file
         // creation fails.
         configFile.mkdirs();
+        configFile = new File(configFile, TIDALRC);
 
         Writer fw = null;
         try {
@@ -222,8 +222,8 @@ public final class ConfigurationController implements SaveConfigurable {
         }
 
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
-        configFile = new File(configFile, DROPLETSRC);
         configFile.mkdirs();
+        configFile = new File(configFile, DROPLETSRC);
 
         Writer fw = null;
         try {
