@@ -26,6 +26,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -48,12 +49,21 @@ import com.google.common.collect.Lists;
  */
 public final class AccessView extends DropShadowPanel {
 
+    /** Resource bundle for this class. */
+    private static final ResourceBundle BUNDLE = ResourceBundle
+            .getBundle(AccessView.class.getName());
+
+    /** Heading label. */
     private JLabel heading;
+    /** Information label. */
     private JLabel information;
 
+    /** Password field. */
     private JPasswordField passwordField;
+    /** Password confirmation field. */
     private JPasswordField confirmationField;
 
+    /** Unlock/Login button. */
     private JButton unlockButton;
 
     private final List<AccessViewListener> listeners;
@@ -104,19 +114,16 @@ public final class AccessView extends DropShadowPanel {
     public void showFirstRun() {
         inEDT();
 
-        // TODO externalise this text
-        heading.setText("First run");
-        information
-                .setText("Create a password so that your Tidal settings are secured.");
+        heading.setText(BUNDLE.getString("heading.firstrun.text"));
+        information.setText(BUNDLE.getString("information.firstrun.text"));
 
         passwordField = new JPasswordField();
         passwordField.setName("AccessViewPasswordField");
         passwordField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(final KeyEvent e) {
-                // Want to unlock the confirm button if the
-                // confirmation
-                // field matches the password field.
+                // Want to unlock the confirm button if the confirmation field
+                // matches the password field.
                 if (Arrays.equals(confirmationField.getPassword(),
                         passwordField.getPassword())) {
                     unlockButton.setEnabled(true);
@@ -131,9 +138,8 @@ public final class AccessView extends DropShadowPanel {
         confirmationField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(final KeyEvent e) {
-                // Want to unlock the confirm button if the
-                // confirmation
-                // field matches the password field.
+                // Want to unlock the confirm button if the confirmation field
+                // matches the password field.
                 if (Arrays.equals(confirmationField.getPassword(),
                         passwordField.getPassword())) {
                     unlockButton.setEnabled(true);
@@ -145,7 +151,7 @@ public final class AccessView extends DropShadowPanel {
 
         unlockButton = new JButton();
         unlockButton.setName("AccessViewUnlockButton");
-        unlockButton.setText("Confirm");
+        unlockButton.setText(BUNDLE.getString("unlockButton.firstrun.text"));
         unlockButton.setEnabled(false);
         unlockButton.addActionListener(new ActionListener() {
             @Override
@@ -170,15 +176,14 @@ public final class AccessView extends DropShadowPanel {
     public void showLogin() {
         inEDT();
 
-        // TODO externalise this text
-        heading.setText("Unlock Tidal");
-        information.setText("Sign in with your Tidal password.");
+        heading.setText(BUNDLE.getString("heading.login.text"));
+        information.setText(BUNDLE.getString("information.login.text"));
 
         passwordField = new JPasswordField();
         passwordField.setName("AccessViewPasswordField");
 
         unlockButton = new JButton();
-        unlockButton.setText("Unlock");
+        unlockButton.setText(BUNDLE.getString("unlockButton.login.text"));
         unlockButton.setName("AccessViewUnlockButton");
         unlockButton.addActionListener(new ActionListener() {
             @Override
@@ -214,9 +219,9 @@ public final class AccessView extends DropShadowPanel {
     private void handleUnlockButtonAction(final ActionEvent e,
             final boolean firstRun) {
         // Clear the input.
-        Arrays.fill(passwordField.getPassword(), '0');
+        Arrays.fill(passwordField.getPassword(), '\0');
         if (confirmationField != null) {
-            Arrays.fill(confirmationField.getPassword(), '0');
+            Arrays.fill(confirmationField.getPassword(), '\0');
         }
 
         // FIXME This may not be the best way of passing passwords around.
