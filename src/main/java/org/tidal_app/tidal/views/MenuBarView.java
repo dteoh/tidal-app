@@ -22,14 +22,18 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.tidal_app.tidal.util.ResourceUtils;
 import org.tidal_app.tidal.views.events.MenuBarViewEvent;
 import org.tidal_app.tidal.views.events.MenuBarViewListener;
 import org.tidal_app.tidal.views.swing.GradientPanel;
@@ -42,6 +46,9 @@ import com.google.common.collect.Sets;
  * @author Douglas Teoh
  */
 public final class MenuBarView extends GradientPanel {
+
+    private static final ResourceBundle BUNDLE = ResourceBundle
+            .getBundle(MenuBarView.class.getName());
 
     /** Colors */
     private static final Color APP_NAME_FOREGROUND = new Color(255, 255, 255);
@@ -67,9 +74,15 @@ public final class MenuBarView extends GradientPanel {
         setLayout(new MigLayout());
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BAR_BORDER_COLOR));
 
-        // TODO Add custom icon
         final JButton menuButton = new JButton();
         menuButton.setName("MenuBarViewMenuButton");
+        menuButton.setContentAreaFilled(false);
+        menuButton.setSelected(false);
+        try {
+            menuButton.setIcon(new ImageIcon(ResourceUtils.getImage(getClass(),
+                    BUNDLE.getString("menuButton.icon"))));
+        } catch (IOException e) {
+        }
         menuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -79,13 +92,14 @@ public final class MenuBarView extends GradientPanel {
         add(menuButton, "w 32!, h 32!");
 
         // Application name
-        final JLabel appName = new JLabel("Tidal");
+        final JLabel appName = new JLabel(BUNDLE.getString("appName.text"));
         appName.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
         appName.setForeground(APP_NAME_FOREGROUND);
         add(appName);
 
         // TODO: Externalize application version number
-        final JLabel appVersion = new JLabel("0.1-dev");
+        final JLabel appVersion = new JLabel(
+                BUNDLE.getString("appVersion.text"));
         appVersion.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 22));
         appVersion.setForeground(APP_VERSION_FOREGROUND);
         add(appVersion);
