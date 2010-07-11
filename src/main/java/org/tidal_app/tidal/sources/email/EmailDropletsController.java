@@ -17,28 +17,62 @@
 package org.tidal_app.tidal.sources.email;
 
 import static org.tidal_app.tidal.util.EDTUtils.outsideEDT;
+import static org.tidal_app.tidal.util.ResourceUtils.getImage;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
+import org.tidal_app.tidal.sources.SetupDroplet;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.sources.email.views.EmailDropletSetup;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class EmailDropletsController {
+public final class EmailDropletsController implements SetupDroplet {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(EmailDropletsController.class);
+
+    private static final ResourceBundle BUNDLE = ResourceBundle
+            .getBundle(EmailDropletsController.class.getName());
 
     private final Map<String, AbstractEmailDroplet> droplets;
+
+    private Icon setupIcon;
+
+    private EmailDropletSetup setupView;
 
     public EmailDropletsController() {
         outsideEDT();
 
         droplets = Maps.newTreeMap();
+
+        // Supported email protocols.
+        final List<String> protocols = Lists.newArrayList("IMAP", "IMAPS");
+
+        Runnable swingTask = new Runnable() {
+            @Override
+            public void run() {
+                setupView = new EmailDropletSetup();
+                setupView.addProtocols(protocols);
+            }
+        };
+        SwingUtilities.invokeLater(swingTask);
     }
 
     /**
@@ -173,6 +207,63 @@ public class EmailDropletsController {
             }
             return allModels;
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tidal_app.tidal.sources.SetupDroplet#getSetupView()
+     */
+    @Override
+    public JComponent getSetupView() {
+        return setupView;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tidal_app.tidal.sources.SetupDroplet#getSetupIcon()
+     */
+    @Override
+    public Icon getSetupIcon() {
+        outsideEDT();
+
+        if (setupIcon == null) {
+            try {
+                setupIcon = new ImageIcon(getImage(getClass(),
+                        BUNDLE.getString("email.image")));
+            } catch (IOException e) {
+                LOGGER.error("Failed to load icon", e);
+            }
+        }
+        return setupIcon;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tidal_app.tidal.sources.SetupDroplet#cancelSetup()
+     */
+    @Override
+    public void cancelSetup() {
+        Runnable swingTask = new Runnable() {
+            @Override
+            public void run() {
+                setupView.clearFields();
+            }
+        };
+        SwingUtilities.invokeLater(swingTask);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tidal_app.tidal.sources.SetupDroplet#createDropletFromSetup()
+     */
+    @Override
+    public boolean createDropletFromSetup() {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

@@ -16,14 +16,16 @@
 
 package org.tidal_app.tidal;
 
+import static org.tidal_app.tidal.util.ResourceUtils.getImage;
+
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.ResourceBundle;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -43,6 +45,7 @@ import org.tidal_app.tidal.exceptions.UnsecuredException;
 import org.tidal_app.tidal.sources.email.EmailDropletsController;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
+import org.tidal_app.tidal.views.AccountsView;
 import org.tidal_app.tidal.views.events.AccessViewEvent;
 import org.tidal_app.tidal.views.events.AccessViewListener;
 import org.tidal_app.tidal.views.events.MenuBarViewEvent;
@@ -67,6 +70,10 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     private final static Logger LOGGER = LoggerFactory
             .getLogger(TidalController.class);
 
+    /** Resource bundle. */
+    private static final ResourceBundle BUNDLE = ResourceBundle
+            .getBundle(TidalController.class.getName());;
+
     /** Views */
     /** This is the main application frame. */
     private JFrame mainFrame;
@@ -89,6 +96,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         menuBarC = new MenuBarController();
         dropletsViewC = new DropletsViewController();
         menuBarC.addMenuBarViewListener(this);
+
         initView();
     }
 
@@ -98,7 +106,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
             public void run() {
                 // Make our application frame.
                 final JFrame mainFrame = new JFrame();
-                mainFrame.setTitle("Tidal");
+                mainFrame.setTitle(BUNDLE.getString("appTitle"));
                 mainFrame
                         .setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 mainFrame.addWindowListener(new WindowAdapter() {
@@ -123,8 +131,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                     backgroundImage = (BufferedImage) Worker.post(new Task() {
                         @Override
                         public Object run() throws Exception {
-                            return ImageIO.read(getClass().getResource(
-                                    "background.png"));
+                            return getImage(getClass(),
+                                    BUNDLE.getString("background.image"));
                         }
                     });
                 } catch (final Exception e) {
@@ -281,7 +289,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
             }.execute();
         } else {
             final AccessView accessView = (AccessView) evt.getSource();
-            accessView.displayMessage("Incorrect password.");
+            accessView.displayMessage(BUNDLE.getString("loginError"));
         }
     }
 
@@ -319,7 +327,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                         cards.show(mainFramePanel, "MAIN_VIEW");
                     } else {
                         AccessView accessView = (AccessView) evt.getSource();
-                        accessView.displayMessage("Password cannot be blank.");
+                        accessView.displayMessage(BUNDLE
+                                .getString("passwordError"));
                     }
                 } catch (final Exception e) {
                     LOGGER.error("GUI update error", e);
@@ -328,16 +337,21 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         }.execute();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Handles the menu button click event. Displays the account setup view.
      * 
-     * @see
-     * org.tidal_app.tidal.views.events.MenuBarViewListener#menuButtonClicked
-     * (org.tidal_app.tidal.views.events.MenuBarViewEvent)
+     * @see org.tidal_app.tidal.views.events.MenuBarViewListener#menuButtonClicked
+     *      (org.tidal_app.tidal.views.events.MenuBarViewEvent)
      */
     @Override
     public void menuButtonClicked(final MenuBarViewEvent evt) {
-        // TODO Auto-generated method stub
+        // Make the account setup view.
+        AccountsView view = new AccountsView(mainFrame, true);
+        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
+        // Register available droplets with the view.
+        view.addSetupView(emailC);
+
+        view.setVisible(true);
     }
 }
