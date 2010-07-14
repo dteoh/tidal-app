@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.exceptions;
 
+import java.util.ResourceBundle;
+
 /**
  * Exception class for EDT thread violations.
  * 
@@ -24,11 +26,11 @@ package org.tidal_app.tidal.exceptions;
  */
 public final class EDTViolationException extends IllegalStateException {
 
-    /** Default exception message. */
-    private static final String MESSAGE = "Manipulating view state outside of EDT; please refactor.";
+    private static final ResourceBundle BUNDLE = ResourceBundle
+            .getBundle("Exceptions");
 
     public EDTViolationException() {
-        super(MESSAGE);
+        super(BUNDLE.getString("EDTViolationException.message"));
     }
 
 }

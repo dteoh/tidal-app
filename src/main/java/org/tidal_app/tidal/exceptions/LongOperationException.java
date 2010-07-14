@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.exceptions;
 
+import java.util.ResourceBundle;
+
 /**
  * Exception class for operations that should not be invoked on the EDT.
  * 
@@ -24,11 +26,11 @@ package org.tidal_app.tidal.exceptions;
  */
 public class LongOperationException extends IllegalStateException {
 
-    /** Default exception message. */
-    private static final String MESSAGE = "An expensive operation was invoked on the EDT; please refactor.";
+    private static final ResourceBundle BUNDLE = ResourceBundle
+            .getBundle("Exceptions");
 
     public LongOperationException() {
-        super(MESSAGE);
+        super(BUNDLE.getString("LongOperationException.message"));
     }
 
 }
