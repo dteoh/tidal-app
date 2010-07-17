@@ -1,2 +1,2 @@
-protocol=imap; type=store; class=com.sun.mail.imap.IMAPStore; vendor=Sun; 
-protocol=imaps; type=store; class=com.sun.mail.imap.IMAPStore; vendor=Sun;
+protocol=imap; type=store; class=com.sun.mail.imap.IMAPStore; vendor=Sun;
+protocol=imaps; type=store; class=com.sun.mail.imap.IMAPSSLStore; vendor=Sun;
