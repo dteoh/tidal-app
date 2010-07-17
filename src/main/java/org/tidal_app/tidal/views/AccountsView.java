@@ -290,7 +290,11 @@ public final class AccountsView extends JDialog {
      */
     private void handleCreateButtonAction(final ActionEvent e) {
         if (activeDroplet != null) {
-            activeDroplet.createDropletFromSetup();
+            boolean created = activeDroplet.createDropletFromSetup();
+            if (created) {
+                cancelSetups();
+                setVisible(false);
+            }
         }
     }
 

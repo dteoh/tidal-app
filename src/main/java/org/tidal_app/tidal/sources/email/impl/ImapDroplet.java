@@ -61,7 +61,8 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         outsideEDT();
 
         final String protocol = settings.getProtocol();
-        if (!"imap".equals(protocol) && !"imaps".equals(protocol)) {
+        if (!"imap".equalsIgnoreCase(protocol)
+                && !"imaps".equalsIgnoreCase(protocol)) {
             throw new DropletCreationException("Unsupported protocol: "
                     + protocol);
         }
@@ -128,8 +129,8 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         // Set up the mailbox to read from
         try {
             store = session.getStore(settings.getProtocol());
-            store.connect(settings.getHost(), settings.getUsername(), settings
-                    .getPassword());
+            store.connect(settings.getHost(), settings.getUsername(),
+                    settings.getPassword());
             inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_WRITE);
         } catch (final NoSuchProviderException e) {

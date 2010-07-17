@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal;
+package org.tidal_app.tidal.controllers;
 
 import static org.tidal_app.tidal.util.ResourceUtils.getImage;
 
@@ -54,6 +54,8 @@ import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
+import com.google.inject.Inject;
+
 import foxtrot.Job;
 import foxtrot.Task;
 import foxtrot.Worker;
@@ -67,12 +69,12 @@ import foxtrot.Worker;
  */
 public class TidalController implements AccessViewListener, MenuBarViewListener {
 
-    private final static Logger LOGGER = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(TidalController.class);
 
     /** Resource bundle. */
     private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(TidalController.class.getName());;
+            .getBundle(TidalController.class.getName());
 
     /** Views */
     /** This is the main application frame. */
@@ -88,13 +90,16 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     private final ConfigurationController configC;
     private final EmailDropletsController emailC;
 
+    @Inject
     public TidalController(
             final ConfigurationController configurationController,
-            final EmailDropletsController emailDropletsController) {
+            final EmailDropletsController emailDropletsController,
+            final MenuBarController menuBarController,
+            final DropletsViewController dropletsViewController) {
         configC = configurationController;
         emailC = emailDropletsController;
-        menuBarC = new MenuBarController();
-        dropletsViewC = new DropletsViewController();
+        menuBarC = menuBarController;
+        dropletsViewC = dropletsViewController;
         menuBarC.addMenuBarViewListener(this);
 
         initView();

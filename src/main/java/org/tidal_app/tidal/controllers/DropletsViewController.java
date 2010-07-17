@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal;
+package org.tidal_app.tidal.controllers;
 
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 

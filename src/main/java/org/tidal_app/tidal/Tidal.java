@@ -20,8 +20,10 @@ import javax.swing.UIManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tidal_app.tidal.configuration.ConfigurationController;
-import org.tidal_app.tidal.sources.email.EmailDropletsController;
+import org.tidal_app.tidal.controllers.TidalController;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * Main application entry point.
@@ -45,9 +47,14 @@ public class Tidal {
             LOGGER.error("Look and feel error", e);
         }
 
-        ConfigurationController configurationC = new ConfigurationController();
-        EmailDropletsController emailDropletsC = new EmailDropletsController();
-        new TidalController(configurationC, emailDropletsC);
+        // ConfigurationController configurationC = new
+        // ConfigurationController();
+        // EmailDropletsController emailDropletsC = new
+        // EmailDropletsController();
+        // new TidalController(configurationC, emailDropletsC);
+
+        Injector injector = Guice.createInjector(new TidalModule());
+        injector.getInstance(TidalController.class);
     }
 
 }

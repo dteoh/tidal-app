@@ -31,39 +31,56 @@ import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tidal_app.tidal.configuration.SaveConfigurable;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
+import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.sources.SetupDroplet;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.sources.email.views.EmailDropletSetup;
+import org.tidal_app.tidal.views.DropletsView;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 
+import foxtrot.Job;
+import foxtrot.Worker;
+
+/**
+ * This controller is used to manage email droplets.
+ * 
+ * @author Douglas Teoh
+ * 
+ */
 public final class EmailDropletsController implements SetupDroplet {
 
+    /** Class logger. */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(EmailDropletsController.class);
 
+    /** Resource bundle for this class. */
     private static final ResourceBundle BUNDLE = ResourceBundle
             .getBundle(EmailDropletsController.class.getName());
 
     private final Map<String, AbstractEmailDroplet> droplets;
 
-    private Icon setupIcon;
-
     private EmailDropletSetup setupView;
 
-    public EmailDropletsController() {
-        outsideEDT();
+    @Inject
+    private SaveConfigurable saveConfig;
 
+    @Inject
+    private DropletsView dropletsView;
+
+    public EmailDropletsController() {
         droplets = Maps.newTreeMap();
 
         // Supported email protocols.
-        final List<String> protocols = Lists.newArrayList("IMAP", "IMAPS");
+        final List<String> protocols = Lists.newArrayList("imap", "imaps");
 
         Runnable swingTask = new Runnable() {
             @Override
@@ -106,7 +123,18 @@ public final class EmailDropletsController implements SetupDroplet {
                                     + emailSettings.getUsername());
                 }
 
+                // Initialize the droplet
+                try {
+                    imapsDroplet.init();
+                } catch (DropletInitException e) {
+                    throw new DropletCreationException(
+                            "Could not initialize IMAP droplet", e);
+                }
+
                 droplets.put(imapsDroplet.getUsername(), imapsDroplet);
+
+                saveConfig.addConfigurable(imapsDroplet);
+
                 return imapsDroplet;
             } else {
                 // Unknown/unsupported protocols.
@@ -119,6 +147,12 @@ public final class EmailDropletsController implements SetupDroplet {
         }
     }
 
+    /**
+     * TODO: Review for removal.
+     * 
+     * @param droplet
+     * @throws DropletCreationException
+     */
     public void addEmailDroplet(final AbstractEmailDroplet droplet)
             throws DropletCreationException {
         outsideEDT();
@@ -130,6 +164,15 @@ public final class EmailDropletsController implements SetupDroplet {
                         "Duplicate AbstractEmailDroplet for "
                                 + droplet.getUsername());
             }
+
+            // Initialize the droplet
+            try {
+                droplet.init();
+            } catch (DropletInitException e) {
+                throw new DropletCreationException(
+                        "Could not initialize email droplet", e);
+            }
+
             droplets.put(droplet.getUsername(), droplet);
         }
 
@@ -228,13 +271,13 @@ public final class EmailDropletsController implements SetupDroplet {
     public Icon getSetupIcon() {
         outsideEDT();
 
-        if (setupIcon == null) {
-            try {
-                setupIcon = new ImageIcon(getImage(getClass(),
-                        BUNDLE.getString("email.image")));
-            } catch (IOException e) {
-                LOGGER.error("Failed to load icon", e);
-            }
+        Icon setupIcon = null;
+
+        try {
+            setupIcon = new ImageIcon(getImage(getClass(),
+                    BUNDLE.getString("email.image")));
+        } catch (IOException e) {
+            LOGGER.error("Failed to load icon", e);
         }
         return setupIcon;
     }
@@ -262,8 +305,24 @@ public final class EmailDropletsController implements SetupDroplet {
      */
     @Override
     public boolean createDropletFromSetup() {
-        // TODO Auto-generated method stub
-        return false;
+        final EmailSettings settings = setupView.getSettings();
+
+        boolean result = (Boolean) Worker.post(new Job() {
+            @Override
+            public Object run() {
+                try {
+                    LOGGER.info("Creating droplet from setup");
+                    EmailDropletsController.this.addEmailDroplet(settings);
+                    LOGGER.info("Sucessfully created droplet");
+                    return true;
+                } catch (DropletCreationException e) {
+                    LOGGER.error("Failed to create droplet", e);
+                }
+                return false;
+            }
+        });
+
+        return result;
     }
 
 }

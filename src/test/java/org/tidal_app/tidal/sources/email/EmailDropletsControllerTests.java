@@ -16,20 +16,25 @@
 
 package org.tidal_app.tidal.sources.email;
 
+import static org.fest.reflect.core.Reflection.field;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tidal_app.tidal.configuration.SaveConfigurable;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 
 /**
- * @author douglas
+ * Tests for the email droplets controller.
+ * 
+ * @author Douglas Teoh
  * 
  */
 public class EmailDropletsControllerTests {
@@ -47,6 +52,11 @@ public class EmailDropletsControllerTests {
         settings = new EmailSettings(hostName, imapProtocol, testUser,
                 testPassword);
         controller = new EmailDropletsController();
+
+        SaveConfigurable sc = mock(SaveConfigurable.class);
+
+        field("saveConfig").ofType(SaveConfigurable.class).in(controller)
+                .set(sc);
     }
 
     @After

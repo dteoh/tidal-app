@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 
 import org.junit.Test;
+import org.tidal_app.tidal.controllers.MenuBarController;
 
 /**
  * Unit tests for {@link MenuBarController}.

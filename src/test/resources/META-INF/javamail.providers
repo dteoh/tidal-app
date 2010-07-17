@@ -1,0 +1,4 @@
+protocol=imap; type=store; class=org.jvnet.mock_javamail.MockStore
+protocol=imap; type=transport; class=org.jvnet.mock_javamail.MockTransport
+protocol=imaps; type=store; class=org.jvnet.mock_javamail.MockStore
+protocol=imaps; type=transport; class=org.jvnet.mock_javamail.MockTransport
