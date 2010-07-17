@@ -34,9 +34,9 @@ import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
-import org.tidal_app.tidal.guice.InjectLogger;
 import org.tidal_app.tidal.sources.email.AbstractEmailDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
@@ -50,8 +50,8 @@ import com.google.common.collect.Lists;
  */
 public final class ImapDroplet extends AbstractEmailDroplet {
 
-    @InjectLogger
-    private Logger logger;
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(ImapDroplet.class);
 
     private Store store = null;
     private Folder inbox = null;
@@ -106,7 +106,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                 // False, because deleted messages get expunged if true.
                 inbox.close(false);
             } catch (final MessagingException e) {
-                logger.error("Destroy exception", e);
+                LOGGER.error("Destroy exception", e);
             }
         }
 
@@ -114,7 +114,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             try {
                 store.close();
             } catch (final MessagingException e) {
-                logger.error("Destroy exception", e);
+                LOGGER.error("Destroy exception", e);
             }
         }
     }
@@ -134,10 +134,10 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_WRITE);
         } catch (final NoSuchProviderException e) {
-            logger.error("Init exception", e);
+            LOGGER.error("Init exception", e);
             throw new DropletInitException(e);
         } catch (final MessagingException e) {
-            logger.error("Init exception", e);
+            LOGGER.error("Init exception", e);
             throw new DropletInitException(e);
         }
     }
@@ -178,9 +178,9 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             }
             return unreadRipples;
         } catch (final MessagingException e) {
-            logger.error("Could not download messages", e);
+            LOGGER.error("Could not download messages", e);
         } catch (final IOException e) {
-            logger.error("Could not download message content", e);
+            LOGGER.error("Could not download message content", e);
         }
         return Lists.newLinkedList();
     }
