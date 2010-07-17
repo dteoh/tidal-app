@@ -20,12 +20,16 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tidal_app.tidal.TidalModule;
 import org.tidal_app.tidal.configuration.models.Configurable;
 import org.tidal_app.tidal.configuration.models.Configuration;
 import org.tidal_app.tidal.exceptions.UnsecuredException;
 import org.yaml.snakeyaml.Dumper;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /*
  * Tidal, a communications aggregation and notification tool. 
@@ -58,7 +62,8 @@ public class ConfigurationControllerTests {
     public void setUp() {
         config = new Configuration("digest");
 
-        controller = new ConfigurationController();
+        Injector injector = Guice.createInjector(new TidalModule());
+        controller = injector.getInstance(ConfigurationController.class);
     }
 
     @After
@@ -84,8 +89,8 @@ public class ConfigurationControllerTests {
 
         assertTrue(controller.loadMainSettings(pr));
 
-        final Configuration controllerConfig = field("config").ofType(
-                Configuration.class).in(controller).get();
+        final Configuration controllerConfig = field("config")
+                .ofType(Configuration.class).in(controller).get();
 
         assertEquals(config, controllerConfig);
 
