@@ -38,10 +38,10 @@ import javax.swing.WindowConstants;
 import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.configuration.ConfigurationController;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.UnsecuredException;
+import org.tidal_app.tidal.guice.InjectLogger;
 import org.tidal_app.tidal.sources.email.EmailDropletsController;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
@@ -69,8 +69,8 @@ import foxtrot.Worker;
  */
 public class TidalController implements AccessViewListener, MenuBarViewListener {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(TidalController.class);
+    @InjectLogger
+    private Logger logger;
 
     /** Resource bundle. */
     private static final ResourceBundle BUNDLE = ResourceBundle
@@ -141,7 +141,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                         }
                     });
                 } catch (final Exception e) {
-                    LOGGER.error("Error loading image", e);
+                    logger.error("Error loading image", e);
                 }
 
                 accessViewPanel.setBackground(new Color(90, 100, 115));
@@ -227,7 +227,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                 }
             });
         } catch (final Exception e) {
-            LOGGER.error("Error saving application settings", e);
+            logger.error("Error saving application settings", e);
         }
         System.exit(0);
     }
@@ -279,7 +279,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                                 publish(emailC.getDropletModel(emailSettings
                                         .getUsername()));
                             } catch (final DropletCreationException e) {
-                                LOGGER.error("Cannot create droplet", e);
+                                logger.error("Cannot create droplet", e);
                             }
                         }
                     }
@@ -316,7 +316,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                     configC.changeAuthorizationKey(evt.getPassword());
                     passwordOK = true;
                 } catch (final UnsecuredException e) {
-                    LOGGER.error("Setup password error", e);
+                    logger.error("Setup password error", e);
                 }
                 return passwordOK;
             }
@@ -336,7 +336,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                                 .getString("passwordError"));
                     }
                 } catch (final Exception e) {
-                    LOGGER.error("GUI update error", e);
+                    logger.error("GUI update error", e);
                 }
             }
         }.execute();

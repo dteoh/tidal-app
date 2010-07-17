@@ -14,41 +14,39 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal;
+package org.tidal_app.tidal.guice;
 
-import javax.swing.UIManager;
+import java.lang.reflect.Field;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tidal_app.tidal.controllers.TidalController;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.MembersInjector;
 
 /**
- * Main application entry point.
+ * Injects logger fields with an instantiated logger.
  * 
  * @author Douglas Teoh
+ * 
  */
-public class Tidal {
+public class LoggerInjector<T> implements MembersInjector<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Tidal.class);
+    private final Field field;
+    private final Logger logger;
 
-    /**
-     * Entry point into the program.
-     * 
-     * @param args
-     */
-    public static void main(final String[] args) {
-        // Set the application to use system UI LnF.
+    public LoggerInjector(final Field field) {
+        this.field = field;
+        logger = LoggerFactory.getLogger(field.getDeclaringClass());
+        field.setAccessible(true);
+    }
+
+    @Override
+    public void injectMembers(final T arg) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (final Exception e) {
-            LOGGER.error("Look and feel error", e);
+            field.set(arg, logger);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-
-        Injector injector = Guice.createInjector(new TidalModule());
-        injector.getInstance(TidalController.class);
     }
 
 }

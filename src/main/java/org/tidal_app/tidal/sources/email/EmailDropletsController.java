@@ -30,10 +30,10 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.configuration.SaveConfigurable;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
+import org.tidal_app.tidal.guice.InjectLogger;
 import org.tidal_app.tidal.sources.SetupDroplet;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
@@ -58,9 +58,8 @@ import foxtrot.Worker;
  */
 public final class EmailDropletsController implements SetupDroplet {
 
-    /** Class logger. */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(EmailDropletsController.class);
+    @InjectLogger
+    private Logger logger;
 
     /** Resource bundle for this class. */
     private static final ResourceBundle BUNDLE = ResourceBundle
@@ -277,7 +276,7 @@ public final class EmailDropletsController implements SetupDroplet {
             setupIcon = new ImageIcon(getImage(getClass(),
                     BUNDLE.getString("email.image")));
         } catch (IOException e) {
-            LOGGER.error("Failed to load icon", e);
+            logger.error("Failed to load icon", e);
         }
         return setupIcon;
     }
@@ -311,12 +310,12 @@ public final class EmailDropletsController implements SetupDroplet {
             @Override
             public Object run() {
                 try {
-                    LOGGER.info("Creating droplet from setup");
+                    logger.info("Creating droplet from setup");
                     EmailDropletsController.this.addEmailDroplet(settings);
-                    LOGGER.info("Sucessfully created droplet");
+                    logger.info("Sucessfully created droplet");
                     return true;
                 } catch (DropletCreationException e) {
-                    LOGGER.error("Failed to create droplet", e);
+                    logger.error("Failed to create droplet", e);
                 }
                 return false;
             }

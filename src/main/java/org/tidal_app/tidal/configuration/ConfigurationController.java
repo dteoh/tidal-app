@@ -32,10 +32,10 @@ import org.apache.commons.io.IOUtils;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.configuration.models.Configurable;
 import org.tidal_app.tidal.configuration.models.Configuration;
 import org.tidal_app.tidal.exceptions.UnsecuredException;
+import org.tidal_app.tidal.guice.InjectLogger;
 import org.yaml.snakeyaml.Dumper;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Loader;
@@ -51,6 +51,8 @@ import com.google.common.collect.Sets;
  */
 public final class ConfigurationController implements SaveConfigurable {
 
+    // TODO refactor this.
+
     /** Default file name for droplet settings */
     private static final String DROPLETSRC = "dropletsrc";
     /** Default file name for user settings */
@@ -60,8 +62,8 @@ public final class ConfigurationController implements SaveConfigurable {
     /** Default property for retrieving user home directory */
     private static final String USER_HOME = "user.home";
 
-    private final static Logger LOGGER = LoggerFactory
-            .getLogger(ConfigurationController.class);
+    @InjectLogger
+    private Logger logger;
 
     /** Contains master configuration information */
     private Configuration config;
@@ -110,7 +112,7 @@ public final class ConfigurationController implements SaveConfigurable {
             fr = new FileReader(configFile);
             result = loadMainSettings(fr);
         } catch (final FileNotFoundException e) {
-            LOGGER.error("Expecting file to exist.", e);
+            logger.error("Expecting file to exist.", e);
         } finally {
             IOUtils.closeQuietly(fr);
         }
@@ -139,7 +141,7 @@ public final class ConfigurationController implements SaveConfigurable {
                 }
             }
         } catch (final ClassCastException e) {
-            LOGGER.error("Incorrect config file", e);
+            logger.error("Incorrect config file", e);
         }
         return result;
     }
@@ -161,7 +163,7 @@ public final class ConfigurationController implements SaveConfigurable {
 
         final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
-            LOGGER.error("No home directory");
+            logger.error("No home directory");
             return;
         }
 
@@ -176,7 +178,7 @@ public final class ConfigurationController implements SaveConfigurable {
             fw = new FileWriter(configFile);
             saveMainSettings(fw);
         } catch (final IOException e) {
-            LOGGER.error("Cannot write program settings.", e);
+            logger.error("Cannot write program settings.", e);
         } finally {
             IOUtils.closeQuietly(fw);
         }
@@ -217,7 +219,7 @@ public final class ConfigurationController implements SaveConfigurable {
 
         final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
-            LOGGER.error("No home directory");
+            logger.error("No home directory");
             return;
         }
 
@@ -230,7 +232,7 @@ public final class ConfigurationController implements SaveConfigurable {
             fw = new FileWriter(configFile);
             saveDropletSettings(fw);
         } catch (final IOException e) {
-            LOGGER.error("Cannot save droplet settings.", e);
+            logger.error("Cannot save droplet settings.", e);
         } finally {
             IOUtils.closeQuietly(fw);
         }
@@ -274,7 +276,7 @@ public final class ConfigurationController implements SaveConfigurable {
 
         final String homeDirectory = System.getProperty(USER_HOME);
         if (homeDirectory == null) {
-            LOGGER.error("No home directory");
+            logger.error("No home directory");
             return Lists.newLinkedList();
         }
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
@@ -286,7 +288,7 @@ public final class ConfigurationController implements SaveConfigurable {
             fr = new FileReader(configFile);
             result = loadDropletSettings(fr);
         } catch (final FileNotFoundException e) {
-            LOGGER.error("Expecting file to exist.", e);
+            logger.error("Expecting file to exist.", e);
             result = Lists.newLinkedList();
         } finally {
             IOUtils.closeQuietly(fr);
@@ -347,8 +349,8 @@ public final class ConfigurationController implements SaveConfigurable {
         }
 
         final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
-        config = new Configuration(passwordEncryptor
-                .encryptPassword(newAuthKey));
+        config = new Configuration(
+                passwordEncryptor.encryptPassword(newAuthKey));
 
         encryptor.setPassword(newAuthKey);
 

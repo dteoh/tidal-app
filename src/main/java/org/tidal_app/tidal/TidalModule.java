@@ -21,10 +21,12 @@ import org.tidal_app.tidal.configuration.SaveConfigurable;
 import org.tidal_app.tidal.controllers.DropletsViewController;
 import org.tidal_app.tidal.controllers.MenuBarController;
 import org.tidal_app.tidal.controllers.TidalController;
+import org.tidal_app.tidal.guice.LoggerListener;
 import org.tidal_app.tidal.sources.email.EmailDropletsController;
 import org.tidal_app.tidal.views.DropletsView;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.matcher.Matchers;
 
 /**
  * Configures the Tidal class bindings.
@@ -34,11 +36,6 @@ import com.google.inject.AbstractModule;
  */
 public class TidalModule extends AbstractModule {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.google.inject.AbstractModule#configure()
-     */
     @Override
     protected void configure() {
 
@@ -55,6 +52,8 @@ public class TidalModule extends AbstractModule {
         bind(EmailDropletsController.class);
 
         bind(TidalController.class);
+
+        bindListener(Matchers.any(), new LoggerListener());
     }
 
 }
