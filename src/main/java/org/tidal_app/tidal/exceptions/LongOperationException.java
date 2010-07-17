@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 public class LongOperationException extends IllegalStateException {
 
     private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle("Exceptions");
+            .getBundle(LongOperationException.class.getName());
 
     public LongOperationException() {
         super(BUNDLE.getString("LongOperationException.message"));

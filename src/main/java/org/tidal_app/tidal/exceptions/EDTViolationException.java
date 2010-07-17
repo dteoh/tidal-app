@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 public final class EDTViolationException extends IllegalStateException {
 
     private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle("Exceptions");
+            .getBundle(EDTViolationException.class.getName());
 
     public EDTViolationException() {
         super(BUNDLE.getString("EDTViolationException.message"));
