@@ -310,9 +310,9 @@ public final class EmailDropletsController implements SetupDroplet {
             @Override
             public Object run() {
                 try {
-                    logger.info("Creating droplet from setup");
+                    logger.debug("Creating droplet from setup");
                     EmailDropletsController.this.addEmailDroplet(settings);
-                    logger.info("Sucessfully created droplet");
+                    logger.debug("Sucessfully created droplet");
                     return true;
                 } catch (DropletCreationException e) {
                     logger.error("Failed to create droplet", e);

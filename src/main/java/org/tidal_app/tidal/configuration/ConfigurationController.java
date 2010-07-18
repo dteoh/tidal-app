@@ -41,6 +41,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.Yaml;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -214,6 +215,7 @@ public final class ConfigurationController implements SaveConfigurable {
      */
     public void saveDropletSettings() throws UnsecuredException {
         if (!configurationUnlocked) {
+            logger.error("Configuration has not been unlocked");
             return;
         }
 
@@ -262,6 +264,7 @@ public final class ConfigurationController implements SaveConfigurable {
         for (final Configurable instance : configurableInstances) {
             allSettings.add(instance.getSettings());
         }
+        logger.debug("{} settings to serialize", allSettings.size());
 
         yaml.dumpAll(allSettings.iterator(), writer);
     }
@@ -282,14 +285,14 @@ public final class ConfigurationController implements SaveConfigurable {
         File configFile = new File(homeDirectory, TIDAL_CONFIG_DIR);
         configFile = new File(configFile, DROPLETSRC);
 
-        Iterable<Object> result = null;
+        Iterable<Object> result = Lists.newLinkedList();
         Reader fr = null;
         try {
             fr = new FileReader(configFile);
             result = loadDropletSettings(fr);
+            logger.debug("{} settings deserialized", Iterables.size(result));
         } catch (final FileNotFoundException e) {
             logger.error("Expecting file to exist.", e);
-            result = Lists.newLinkedList();
         } finally {
             IOUtils.closeQuietly(fr);
         }
@@ -312,7 +315,16 @@ public final class ConfigurationController implements SaveConfigurable {
                 encryptor)));
         allSettings = yaml.loadAll(reader);
 
-        return allSettings;
+        /*
+         * Refs #22 - Have to copy the settings because somehow SnakeYAML is
+         * throwing the data away.
+         */
+        List<Object> copy = Lists.newLinkedList();
+        for (Object o : allSettings) {
+            copy.add(o);
+        }
+
+        return copy;
     }
 
     /**
@@ -379,6 +391,8 @@ public final class ConfigurationController implements SaveConfigurable {
             return false;
         }
 
+        logger.debug("Added configurable");
+
         configurableInstances.add(instance);
         return true;
     }
@@ -401,6 +415,9 @@ public final class ConfigurationController implements SaveConfigurable {
         if (!configurableInstances.contains(instance)) {
             return false;
         }
+
+        logger.debug("Removed configurable");
+
         configurableInstances.remove(instance);
         return true;
     }

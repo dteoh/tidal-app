@@ -259,28 +259,42 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         });
 
         if (passwordOK) {
+            logger.debug("Login OK");
+
             new SwingWorker<Void, DropletModel>() {
                 @Override
                 protected void process(
                         final List<DropletModel> dropletModelChunks) {
+                    logger.debug("Adding droplet to view");
                     dropletsViewC.updateDropletViews(dropletModelChunks);
                 }
 
                 @Override
-                protected Void doInBackground() throws Exception {
+                protected Void doInBackground() {
                     final Iterable<Object> dropletSettings = configC
                             .loadDropletSettings();
 
                     for (final Object settings : dropletSettings) {
+                        logger.debug("Processing a user setting");
+
                         if (settings instanceof EmailSettings) {
+                            logger.debug("Setting is email setting");
+
                             EmailSettings emailSettings = (EmailSettings) settings;
                             try {
+                                logger.debug("Adding email droplet");
+
                                 emailC.addEmailDroplet(emailSettings);
                                 publish(emailC.getDropletModel(emailSettings
                                         .getUsername()));
+
+                                logger.debug("Published droplet");
                             } catch (final DropletCreationException e) {
                                 logger.error("Cannot create droplet", e);
                             }
+                        } else {
+                            logger.debug("Unknown setting: {}",
+                                    settings.getClass());
                         }
                     }
                     return null;
@@ -288,6 +302,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
 
                 @Override
                 protected void done() {
+                    logger.debug("Background task done");
                     CardLayout cards = (CardLayout) mainFramePanel.getLayout();
                     cards.show(mainFramePanel, "MAIN_VIEW");
                 }
