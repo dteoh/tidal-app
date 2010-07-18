@@ -31,6 +31,7 @@ import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.ContentType;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
@@ -140,7 +141,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             store.connect(settings.getHost(), settings.getUsername(),
                     settings.getPassword());
             inbox = store.getFolder("INBOX");
-            inbox.open(Folder.READ_WRITE);
+            inbox.open(Folder.READ_ONLY);
         } catch (final NoSuchProviderException e) {
             LOGGER.error("Init exception", e);
             throw new DropletInitException(e);
@@ -166,15 +167,16 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             // Make ripples
             final List<EmailRipple> unreadRipples = Lists.newLinkedList();
             for (int i = 0; i < messages.length; i++) {
-                final Address[] senderAddresses = messages[i].getFrom();
-                final String subject = messages[i].getSubject();
-                final Date sent = messages[i].getSentDate();
+                Address[] senderAddresses = messages[i].getFrom();
+                String subject = messages[i].getSubject();
+                Date sent = messages[i].getSentDate();
 
-                final String contentType = messages[i].getContentType();
+                ContentType ct = new ContentType(messages[i].getContentType());
+                // TODO externalize this message.
                 String content = "Only plaintext and HTML emails are supported.";
-                if (contentType != null
-                        && (contentType.contains("text/plain") || contentType
-                                .contains("text/html"))) {
+                if (ct != null
+                        && ("text/plain".equalsIgnoreCase(ct.getBaseType()) || "text/html"
+                                .equalsIgnoreCase(ct.getBaseType()))) {
                     content = (String) messages[i].getContent();
                 }
 
