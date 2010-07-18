@@ -30,6 +30,7 @@ import org.tidal_app.tidal.configuration.SaveConfigurable;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.views.DropletsView;
 
 /**
  * Tests for the email droplets controller.
@@ -54,9 +55,11 @@ public class EmailDropletsControllerTests {
         controller = new EmailDropletsController();
 
         SaveConfigurable sc = mock(SaveConfigurable.class);
+        DropletsView dv = mock(DropletsView.class);
 
         field("saveConfig").ofType(SaveConfigurable.class).in(controller)
                 .set(sc);
+        field("dropletsView").ofType(DropletsView.class).in(controller).set(dv);
     }
 
     @After
