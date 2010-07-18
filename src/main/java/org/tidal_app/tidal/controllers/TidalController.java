@@ -23,7 +23,6 @@ import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
@@ -50,7 +49,6 @@ import org.tidal_app.tidal.views.events.AccessViewEvent;
 import org.tidal_app.tidal.views.events.AccessViewListener;
 import org.tidal_app.tidal.views.events.MenuBarViewEvent;
 import org.tidal_app.tidal.views.events.MenuBarViewListener;
-import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
@@ -250,13 +248,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
      */
     @Override
     public void loginAttempted(final AccessViewEvent evt) {
-        new SwingWorker<Boolean, DropletModel>() {
-            @Override
-            protected void process(final List<DropletModel> dropletModelChunks) {
-                logger.debug("Adding droplet to view");
-                dropletsViewC.updateDropletViews(dropletModelChunks);
-            }
-
+        new SwingWorker<Boolean, Void>() {
             @Override
             protected Boolean doInBackground() {
                 boolean passwordOK = configC.authorize(evt.getPassword());
@@ -278,13 +270,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
 
                         EmailSettings emailSettings = (EmailSettings) settings;
                         try {
-                            logger.debug("Adding email droplet");
-
                             emailC.addEmailDroplet(emailSettings);
-                            publish(emailC.getDropletModel(emailSettings
-                                    .getUsername()));
-
-                            logger.debug("Published droplet");
+                            logger.debug("Registered email droplet");
                         } catch (final DropletCreationException e) {
                             logger.error("Cannot create droplet", e);
                         }
@@ -297,7 +284,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
 
             @Override
             protected void done() {
-                logger.debug("Background task done");
+                logger.debug("Login task done");
 
                 boolean passwordOK;
                 try {

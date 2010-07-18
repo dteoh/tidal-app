@@ -28,6 +28,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.slf4j.Logger;
 import org.tidal_app.tidal.configuration.SaveConfigurable;
@@ -133,6 +134,29 @@ public final class EmailDropletsController implements SetupDroplet {
                 droplets.put(imapsDroplet.getUsername(), imapsDroplet);
 
                 saveConfig.addConfigurable(imapsDroplet);
+
+                /*
+                 * Get any emails from the newly created droplet and show to the
+                 * user.
+                 */
+                new SwingWorker<DropletModel, Void>() {
+
+                    @Override
+                    protected DropletModel doInBackground() {
+                        logger.debug("Retrieving emails");
+                        return getDropletModel(emailSettings.getUsername());
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            dropletsView.updateDropletViews(get());
+                            logger.debug("Updated droplet view");
+                        } catch (Exception e) {
+                            logger.error("Failed to update droplet view", e);
+                        }
+                    }
+                }.execute();
 
                 return imapsDroplet;
             } else {
