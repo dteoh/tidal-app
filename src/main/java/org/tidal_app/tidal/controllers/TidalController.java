@@ -56,7 +56,6 @@ import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
 import com.google.inject.Inject;
 
-import foxtrot.Job;
 import foxtrot.Task;
 import foxtrot.Worker;
 
@@ -251,66 +250,72 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
      */
     @Override
     public void loginAttempted(final AccessViewEvent evt) {
-        final boolean passwordOK = (Boolean) Worker.post(new Job() {
+        new SwingWorker<Boolean, DropletModel>() {
             @Override
-            public Object run() {
-                return configC.authorize(evt.getPassword());
+            protected void process(final List<DropletModel> dropletModelChunks) {
+                logger.debug("Adding droplet to view");
+                dropletsViewC.updateDropletViews(dropletModelChunks);
             }
-        });
 
-        if (passwordOK) {
-            logger.debug("Login OK");
+            @Override
+            protected Boolean doInBackground() {
+                boolean passwordOK = configC.authorize(evt.getPassword());
 
-            new SwingWorker<Void, DropletModel>() {
-                @Override
-                protected void process(
-                        final List<DropletModel> dropletModelChunks) {
-                    logger.debug("Adding droplet to view");
-                    dropletsViewC.updateDropletViews(dropletModelChunks);
+                if (!passwordOK) {
+                    return false;
                 }
 
-                @Override
-                protected Void doInBackground() {
-                    final Iterable<Object> dropletSettings = configC
-                            .loadDropletSettings();
+                logger.debug("Login OK");
 
-                    for (final Object settings : dropletSettings) {
-                        logger.debug("Processing a user setting");
+                final Iterable<Object> dropletSettings = configC
+                        .loadDropletSettings();
 
-                        if (settings instanceof EmailSettings) {
-                            logger.debug("Setting is email setting");
+                for (final Object settings : dropletSettings) {
+                    logger.debug("Processing a user setting");
 
-                            EmailSettings emailSettings = (EmailSettings) settings;
-                            try {
-                                logger.debug("Adding email droplet");
+                    if (settings instanceof EmailSettings) {
+                        logger.debug("Setting is email setting");
 
-                                emailC.addEmailDroplet(emailSettings);
-                                publish(emailC.getDropletModel(emailSettings
-                                        .getUsername()));
+                        EmailSettings emailSettings = (EmailSettings) settings;
+                        try {
+                            logger.debug("Adding email droplet");
 
-                                logger.debug("Published droplet");
-                            } catch (final DropletCreationException e) {
-                                logger.error("Cannot create droplet", e);
-                            }
-                        } else {
-                            logger.debug("Unknown setting: {}",
-                                    settings.getClass());
+                            emailC.addEmailDroplet(emailSettings);
+                            publish(emailC.getDropletModel(emailSettings
+                                    .getUsername()));
+
+                            logger.debug("Published droplet");
+                        } catch (final DropletCreationException e) {
+                            logger.error("Cannot create droplet", e);
                         }
+                    } else {
+                        logger.debug("Unknown setting: {}", settings.getClass());
                     }
-                    return null;
                 }
+                return true;
+            }
 
-                @Override
-                protected void done() {
-                    logger.debug("Background task done");
-                    CardLayout cards = (CardLayout) mainFramePanel.getLayout();
-                    cards.show(mainFramePanel, "MAIN_VIEW");
+            @Override
+            protected void done() {
+                logger.debug("Background task done");
+
+                boolean passwordOK;
+                try {
+                    passwordOK = get();
+                    if (passwordOK) {
+                        CardLayout cards = (CardLayout) mainFramePanel
+                                .getLayout();
+                        cards.show(mainFramePanel, "MAIN_VIEW");
+                    } else {
+                        AccessView accessView = (AccessView) evt.getSource();
+                        accessView.displayMessage(BUNDLE
+                                .getString("loginError"));
+                    }
+                } catch (Exception e) {
+                    logger.error("Login result error", e);
                 }
-            }.execute();
-        } else {
-            final AccessView accessView = (AccessView) evt.getSource();
-            accessView.displayMessage(BUNDLE.getString("loginError"));
-        }
+            }
+        }.execute();
     }
 
     /*
