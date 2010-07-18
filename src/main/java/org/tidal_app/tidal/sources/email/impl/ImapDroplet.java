@@ -123,7 +123,15 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     public void init() throws DropletInitException {
         outsideEDT();
 
-        final Properties props = System.getProperties();
+        // Don't overwrite system properties.
+        final Properties props = new Properties(System.getProperties());
+        if ("imaps".equalsIgnoreCase(settings.getProtocol())) {
+            props.setProperty("mail.imaps.starttls.enable", "true");
+            props.setProperty("mail.imaps.host", settings.getHost());
+            props.setProperty("mail.imaps.port", "993");
+            props.setProperty("mail.imaps.user", settings.getUsername());
+        }
+
         final Session session = Session.getInstance(props, null);
 
         // Set up the mailbox to read from
