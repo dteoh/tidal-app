@@ -74,7 +74,7 @@ public class DropletsViewController implements DropletsView {
     public void updateDropletViews(final DropletModel... dropletModels) {
         inEDT();
 
-        final List<DropletModel> models = Lists.newLinkedList();
+        final List<DropletModel> models = Lists.newArrayList(dropletModels);
 
         updateDropletViews(models);
     }
@@ -91,6 +91,7 @@ public class DropletsViewController implements DropletsView {
                 dv.setDropletModel(dropletModel);
             }
             dropletsPanel.add(dv, "growx, pushx");
+            dropletsPanel.validate();
         }
     }
 }
