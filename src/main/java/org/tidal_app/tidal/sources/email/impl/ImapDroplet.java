@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -53,6 +54,9 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ImapDroplet.class);
+
+    private static final ResourceBundle BUNDLE = ResourceBundle
+            .getBundle(ImapDroplet.class.getName());
 
     private Store store = null;
     private Folder inbox = null;
@@ -173,7 +177,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
                 ContentType ct = new ContentType(messages[i].getContentType());
                 // TODO externalize this message.
-                String content = "Only plaintext and HTML emails are supported.";
+                String content = BUNDLE.getString("content-unsupported");
                 if (ct != null
                         && ("text/plain".equalsIgnoreCase(ct.getBaseType()) || "text/html"
                                 .equalsIgnoreCase(ct.getBaseType()))) {
