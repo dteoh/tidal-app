@@ -267,6 +267,9 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
      */
     @Override
     public void loginAttempted(final AccessViewEvent evt) {
+        AccessView accessView = (AccessView) evt.getSource();
+        accessView.disableLogin();
+
         new SwingWorker<Boolean, Void>() {
             @Override
             protected Boolean doInBackground() {
@@ -319,6 +322,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                         AccessView accessView = (AccessView) evt.getSource();
                         accessView.displayMessage(BUNDLE
                                 .getString("loginError"));
+                        accessView.enableLogin();
                     }
                 } catch (Exception e) {
                     logger.error("Login result error", e);

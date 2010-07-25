@@ -289,7 +289,6 @@ public final class AccountsView extends JDialog {
                 handleCancelButtonAction(e);
             }
         };
-        cancelAction.setEnabled(true);
         cancelButton.setAction(cancelAction);
 
         final JButton createButton = new JButton();

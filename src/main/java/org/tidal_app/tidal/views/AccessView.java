@@ -21,13 +21,14 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -66,8 +67,13 @@ public final class AccessView extends DropShadowPanel {
     /** Unlock/Login button. */
     private JButton unlockButton;
 
+    private Action unlockAction;
+
     private final List<AccessViewListener> listeners;
 
+    /**
+     * Creates the login screen.
+     */
     public AccessView() {
         super(6, 0.5F);
         listeners = Lists.newLinkedList();
@@ -111,6 +117,7 @@ public final class AccessView extends DropShadowPanel {
     /**
      * Display the first run screen.
      */
+    @SuppressWarnings("serial")
     public void showFirstRun() {
         inEDT();
 
@@ -142,23 +149,24 @@ public final class AccessView extends DropShadowPanel {
                 // matches the password field.
                 if (Arrays.equals(confirmationField.getPassword(),
                         passwordField.getPassword())) {
-                    unlockButton.setEnabled(true);
+                    unlockAction.setEnabled(true);
                 } else {
-                    unlockButton.setEnabled(false);
+                    unlockAction.setEnabled(false);
                 }
             }
         });
 
         unlockButton = new JButton();
         unlockButton.setName("AccessViewUnlockButton");
-        unlockButton.setText(BUNDLE.getString("unlockButton.firstrun.text"));
-        unlockButton.setEnabled(false);
-        unlockButton.addActionListener(new ActionListener() {
+        unlockAction = new AbstractAction(
+                BUNDLE.getString("unlockAction.firstrun.name")) {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 handleUnlockButtonAction(e, true);
             }
-        });
+        };
+        unlockAction.setEnabled(false);
+        unlockButton.setAction(unlockAction);
 
         // Construct input panel.
 
@@ -173,6 +181,7 @@ public final class AccessView extends DropShadowPanel {
     /**
      * Display the login screen.
      */
+    @SuppressWarnings("serial")
     public void showLogin() {
         inEDT();
 
@@ -183,14 +192,15 @@ public final class AccessView extends DropShadowPanel {
         passwordField.setName("AccessViewPasswordField");
 
         unlockButton = new JButton();
-        unlockButton.setText(BUNDLE.getString("unlockButton.login.text"));
-        unlockButton.setName("AccessViewUnlockButton");
-        unlockButton.addActionListener(new ActionListener() {
+        unlockAction = new AbstractAction(
+                BUNDLE.getString("unlockAction.login.name")) {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 handleUnlockButtonAction(e, false);
             }
-        });
+        };
+        unlockButton.setAction(unlockAction);
+        unlockButton.setName("AccessViewUnlockButton");
 
         // Construct input panel.
         final JPanel inputPanel = new JPanel(new MigLayout());
@@ -198,6 +208,26 @@ public final class AccessView extends DropShadowPanel {
         inputPanel.add(unlockButton, "wrap");
 
         add(inputPanel, "pushx, growx, wrap");
+    }
+
+    /**
+     * Disable the login action.
+     */
+    public void disableLogin() {
+        inEDT();
+        if (unlockAction != null) {
+            unlockAction.setEnabled(false);
+        }
+    }
+
+    /**
+     * Enable the login action.
+     */
+    public void enableLogin() {
+        inEDT();
+        if (unlockAction != null) {
+            unlockAction.setEnabled(true);
+        }
     }
 
     /**
