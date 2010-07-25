@@ -135,6 +135,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                 });
                 mainFrame.setMinimumSize(getDimension(BUNDLE
                         .getString("mainFrame.minimumsize")));
+                mainFrame.setLocationRelativeTo(null);
 
                 mainFramePanel = new JPanel(new CardLayout());
 
@@ -381,6 +382,9 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         // Make the account setup view.
         AccountsView view = new AccountsView(mainFrame, true);
         view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        view.setMinimumSize(getDimension(BUNDLE
+                .getString("accountsView.minimumSize")));
+        view.setLocationRelativeTo(mainFrame);
 
         // Register available droplets with the view.
         view.addSetupView(emailC);
