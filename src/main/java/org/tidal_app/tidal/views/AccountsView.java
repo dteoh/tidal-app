@@ -32,10 +32,13 @@ import java.awt.event.WindowEvent;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
@@ -78,18 +81,27 @@ public final class AccountsView extends JDialog {
     /** The active droplet being configured. */
     private SetupDroplet activeDroplet;
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView() {
         super();
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Dialog owner, final boolean modal) {
         super(owner, modal);
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Dialog owner, final String title,
             final boolean modal, final GraphicsConfiguration gc) {
         super(owner, title, modal, gc);
@@ -97,6 +109,9 @@ public final class AccountsView extends JDialog {
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Dialog owner, final String title,
             final boolean modal) {
         super(owner, title, modal);
@@ -104,24 +119,36 @@ public final class AccountsView extends JDialog {
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Dialog owner, final String title) {
         super(owner, title);
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Dialog owner) {
         super(owner);
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Frame owner, final boolean modal) {
         super(owner, modal);
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Frame owner, final String title,
             final boolean modal, final GraphicsConfiguration gc) {
         super(owner, title, modal, gc);
@@ -129,6 +156,9 @@ public final class AccountsView extends JDialog {
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Frame owner, final String title,
             final boolean modal) {
         super(owner, title, modal);
@@ -136,24 +166,36 @@ public final class AccountsView extends JDialog {
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Frame owner, final String title) {
         super(owner, title);
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Frame owner) {
         super(owner);
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Window owner, final ModalityType modalityType) {
         super(owner, modalityType);
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Window owner, final String title,
             final ModalityType modalityType, final GraphicsConfiguration gc) {
         super(owner, title, modalityType, gc);
@@ -161,6 +203,9 @@ public final class AccountsView extends JDialog {
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Window owner, final String title,
             final ModalityType modalityType) {
         super(owner, title, modalityType);
@@ -168,12 +213,18 @@ public final class AccountsView extends JDialog {
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Window owner, final String title) {
         super(owner, title);
         init();
         initView();
     }
 
+    /**
+     * @see {@link #JDialog()}
+     */
     public AccountsView(final Window owner) {
         super(owner);
         init();
@@ -190,6 +241,7 @@ public final class AccountsView extends JDialog {
     /**
      * Initialize UI.
      */
+    @SuppressWarnings("serial")
     private void initView() {
         inEDT();
 
@@ -229,24 +281,34 @@ public final class AccountsView extends JDialog {
         commandPanel = new JPanel(new MigLayout());
 
         JButton cancelButton = new JButton();
-        cancelButton.setText(BUNDLE.getString("cancelButton.text"));
         cancelButton.setName("AccountsViewCancelButton");
-        cancelButton.addActionListener(new ActionListener() {
+        Action cancelAction = new AbstractAction(
+                BUNDLE.getString("cancelAction.name")) {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 handleCancelButtonAction(e);
             }
-        });
+        };
+        cancelAction.setEnabled(true);
+        cancelButton.setAction(cancelAction);
 
-        JButton createButton = new JButton();
-        createButton.setText(BUNDLE.getString("createButton.text"));
+        final JButton createButton = new JButton();
         createButton.setName("AccountsViewCreateButton");
-        createButton.addActionListener(new ActionListener() {
+        Action createAction = new AbstractAction(
+                BUNDLE.getString("createAction.name")) {
             @Override
             public void actionPerformed(final ActionEvent e) {
+                createButton.setText(BUNDLE
+                        .getString("createButton.text.pending"));
+                createButton.setEnabled(false);
+
                 handleCreateButtonAction(e);
+
+                createButton.setText(BUNDLE.getString("createAction.name"));
+                createButton.setEnabled(true);
             }
-        });
+        };
+        createButton.setAction(createAction);
 
         // Right align the buttons
         commandPanel.add(cancelButton, "pushx, tag cancel");
@@ -289,11 +351,17 @@ public final class AccountsView extends JDialog {
      *            Event to handle.
      */
     private void handleCreateButtonAction(final ActionEvent e) {
+
         if (activeDroplet != null) {
             boolean created = activeDroplet.createDropletFromSetup();
             if (created) {
                 cancelSetups();
                 setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        BUNDLE.getString("create.error.message"),
+                        BUNDLE.getString("create.error.title"),
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
