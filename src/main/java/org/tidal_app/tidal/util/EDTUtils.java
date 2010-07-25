@@ -49,4 +49,20 @@ public final class EDTUtils {
         }
     }
 
+    /**
+     * Runs the given runnable on the event dispatch thread. If we are already
+     * in the EDT, then run r immediately. Else schedule it on the EDT as per
+     * {@link SwingUtilities#invokeLater(Runnable)}.
+     * 
+     * @param r
+     *            The runnable to invoke.
+     */
+    public static void runOnEDT(final Runnable r) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            r.run();
+        } else {
+            SwingUtilities.invokeLater(r);
+        }
+    }
+
 }

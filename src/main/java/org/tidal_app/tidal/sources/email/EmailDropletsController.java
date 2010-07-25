@@ -28,7 +28,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
 import org.slf4j.Logger;
 import org.tidal_app.tidal.configuration.SaveConfigurable;
@@ -37,12 +36,9 @@ import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.guice.InjectLogger;
 import org.tidal_app.tidal.sources.SetupDroplet;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
-import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.sources.email.views.EmailDropletSetup;
 import org.tidal_app.tidal.views.DropletsView;
-import org.tidal_app.tidal.views.models.DropletModel;
-import org.tidal_app.tidal.views.models.RippleModel;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -59,6 +55,7 @@ import foxtrot.Worker;
  */
 public final class EmailDropletsController implements SetupDroplet {
 
+    /** Logger for this class. */
     @InjectLogger
     private Logger logger;
 
@@ -66,17 +63,25 @@ public final class EmailDropletsController implements SetupDroplet {
     private static final ResourceBundle BUNDLE = ResourceBundle
             .getBundle(EmailDropletsController.class.getName());
 
+    /** Mapping between usernames and email droplets. */
     private final Map<String, AbstractEmailDroplet> droplets;
 
-    private EmailDropletSetup setupView;
-
+    /** Used to register droplets for settings serialization. */
     @Inject
     private SaveConfigurable saveConfig;
 
+    /** View used for displaying droplet updates. */
     @Inject
     private DropletsView dropletsView;
 
-    public EmailDropletsController() {
+    /** View used for setting up new email droplets. */
+    private EmailDropletSetup setupView;
+
+    /**
+     * Creates a new email droplets controller.
+     */
+    @Inject
+    private EmailDropletsController() {
         droplets = Maps.newTreeMap();
 
         // Supported email protocols.
@@ -139,24 +144,7 @@ public final class EmailDropletsController implements SetupDroplet {
                  * Get any emails from the newly created droplet and show to the
                  * user.
                  */
-                new SwingWorker<DropletModel, Void>() {
-
-                    @Override
-                    protected DropletModel doInBackground() {
-                        logger.debug("Retrieving emails");
-                        return getDropletModel(emailSettings.getUsername());
-                    }
-
-                    @Override
-                    protected void done() {
-                        try {
-                            dropletsView.updateDropletViews(get());
-                            logger.debug("Updated droplet view");
-                        } catch (Exception e) {
-                            logger.error("Failed to update droplet view", e);
-                        }
-                    }
-                }.execute();
+                new EmailDropletsUpdater(dropletsView, imapsDroplet).execute();
 
                 return imapsDroplet;
             } else {
@@ -220,59 +208,6 @@ public final class EmailDropletsController implements SetupDroplet {
             }
         }
         return false;
-    }
-
-    /**
-     * TODO: Replace with callback mechanism.
-     * 
-     * @param dropletUsername
-     * @return
-     */
-    public DropletModel getDropletModel(final String dropletUsername) {
-        outsideEDT();
-
-        synchronized (this) {
-            final AbstractEmailDroplet droplet = droplets.get(dropletUsername);
-
-            if (droplet == null) {
-                return null;
-            }
-
-            final List<RippleModel> contentModel = Lists.newLinkedList();
-
-            for (final EmailRipple ripple : droplet.getRipples()) {
-                contentModel.add(new RippleModel(ripple.getId(), ripple
-                        .getSender(), ripple.getSubject(), ripple.getContent(),
-                        ripple.getEpochSentTime()));
-            }
-            return new DropletModel(droplet.getUsername(), contentModel);
-        }
-    }
-
-    /**
-     * TODO: replace with callback mechanism.
-     * 
-     * @return
-     */
-    public Iterable<DropletModel> getAllDropletModels() {
-        outsideEDT();
-
-        synchronized (this) {
-            final List<DropletModel> allModels = Lists.newLinkedList();
-
-            for (final AbstractEmailDroplet droplet : droplets.values()) {
-                final List<RippleModel> contentModel = Lists.newLinkedList();
-
-                for (final EmailRipple ripple : droplet.getRipples()) {
-                    contentModel.add(new RippleModel(ripple.getId(), ripple
-                            .getSender(), ripple.getSubject(), ripple
-                            .getContent(), ripple.getEpochSentTime()));
-                }
-                allModels.add(new DropletModel(droplet.getUsername(),
-                        contentModel));
-            }
-            return allModels;
-        }
     }
 
     /*

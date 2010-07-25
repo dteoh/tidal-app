@@ -16,6 +16,7 @@
 
 package org.tidal_app.tidal.sources.email;
 
+import static org.fest.reflect.core.Reflection.constructor;
 import static org.fest.reflect.core.Reflection.field;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -52,7 +53,8 @@ public class EmailDropletsControllerTests {
     public void setUp() {
         settings = new EmailSettings(hostName, imapProtocol, testUser,
                 testPassword);
-        controller = new EmailDropletsController();
+        controller = constructor().in(EmailDropletsController.class)
+                .newInstance();
 
         SaveConfigurable sc = mock(SaveConfigurable.class);
         DropletsView dv = mock(DropletsView.class);
