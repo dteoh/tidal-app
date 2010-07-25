@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -63,6 +66,10 @@ public final class EmailDropletsController implements SetupDroplet {
     private static final ResourceBundle BUNDLE = ResourceBundle
             .getBundle(EmailDropletsController.class.getName());
 
+    /** Email update schedule. */
+    private static final long UPDATE_SCHEDULE = TimeUnit.MILLISECONDS.convert(
+            5, TimeUnit.MINUTES);
+
     /** Mapping between usernames and email droplets. */
     private final Map<String, AbstractEmailDroplet> droplets;
 
@@ -76,6 +83,9 @@ public final class EmailDropletsController implements SetupDroplet {
 
     /** View used for setting up new email droplets. */
     private EmailDropletSetup setupView;
+
+    /** Used to schedule periodic email updates. */
+    private Timer scheduler;
 
     /**
      * Creates a new email droplets controller.
@@ -210,21 +220,34 @@ public final class EmailDropletsController implements SetupDroplet {
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tidal_app.tidal.sources.SetupDroplet#getSetupView()
+    /**
+     * Schedules email updates.
      */
+    public void schedule() {
+        if (scheduler == null) {
+            // Daemon thread.
+            scheduler = new Timer(true);
+        } else {
+            // Stop currently executing tasks.
+            scheduler.cancel();
+            scheduler = new Timer(true);
+        }
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                new EmailDropletsUpdater(dropletsView,
+                        Lists.newLinkedList(droplets.values())).execute();
+            }
+        };
+        scheduler.schedule(task, UPDATE_SCHEDULE, UPDATE_SCHEDULE);
+    }
+
     @Override
     public JComponent getSetupView() {
         return setupView;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tidal_app.tidal.sources.SetupDroplet#getSetupIcon()
-     */
     @Override
     public Icon getSetupIcon() {
         outsideEDT();
@@ -240,11 +263,6 @@ public final class EmailDropletsController implements SetupDroplet {
         return setupIcon;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tidal_app.tidal.sources.SetupDroplet#cancelSetup()
-     */
     @Override
     public void cancelSetup() {
         Runnable swingTask = new Runnable() {
@@ -256,11 +274,6 @@ public final class EmailDropletsController implements SetupDroplet {
         SwingUtilities.invokeLater(swingTask);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tidal_app.tidal.sources.SetupDroplet#createDropletFromSetup()
-     */
     @Override
     public boolean createDropletFromSetup() {
         final EmailSettings settings = setupView.getSettings();

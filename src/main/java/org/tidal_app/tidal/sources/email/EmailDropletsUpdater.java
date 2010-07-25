@@ -125,6 +125,8 @@ public class EmailDropletsUpdater extends SwingWorker<Void, DropletModel> {
             contentModel.add(new RippleModel(ripple.getId(),
                     ripple.getSender(), ripple.getSubject(), ripple
                             .getContent(), ripple.getEpochSentTime()));
+            LOGGER.debug("ID: {}, Subject: '{}'", ripple.getId(),
+                    ripple.getSubject());
         }
         return new DropletModel(droplet.getUsername(), contentModel);
     }

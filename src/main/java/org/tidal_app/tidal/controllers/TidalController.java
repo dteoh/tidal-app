@@ -279,6 +279,9 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                         logger.debug("Unknown setting: {}", settings.getClass());
                     }
                 }
+
+                emailC.schedule();
+
                 return true;
             }
 
