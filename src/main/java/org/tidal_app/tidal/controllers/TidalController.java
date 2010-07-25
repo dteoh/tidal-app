@@ -16,6 +16,7 @@
 
 package org.tidal_app.tidal.controllers;
 
+import static org.tidal_app.tidal.util.ResourceUtils.getDimension;
 import static org.tidal_app.tidal.util.ResourceUtils.getImage;
 
 import java.awt.CardLayout;
@@ -87,8 +88,20 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     private final ConfigurationController configC;
     private final EmailDropletsController emailC;
 
+    /**
+     * Creates a new TidalController.
+     * 
+     * @param configurationController
+     *            Controller responsible for configuration (de)serialization.
+     * @param emailDropletsController
+     *            Controller responsible for email droplets.
+     * @param menuBarController
+     *            Controller responsible for handling the menu bar.
+     * @param dropletsViewController
+     *            Controller responsible for handling the main application view.
+     */
     @Inject
-    public TidalController(
+    private TidalController(
             final ConfigurationController configurationController,
             final EmailDropletsController emailDropletsController,
             final MenuBarController menuBarController,
@@ -102,6 +115,9 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         initView();
     }
 
+    /**
+     * Initialize the main application view.
+     */
     private void initView() {
         final Runnable swingTask = new Runnable() {
             @Override
@@ -117,6 +133,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                         exitHandler();
                     }
                 });
+                mainFrame.setMinimumSize(getDimension(BUNDLE
+                        .getString("mainFrame.minimumsize")));
 
                 mainFramePanel = new JPanel(new CardLayout());
 
