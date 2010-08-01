@@ -33,6 +33,14 @@ import org.tidal_app.tidal.exceptions.LongOperationException;
 public class EDTUtilsTest {
 
     /**
+     * Test if the class can be instantiated. Expecting nothing special.
+     */
+    @Test
+    public void testEDTUtils() {
+        new EDTUtils();
+    }
+
+    /**
      * No exception when called from the EDT.
      */
     @Test
@@ -79,6 +87,45 @@ public class EDTUtilsTest {
             }
         };
         SwingUtilities.invokeLater(nonEdtTask);
+    }
+
+    /**
+     * Test that the helper function runs the task in the EDT if calling from
+     * outside the EDT.
+     */
+    @Test
+    public void testRunOnEDT1() {
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                if (!SwingUtilities.isEventDispatchThread()) {
+                    fail("Expecting to be in EDT.");
+                }
+            }
+        };
+        EDTUtils.runOnEDT(task);
+    }
+
+    /**
+     * Test that the helper function runs the task in the EDT if calling from
+     * the EDT.
+     */
+    @Test
+    public void testRunOnEDT2() {
+        final Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                if (!SwingUtilities.isEventDispatchThread()) {
+                    fail("Expecting to be in EDT.");
+                }
+            }
+        };
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                EDTUtils.runOnEDT(task);
+            }
+        });
     }
 
 }
