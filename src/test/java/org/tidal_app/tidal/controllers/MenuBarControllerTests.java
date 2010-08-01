@@ -14,14 +14,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal;
+package org.tidal_app.tidal.controllers;
+
+import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.SwingUtilities;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.tidal_app.tidal.controllers.MenuBarController;
+import org.tidal_app.tidal.views.events.MenuBarViewListener;
 
 /**
  * Unit tests for {@link MenuBarController}.
@@ -31,9 +35,20 @@ import org.tidal_app.tidal.controllers.MenuBarController;
  */
 public class MenuBarControllerTests {
 
+    private MenuBarController mbc;
+
+    @Before
+    public void setUp() {
+        mbc = new MenuBarController();
+    }
+
+    @After
+    public void tearDown() {
+        mbc = null;
+    }
+
     /**
-     * Test creation out of EDT. TODO: remove once functionality has been
-     * implemented.
+     * Test creation out of EDT.
      */
     @Test
     public void testMenuBarController1() {
@@ -42,8 +57,7 @@ public class MenuBarControllerTests {
     }
 
     /**
-     * Test creation on EDT. TODO: remove once functionality has been
-     * implemented.
+     * Test creation on EDT.
      * 
      * @throws InvocationTargetException
      * @throws InterruptedException
@@ -59,6 +73,19 @@ public class MenuBarControllerTests {
             }
         };
         SwingUtilities.invokeAndWait(edtTask);
+    }
+
+    @Test
+    public void testAddMenuBarViewListener1() {
+        MenuBarViewListener listener = mock(MenuBarViewListener.class);
+        mbc.addMenuBarViewListener(listener);
+    }
+
+    @Test
+    public void testRemoveMenuBarViewListener1() {
+        MenuBarViewListener listener = mock(MenuBarViewListener.class);
+        mbc.addMenuBarViewListener(listener);
+        mbc.removeMenuBarViewListener(listener);
     }
 
 }

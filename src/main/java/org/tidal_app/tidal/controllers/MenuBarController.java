@@ -16,6 +16,8 @@
 
 package org.tidal_app.tidal.controllers;
 
+import static org.tidal_app.tidal.util.EDTUtils.runOnEDT;
+
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
@@ -55,23 +57,21 @@ public class MenuBarController {
     }
 
     public void addMenuBarViewListener(final MenuBarViewListener listener) {
-        Runnable swingTask = new Runnable() {
+        runOnEDT(new Runnable() {
             @Override
             public void run() {
                 menuBar.addMenuBarViewListener(listener);
             }
-        };
-        SwingUtilities.invokeLater(swingTask);
+        });
     }
 
     public void removeMenuBarViewListener(final MenuBarViewListener listener) {
-        Runnable swingTask = new Runnable() {
+        runOnEDT(new Runnable() {
             @Override
             public void run() {
                 menuBar.removeMenuBarViewListener(listener);
             }
-        };
-        SwingUtilities.invokeLater(swingTask);
+        });
     }
 
 }

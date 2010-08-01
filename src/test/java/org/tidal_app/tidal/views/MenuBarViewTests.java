@@ -16,6 +16,10 @@
 
 package org.tidal_app.tidal.views;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -27,6 +31,8 @@ import org.fest.swing.fixture.JLabelFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tidal_app.tidal.views.events.MenuBarViewEvent;
+import org.tidal_app.tidal.views.events.MenuBarViewListener;
 
 /**
  * Tests the MenuBarView class.
@@ -40,8 +46,8 @@ public class MenuBarViewTests {
 
     @Before
     public void setUp() {
-        final JFrame testFrame =
-                GuiActionRunner.execute(new GuiQuery<JFrame>() {
+        final JFrame testFrame = GuiActionRunner
+                .execute(new GuiQuery<JFrame>() {
                     @Override
                     protected JFrame executeInEDT() throws Throwable {
                         final JFrame testFrame = new JFrame();
@@ -70,8 +76,8 @@ public class MenuBarViewTests {
      */
     @Test
     public void titleLabelTest() {
-        final JLabelFixture titleLabel =
-                window.label(new GenericTypeMatcher<JLabel>(JLabel.class) {
+        final JLabelFixture titleLabel = window
+                .label(new GenericTypeMatcher<JLabel>(JLabel.class) {
                     @Override
                     protected boolean isMatching(final JLabel jlabel) {
                         return "Tidal".equals(jlabel.getText());
@@ -80,4 +86,46 @@ public class MenuBarViewTests {
 
         titleLabel.requireVisible();
     }
+
+    /**
+     * Test adding a listener.
+     */
+    @Test
+    public void testAddMenuBarViewListener() {
+        MenuBarViewListener listener = mock(MenuBarViewListener.class);
+        menuBarView.addMenuBarViewListener(listener);
+    }
+
+    /**
+     * Test removing a listener.
+     */
+    @Test
+    public void testRemoveMenuBarViewListener1() {
+        MenuBarViewListener listener = mock(MenuBarViewListener.class);
+        menuBarView.addMenuBarViewListener(listener);
+        menuBarView.removeMenuBarViewListener(listener);
+    }
+
+    /**
+     * Test removing non-existent listener.
+     */
+    @Test
+    public void testRemoveMenuBarViewListener2() {
+        MenuBarViewListener listener = mock(MenuBarViewListener.class);
+        menuBarView.removeMenuBarViewListener(listener);
+    }
+
+    /**
+     * Test if menu button click events are generated and received.
+     */
+    @Test
+    public void testMenuButtonClicked() {
+        MenuBarViewListener listener = mock(MenuBarViewListener.class);
+        menuBarView.addMenuBarViewListener(listener);
+
+        window.button("MenuBarViewMenuButton").click();
+
+        verify(listener).menuButtonClicked(any(MenuBarViewEvent.class));
+    }
+
 }
