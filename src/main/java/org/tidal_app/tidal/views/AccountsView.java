@@ -411,6 +411,7 @@ public final class AccountsView extends JDialog {
         buttonMap.put(showSetupButton, droplet);
 
         iconPanel.add(showSetupButton, "w 80!, h 80!");
+        iconPanel.validate();
 
         // If there is no active setup screen, show this one.
         if (activeDroplet == null) {
