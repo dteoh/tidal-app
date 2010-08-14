@@ -18,6 +18,7 @@ package org.tidal_app.tidal.views;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import javax.swing.JFrame;
 
@@ -31,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tidal_app.tidal.exceptions.EDTViolationException;
+import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 
@@ -47,14 +49,15 @@ public class DropletViewTests {
 
     @Before
     public void setUp() {
-        final String id = "ID1";
+        final ID id = mock(ID.class);
+        final String name = "ID1";
         final String origin = "test@tidal-app.org";
         final String subject = "B";
         final String content = "";
         final long received = 10000;
 
-        model = new DropletModel("Test droplet", new RippleModel(id, origin,
-                subject, content, received));
+        model = new DropletModel(id, "Test droplet", new RippleModel(name,
+                origin, subject, content, received));
 
         final JFrame testFrame = GuiActionRunner
                 .execute(new GuiQuery<JFrame>() {
@@ -131,7 +134,8 @@ public class DropletViewTests {
      */
     @Test
     public void testSetDropletModel2() {
-        final DropletModel emptyModel = new DropletModel("Empty model");
+        final DropletModel emptyModel = new DropletModel(mock(ID.class),
+                "Empty model");
         GuiActionRunner.execute(new GuiTask() {
             @Override
             protected void executeInEDT() throws Throwable {
@@ -154,7 +158,7 @@ public class DropletViewTests {
     @Test
     public void testSetDropletModel3() {
         final String newName = "TestNewName";
-        final DropletModel newModel = new DropletModel(newName);
+        final DropletModel newModel = new DropletModel(mock(ID.class), newName);
         GuiActionRunner.execute(new GuiTask() {
             @Override
             protected void executeInEDT() throws Throwable {
@@ -189,8 +193,8 @@ public class DropletViewTests {
         final RippleModel model2 = new RippleModel(id2, origin2, subject2,
                 content2, received2);
 
-        final DropletModel newModel = new DropletModel("Two models", model1,
-                model2);
+        final DropletModel newModel = new DropletModel(mock(ID.class),
+                "Two models", model1, model2);
 
         GuiActionRunner.execute(new GuiTask() {
             @Override
@@ -214,24 +218,24 @@ public class DropletViewTests {
      */
     @Test
     public void testSetDropletModel5() {
-        final String id1 = "ID1";
+        final String name1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "A";
         final String content1 = "First";
         final long received1 = 10000;
-        final RippleModel model1 = new RippleModel(id1, origin1, subject1,
+        final RippleModel model1 = new RippleModel(name1, origin1, subject1,
                 content1, received1);
 
-        final String id2 = "ID2";
+        final String name2 = "ID2";
         final String origin2 = "test@tidal-app.org";
         final String subject2 = "B";
         final String content2 = "Most recent";
         final long received2 = 20000;
-        final RippleModel model2 = new RippleModel(id2, origin2, subject2,
+        final RippleModel model2 = new RippleModel(name2, origin2, subject2,
                 content2, received2);
 
-        final DropletModel newModel = new DropletModel("Two models", model1,
-                model2);
+        final DropletModel newModel = new DropletModel(mock(ID.class),
+                "Two models", model1, model2);
 
         GuiActionRunner.execute(new GuiTask() {
             @Override
@@ -257,24 +261,24 @@ public class DropletViewTests {
      */
     @Test
     public void testAddDropletModel1() {
-        final String id1 = "ID1";
+        final String name1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "A";
         final String content1 = "First";
         final long received1 = 10000;
-        final RippleModel model1 = new RippleModel(id1, origin1, subject1,
+        final RippleModel model1 = new RippleModel(name1, origin1, subject1,
                 content1, received1);
 
-        final String id2 = "ID2";
+        final String name2 = "ID2";
         final String origin2 = "test@tidal-app.org";
         final String subject2 = "B";
         final String content2 = "Most recent";
         final long received2 = 20000;
-        final RippleModel model2 = new RippleModel(id2, origin2, subject2,
+        final RippleModel model2 = new RippleModel(name2, origin2, subject2,
                 content2, received2);
 
-        final DropletModel newModel = new DropletModel("Two models", model1,
-                model2);
+        final DropletModel newModel = new DropletModel(mock(ID.class),
+                "Two models", model1, model2);
 
         GuiActionRunner.execute(new GuiTask() {
             @Override
@@ -283,15 +287,16 @@ public class DropletViewTests {
             }
         });
 
-        final String id3 = "ID3";
+        final String name3 = "ID3";
         final String origin3 = "test@tidal-app.org";
         final String subject3 = "B";
         final String content3 = "Most recent";
         final long received3 = 15000;
-        final RippleModel model3 = new RippleModel(id3, origin3, subject3,
+        final RippleModel model3 = new RippleModel(name3, origin3, subject3,
                 content3, received3);
 
-        final DropletModel newestModel = new DropletModel("One model", model3);
+        final DropletModel newestModel = new DropletModel(mock(ID.class),
+                "One model", model3);
 
         GuiActionRunner.execute(new GuiTask() {
             @Override
@@ -314,24 +319,24 @@ public class DropletViewTests {
      */
     @Test
     public void testAddDropletModel2() {
-        final String id1 = "ID1";
+        final String name1 = "ID1";
         final String origin1 = "test@tidal-app.org";
         final String subject1 = "A";
         final String content1 = "First";
         final long received1 = 10000;
-        final RippleModel model1 = new RippleModel(id1, origin1, subject1,
+        final RippleModel model1 = new RippleModel(name1, origin1, subject1,
                 content1, received1);
 
-        final String id2 = "ID2";
+        final String name2 = "ID2";
         final String origin2 = "test@tidal-app.org";
         final String subject2 = "B";
         final String content2 = "Most recent";
         final long received2 = 20000;
-        final RippleModel model2 = new RippleModel(id2, origin2, subject2,
+        final RippleModel model2 = new RippleModel(name2, origin2, subject2,
                 content2, received2);
 
-        final DropletModel newModel = new DropletModel("Two models", model1,
-                model2);
+        final DropletModel newModel = new DropletModel(mock(ID.class),
+                "Two models", model1, model2);
 
         GuiActionRunner.execute(new GuiTask() {
             @Override
@@ -340,15 +345,16 @@ public class DropletViewTests {
             }
         });
 
-        final String id3 = "ID3";
+        final String name3 = "ID3";
         final String origin3 = "test@tidal-app.org";
         final String subject3 = "B";
         final String content3 = "Most recent";
         final long received3 = 15000;
-        final RippleModel model3 = new RippleModel(id3, origin3, subject3,
+        final RippleModel model3 = new RippleModel(name3, origin3, subject3,
                 content3, received3);
 
-        final DropletModel newestModel = new DropletModel("One model", model3);
+        final DropletModel newestModel = new DropletModel(mock(ID.class),
+                "One model", model3);
 
         GuiActionRunner.execute(new GuiTask() {
             @Override

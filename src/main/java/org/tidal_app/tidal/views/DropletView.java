@@ -41,13 +41,10 @@ import org.tidal_app.tidal.views.swing.GradientPanel;
  */
 public final class DropletView extends DropShadowPanel {
 
-    /**
-     * Models
-     */
+    /** Models */
     protected DropletModel dropletModel;
-    /**
-     * Views
-     */
+
+    /** Views */
     private JPanel ripplesPanel;
     private JLabel nameLabel;
 

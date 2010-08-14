@@ -202,6 +202,8 @@ public final class EmailDropletsController implements SetupDroplet {
     /**
      * Removes and destroys a droplet being managed by the controller.
      * 
+     * TODO review for removal
+     * 
      * @param dropletUsername
      *            username identifying the droplet to be destroyed.
      * @return true if the droplet exists and is destroyed, false otherwise.

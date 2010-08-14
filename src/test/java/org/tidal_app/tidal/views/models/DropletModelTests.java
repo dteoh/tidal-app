@@ -18,12 +18,14 @@ package org.tidal_app.tidal.views.models;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.tidal_app.tidal.id.ID;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -58,7 +60,8 @@ public class DropletModelTests {
     @Test
     public void testGetDropletName() {
         final String dropletName = "TestDroplet";
-        final DropletModel model = new DropletModel(dropletName, ripple1);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                dropletName, ripple1);
         assertEquals(dropletName, model.getDropletName());
     }
 
@@ -67,7 +70,8 @@ public class DropletModelTests {
      */
     @Test
     public void testDropletModelStringRippleModelArray1() {
-        final DropletModel model = new DropletModel("TestDroplet");
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet");
         assertTrue(Iterables.isEmpty(model.getDropletContents()));
     }
 
@@ -76,7 +80,8 @@ public class DropletModelTests {
      */
     @Test
     public void testDropletModelStringRippleModelArray2() {
-        final DropletModel model = new DropletModel("TestDroplet", ripple1);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet", ripple1);
         assertEquals(1, Iterables.size(model.getDropletContents()));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple1));
     }
@@ -86,8 +91,8 @@ public class DropletModelTests {
      */
     @Test
     public void testDropletModelStringRippleModelArray3() {
-        final DropletModel model = new DropletModel("TestDroplet", ripple1,
-                ripple2);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet", ripple1, ripple2);
         assertEquals(2, Iterables.size(model.getDropletContents()));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple1));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple2));
@@ -98,8 +103,8 @@ public class DropletModelTests {
      */
     @Test
     public void testDropletModelStringRippleModelArray4() {
-        final DropletModel model = new DropletModel("TestDroplet", ripple1,
-                ripple2, ripple3);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet", ripple1, ripple2, ripple3);
         assertEquals(3, Iterables.size(model.getDropletContents()));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple1));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple2));
@@ -112,7 +117,8 @@ public class DropletModelTests {
     @Test
     public void testDropletModelStringIterableOfRippleModel1() {
         final List<RippleModel> ripples = Lists.newLinkedList();
-        final DropletModel model = new DropletModel("TestDroplet", ripples);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet", ripples);
         assertTrue(Iterables.isEmpty(model.getDropletContents()));
     }
 
@@ -122,7 +128,8 @@ public class DropletModelTests {
     @Test
     public void testDropletModelStringIterableOfRippleModel2() {
         final List<RippleModel> ripples = Lists.newArrayList(ripple1);
-        final DropletModel model = new DropletModel("TestDroplet", ripples);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet", ripples);
         assertEquals(1, Iterables.size(model.getDropletContents()));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple1));
     }
@@ -133,7 +140,8 @@ public class DropletModelTests {
     @Test
     public void testDropletModelStringIterableOfRippleModel3() {
         final List<RippleModel> ripples = Lists.newArrayList(ripple1, ripple2);
-        final DropletModel model = new DropletModel("TestDroplet", ripples);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet", ripples);
         assertEquals(2, Iterables.size(model.getDropletContents()));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple1));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple2));
@@ -146,7 +154,8 @@ public class DropletModelTests {
     public void testDropletModelStringIterableOfRippleModel4() {
         final List<RippleModel> ripples = Lists.newArrayList(ripple1, ripple2,
                 ripple3);
-        final DropletModel model = new DropletModel("TestDroplet", ripples);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet", ripples);
         assertEquals(3, Iterables.size(model.getDropletContents()));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple1));
         assertTrue(Iterables.contains(model.getDropletContents(), ripple2));
@@ -158,8 +167,10 @@ public class DropletModelTests {
      */
     @Test
     public void testMergeWith1() {
-        final DropletModel model1 = new DropletModel("TestDroplet1");
-        final DropletModel model2 = new DropletModel("TestDroplet2");
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1");
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2");
 
         final DropletModel merged1 = model1.mergeWith(model2);
         assertTrue(Iterables.isEmpty(merged1.getDropletContents()));
@@ -175,8 +186,10 @@ public class DropletModelTests {
      */
     @Test
     public void testMergeWith2() {
-        final DropletModel model1 = new DropletModel("TestDroplet1", ripple1);
-        final DropletModel model2 = new DropletModel("TestDroplet2");
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple1);
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2");
 
         final DropletModel merged1 = model1.mergeWith(model2);
         assertEquals(1, Iterables.size(merged1.getDropletContents()));
@@ -194,8 +207,10 @@ public class DropletModelTests {
      */
     @Test
     public void testMergeWith3() {
-        final DropletModel model1 = new DropletModel("TestDroplet1", ripple1);
-        final DropletModel model2 = new DropletModel("TestDroplet2", ripple2);
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple1);
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2", ripple2);
 
         final DropletModel merged1 = model1.mergeWith(model2);
         assertEquals(2, Iterables.size(merged1.getDropletContents()));
@@ -215,8 +230,10 @@ public class DropletModelTests {
      */
     @Test
     public void testMergeWith4() {
-        final DropletModel model1 = new DropletModel("TestDroplet1", ripple1);
-        final DropletModel model2 = new DropletModel("TestDroplet2", ripple1);
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple1);
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2", ripple1);
 
         final DropletModel merged1 = model1.mergeWith(model2);
         assertEquals(1, Iterables.size(merged1.getDropletContents()));
@@ -235,10 +252,10 @@ public class DropletModelTests {
      */
     @Test
     public void testMergeWith5() {
-        final DropletModel model1 = new DropletModel("TestDroplet1", ripple1,
-                ripple3);
-        final DropletModel model2 = new DropletModel("TestDroplet2", ripple1,
-                ripple2);
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple1, ripple3);
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2", ripple1, ripple2);
 
         final DropletModel merged1 = model1.mergeWith(model2);
         assertEquals(3, Iterables.size(merged1.getDropletContents()));
@@ -260,9 +277,10 @@ public class DropletModelTests {
      */
     @Test
     public void testMergeWith6() {
-        final DropletModel model1 = new DropletModel("TestDroplet1", ripple1);
-        final DropletModel model2 = new DropletModel("TestDroplet2", ripple2,
-                ripple3);
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple1);
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2", ripple2, ripple3);
 
         final DropletModel merged1 = model1.mergeWith(model2);
         assertEquals(3, Iterables.size(merged1.getDropletContents()));
@@ -284,9 +302,10 @@ public class DropletModelTests {
      */
     @Test
     public void testMergeWith7() {
-        final DropletModel model1 = new DropletModel("TestDroplet1", ripple2);
-        final DropletModel model2 = new DropletModel("TestDroplet2", ripple1,
-                ripple3);
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple2);
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2", ripple1, ripple3);
 
         final DropletModel merged1 = model1.mergeWith(model2);
         assertEquals(3, Iterables.size(merged1.getDropletContents()));
@@ -308,8 +327,8 @@ public class DropletModelTests {
      */
     @Test
     public void testGetDropletContents1() {
-        final DropletModel model = new DropletModel("TestDroplet1", ripple1,
-                ripple2);
+        final DropletModel model = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple1, ripple2);
 
         // Newest first.
         final List<RippleModel> ripples = Lists.newArrayList(ripple2, ripple1);
@@ -321,9 +340,10 @@ public class DropletModelTests {
      */
     @Test
     public void testGetDropletContents2() {
-        final DropletModel model1 = new DropletModel("TestDroplet1", ripple1,
-                ripple3);
-        final DropletModel model2 = new DropletModel("TestDroplet2", ripple2);
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple1, ripple3);
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2", ripple2);
         final DropletModel merged = model1.mergeWith(model2);
 
         // Newest first.
@@ -339,10 +359,10 @@ public class DropletModelTests {
      */
     @Test
     public void testGetDropletContents3() {
-        final DropletModel model1 = new DropletModel("TestDroplet1", ripple1,
-                ripple3);
-        final DropletModel model2 = new DropletModel("TestDroplet2", ripple1,
-                ripple2);
+        final DropletModel model1 = new DropletModel(mock(ID.class),
+                "TestDroplet1", ripple1, ripple3);
+        final DropletModel model2 = new DropletModel(mock(ID.class),
+                "TestDroplet2", ripple1, ripple2);
         final DropletModel merged = model1.mergeWith(model2);
 
         // Newest first.

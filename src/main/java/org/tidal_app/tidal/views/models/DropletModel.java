@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.views.DropletView;
 
 import com.google.common.collect.ImmutableList;
@@ -32,13 +33,23 @@ import com.google.common.collect.ImmutableList;
  * 
  */
 public class DropletModel {
+
+    /** Droplet identifier. */
+    private final ID dropletID;
     /** Name of the model. */
     private final String dropletName;
     /** Droplet contents. */
     private final List<RippleModel> dropletContents;
 
     /**
-     * @return the name or identifier of this droplet.
+     * @return the identifier of this droplet.
+     */
+    public ID getIdentifier() {
+        return dropletID;
+    }
+
+    /**
+     * @return the name of this droplet.
      */
     public String getDropletName() {
         return dropletName;
@@ -59,8 +70,9 @@ public class DropletModel {
      * @param dropletContents
      *            Contents of the view model.
      */
-    public DropletModel(final String dropletName,
+    public DropletModel(final ID identifier, final String dropletName,
             final RippleModel... dropletContents) {
+        dropletID = identifier;
         this.dropletName = dropletName;
 
         final List<RippleModel> models = new ArrayList<RippleModel>();
@@ -84,8 +96,9 @@ public class DropletModel {
      * @param dropletContents
      *            Contents of the view model.
      */
-    public DropletModel(final String dropletName,
+    public DropletModel(final ID identifier, final String dropletName,
             final Iterable<RippleModel> dropletContents) {
+        dropletID = identifier;
         this.dropletName = dropletName;
 
         final List<RippleModel> models = new ArrayList<RippleModel>();
@@ -111,6 +124,7 @@ public class DropletModel {
      *            Merge this model into the first model.
      */
     private DropletModel(final DropletModel first, final DropletModel second) {
+        dropletID = first.getIdentifier();
         dropletName = first.getDropletName();
 
         final List<RippleModel> models = new ArrayList<RippleModel>();

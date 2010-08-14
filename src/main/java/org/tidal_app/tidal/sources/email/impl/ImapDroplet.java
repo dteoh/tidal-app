@@ -39,6 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
+import org.tidal_app.tidal.id.ID;
+import org.tidal_app.tidal.id.IDGenerator;
 import org.tidal_app.tidal.sources.email.AbstractEmailDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
@@ -71,7 +73,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             throw new DropletCreationException("Unsupported protocol: "
                     + protocol);
         }
-        return new ImapDroplet(settings);
+        return new ImapDroplet(IDGenerator.generateID(), settings);
     }
 
     public static ImapDroplet create(final String host, final String protocol,
@@ -83,11 +85,12 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             throw new DropletCreationException("Unsupported protocol: "
                     + protocol);
         }
-        return new ImapDroplet(host, protocol, username, password);
+        return new ImapDroplet(IDGenerator.generateID(), host, protocol,
+                username, password);
     }
 
-    private ImapDroplet(final EmailSettings settings) {
-        super(settings);
+    private ImapDroplet(final ID identifier, final EmailSettings settings) {
+        super(identifier, settings);
     }
 
     /**
@@ -97,9 +100,9 @@ public final class ImapDroplet extends AbstractEmailDroplet {
      * @param username
      * @param password
      */
-    private ImapDroplet(final String host, final String protocol,
-            final String username, final String password) {
-        super(host, protocol, username, password);
+    private ImapDroplet(final ID identifier, final String host,
+            final String protocol, final String username, final String password) {
+        super(identifier, host, protocol, username, password);
     }
 
     @Override
