@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tidal_app.tidal.configuration.SaveConfigurable;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
+import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.DropletsView;
@@ -134,39 +135,11 @@ public class EmailDropletsControllerTests {
     }
 
     /**
-     * Test adding an IMAP droplet.
-     */
-    @Test
-    public void testAddEmailDropletAbstractEmailDroplet1() {
-        try {
-            final AbstractEmailDroplet droplet = ImapDroplet.create(settings);
-            controller.addEmailDroplet(droplet);
-        } catch (final DropletCreationException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /**
-     * Test adding duplicate IMAP droplet.
-     */
-    @Test
-    public void testAddEmailDropletAbstractEmailDroplet2() {
-        try {
-            final AbstractEmailDroplet droplet = ImapDroplet.create(settings);
-            controller.addEmailDroplet(droplet);
-            controller.addEmailDroplet(droplet);
-            fail("Expecting DropletCreationException.");
-        } catch (final DropletCreationException e) {
-            // Test passed.
-        }
-    }
-
-    /**
      * Test destroying a non-existent droplet.
      */
     @Test
     public void testDestroyEmailDroplet1() {
-        assertFalse(controller.destroyEmailDroplet("doesn't exist"));
+        assertFalse(controller.destroyEmailDroplet(mock(ID.class)));
     }
 
     /**
@@ -175,8 +148,8 @@ public class EmailDropletsControllerTests {
     @Test
     public void testDestroyEmailDroplet2() {
         try {
-            controller.addEmailDroplet(settings);
-            assertTrue(controller.destroyEmailDroplet(settings.getUsername()));
+            AbstractEmailDroplet d = controller.addEmailDroplet(settings);
+            assertTrue(controller.destroyEmailDroplet(d.getIdentifier()));
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
         }
@@ -188,8 +161,8 @@ public class EmailDropletsControllerTests {
     @Test
     public void testDestroyEmailDroplet3() {
         try {
-            controller.addEmailDroplet(settings);
-            assertTrue(controller.destroyEmailDroplet(settings.getUsername()));
+            AbstractEmailDroplet d = controller.addEmailDroplet(settings);
+            assertTrue(controller.destroyEmailDroplet(d.getIdentifier()));
             controller.addEmailDroplet(settings);
         } catch (final DropletCreationException e) {
             fail(e.getMessage());

@@ -37,6 +37,7 @@ import org.tidal_app.tidal.configuration.SaveConfigurable;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.guice.InjectLogger;
+import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.sources.SetupDroplet;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
@@ -70,8 +71,8 @@ public final class EmailDropletsController implements SetupDroplet {
     private static final long UPDATE_SCHEDULE = TimeUnit.MILLISECONDS.convert(
             5, TimeUnit.MINUTES);
 
-    /** Mapping between usernames and email droplets. */
-    private final Map<String, AbstractEmailDroplet> droplets;
+    /** Mapping between identifiers and email droplets. */
+    private final Map<ID, AbstractEmailDroplet> droplets;
 
     /** Used to register droplets for settings serialization. */
     @Inject
@@ -92,7 +93,7 @@ public final class EmailDropletsController implements SetupDroplet {
      */
     @Inject
     private EmailDropletsController() {
-        droplets = Maps.newTreeMap();
+        droplets = Maps.newHashMap();
 
         // Supported email protocols.
         final List<String> protocols = Lists.newArrayList("imap", "imaps");
@@ -132,7 +133,7 @@ public final class EmailDropletsController implements SetupDroplet {
                         .create(emailSettings);
 
                 // Disallow overwriting existing mappings.
-                if (droplets.containsKey(emailSettings.getUsername())) {
+                if (isManaging(emailSettings.getUsername())) {
                     throw new DropletCreationException(
                             "Duplicate AbstractEmailDroplet for "
                                     + emailSettings.getUsername());
@@ -146,7 +147,7 @@ public final class EmailDropletsController implements SetupDroplet {
                             "Could not initialize IMAP droplet", e);
                 }
 
-                droplets.put(imapsDroplet.getUsername(), imapsDroplet);
+                droplets.put(imapsDroplet.getIdentifier(), imapsDroplet);
 
                 saveConfig.addConfigurable(imapsDroplet);
 
@@ -159,61 +160,25 @@ public final class EmailDropletsController implements SetupDroplet {
                 return imapsDroplet;
             } else {
                 // Unknown/unsupported protocols.
-                final StringBuilder sb = new StringBuilder(
-                        "Unknown protocol \"");
-                sb.append(protocol);
-                sb.append("\"");
-                throw new DropletCreationException(sb.toString());
+                throw new DropletCreationException("Unknown protocol: "
+                        + protocol);
             }
         }
-    }
-
-    /**
-     * TODO: Review for removal.
-     * 
-     * @param droplet
-     * @throws DropletCreationException
-     */
-    public void addEmailDroplet(final AbstractEmailDroplet droplet)
-            throws DropletCreationException {
-        outsideEDT();
-
-        synchronized (this) {
-            // Disallow overwriting existing mappings.
-            if (droplets.containsKey(droplet.getUsername())) {
-                throw new DropletCreationException(
-                        "Duplicate AbstractEmailDroplet for "
-                                + droplet.getUsername());
-            }
-
-            // Initialize the droplet
-            try {
-                droplet.init();
-            } catch (DropletInitException e) {
-                throw new DropletCreationException(
-                        "Could not initialize email droplet", e);
-            }
-
-            droplets.put(droplet.getUsername(), droplet);
-        }
-
     }
 
     /**
      * Removes and destroys a droplet being managed by the controller.
      * 
-     * TODO review for removal
-     * 
-     * @param dropletUsername
-     *            username identifying the droplet to be destroyed.
+     * @param dropletID
+     *            identifier of the droplet being removed.
      * @return true if the droplet exists and is destroyed, false otherwise.
      */
-    public boolean destroyEmailDroplet(final String dropletUsername) {
+    public boolean destroyEmailDroplet(final ID dropletID) {
         outsideEDT();
 
         synchronized (this) {
             final AbstractEmailDroplet abstractEmailDroplet = droplets
-                    .remove(dropletUsername);
+                    .remove(dropletID);
             if (abstractEmailDroplet != null) {
                 abstractEmailDroplet.destroy();
                 return true;
@@ -296,6 +261,24 @@ public final class EmailDropletsController implements SetupDroplet {
         });
 
         return result;
+    }
+
+    /**
+     * Check if we are already managing an email droplet with the same username.
+     * 
+     * @param username
+     *            Username to check.
+     * @return true if already managing a droplet with the same email address,
+     *         false otherwise.
+     */
+    private boolean isManaging(final String username) {
+        for (AbstractEmailDroplet droplet : droplets.values()) {
+            if (droplet.getUsername().equals(username) == true) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
