@@ -40,6 +40,9 @@ public class Tidal {
      * @param args
      */
     public static void main(final String[] args) {
+        // Use system configured proxies.
+        System.setProperty("java.net.useSystemProxies", "true");
+
         // Set the application to use system UI LnF.
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
