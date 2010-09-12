@@ -14,40 +14,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.sources;
+package org.tidal_app.tidal.views;
 
-import org.tidal_app.tidal.configuration.models.Configurable;
-import org.tidal_app.tidal.exceptions.DropletInitException;
-import org.tidal_app.tidal.views.DropletView;
+import org.tidal_app.tidal.views.models.DropletModel;
 
 /**
- * A Droplet represents an arbitrary source of information.
+ * Static utility methods related to {@link DropletView}s.
  * 
  * @author Douglas Teoh
+ * 
  */
-public interface Droplet extends Configurable {
+public final class DropletViews {
+
+    private DropletViews() {
+        throw new AssertionError();
+    }
 
     /**
-     * Initialize the droplet.
-     * 
-     * @throws DropletInitException
+     * Creates a new DropletView for viewing {@link DropletModel}s as a list.
      */
-    void init() throws DropletInitException;
-
-    /**
-     * Ask the droplet to retrieve new information and display it on the view
-     * defined by {@link #getDropletView()}.
-     */
-    void update();
-
-    /**
-     * Destroy the droplet.
-     */
-    void destroy();
-
-    /**
-     * Retrieves the view associated with this droplet.
-     */
-    DropletView getDropletView();
+    public static DropletView newListView() {
+        return ListDropletView.create();
+    }
 
 }

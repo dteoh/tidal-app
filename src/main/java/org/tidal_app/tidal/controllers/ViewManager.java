@@ -14,8 +14,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.views;
+package org.tidal_app.tidal.controllers;
 
+import org.tidal_app.tidal.views.View;
 import org.tidal_app.tidal.views.models.DropletModel;
 
 /**
@@ -24,10 +25,20 @@ import org.tidal_app.tidal.views.models.DropletModel;
  * @author Douglas Teoh
  * 
  */
-public interface DropletsView {
+public interface ViewManager {
 
-    void updateDropletViews(DropletModel... dropletModels);
+    /**
+     * Displays the given {@link View}.
+     * 
+     * @param view
+     */
+    void displayView(View view);
 
-    void updateDropletViews(Iterable<DropletModel> dropletModels);
+    /**
+     * Removes the given {@link View} from being displayed.
+     * 
+     * @param view
+     */
+    void removeView(View view);
 
 }

@@ -37,8 +37,8 @@ import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
-import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.views.models.RippleModel;
 
 import com.google.common.collect.Iterables;
 
@@ -83,8 +83,8 @@ public class ImapDropletTests {
     public void testCreate2() {
         try {
             final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
-                    settings.getProtocol(), settings.getUsername(), settings
-                            .getPassword());
+                    settings.getProtocol(), settings.getUsername(),
+                    settings.getPassword());
             assertEquals(settings, droplet.getSettings());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
@@ -97,8 +97,8 @@ public class ImapDropletTests {
     @Test
     public void testCreate3() {
         try {
-            ImapDroplet.create(settings.getHost(), "imap", settings
-                    .getUsername(), settings.getPassword());
+            ImapDroplet.create(settings.getHost(), "imap",
+                    settings.getUsername(), settings.getPassword());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
         }
@@ -110,8 +110,8 @@ public class ImapDropletTests {
     @Test
     public void testCreate4() {
         try {
-            ImapDroplet.create(settings.getHost(), "imaps", settings
-                    .getUsername(), settings.getPassword());
+            ImapDroplet.create(settings.getHost(), "imaps",
+                    settings.getUsername(), settings.getPassword());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
         }
@@ -123,8 +123,8 @@ public class ImapDropletTests {
     @Test
     public void testCreate5() {
         try {
-            ImapDroplet.create(settings.getHost(), "pop3", settings
-                    .getUsername(), settings.getPassword());
+            ImapDroplet.create(settings.getHost(), "pop3",
+                    settings.getUsername(), settings.getPassword());
             fail("Expecting DropletCreationException.");
         } catch (final DropletCreationException e) {
             // Pass.
@@ -314,15 +314,15 @@ public class ImapDropletTests {
         } catch (final Exception e) {
             fail(e.getMessage());
         }
-        final Iterable<EmailRipple> ripples = droplet.getRipples();
-        final Iterator<EmailRipple> it = ripples.iterator();
+        final Iterable<RippleModel> ripples = droplet.getRipples();
+        final Iterator<RippleModel> it = ripples.iterator();
         assertTrue(it.hasNext());
 
-        final EmailRipple ripple = it.next();
-        assertEquals(fromAddr, ripple.getSender());
+        final RippleModel ripple = it.next();
+        assertEquals(fromAddr, ripple.getOrigin());
         assertEquals(subject, ripple.getSubject());
         assertEquals(contents, ripple.getContent());
-        assertEquals(time, ripple.getEpochSentTime());
+        assertEquals(time, ripple.getReceived());
 
         assertFalse(it.hasNext());
     }

@@ -14,40 +14,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.tidal_app.tidal.sources;
+package org.tidal_app.tidal.views;
 
-import org.tidal_app.tidal.configuration.models.Configurable;
-import org.tidal_app.tidal.exceptions.DropletInitException;
-import org.tidal_app.tidal.views.DropletView;
+import javax.swing.JComponent;
 
 /**
- * A Droplet represents an arbitrary source of information.
+ * Wrapper for underlying implementation of a view.
  * 
  * @author Douglas Teoh
+ * 
  */
-public interface Droplet extends Configurable {
+public interface View {
 
     /**
-     * Initialize the droplet.
-     * 
-     * @throws DropletInitException
+     * Retrieves the underlying view.
      */
-    void init() throws DropletInitException;
-
-    /**
-     * Ask the droplet to retrieve new information and display it on the view
-     * defined by {@link #getDropletView()}.
-     */
-    void update();
-
-    /**
-     * Destroy the droplet.
-     */
-    void destroy();
-
-    /**
-     * Retrieves the view associated with this droplet.
-     */
-    DropletView getDropletView();
+    JComponent getView();
 
 }

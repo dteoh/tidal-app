@@ -41,10 +41,10 @@ import org.tidal_app.tidal.views.models.RippleModel;
  * 
  * @author Douglas Teoh
  */
-public class DropletViewTests {
+public class ListDropletViewTests {
 
     private FrameFixture window;
-    private DropletView view;
+    private ListDropletView view;
     private DropletModel model;
 
     @Before
@@ -64,7 +64,8 @@ public class DropletViewTests {
                     @Override
                     protected JFrame executeInEDT() throws Throwable {
                         final JFrame testFrame = new JFrame();
-                        view = new DropletView(model);
+                        view = ListDropletView.create();
+                        view.setDropletModel(model);
                         testFrame.add(view);
                         return testFrame;
                     }
@@ -118,7 +119,7 @@ public class DropletViewTests {
      */
     @Test(expected = EDTViolationException.class)
     public void testInitView1() {
-        new DropletView(model);
+        ListDropletView.create();
     }
 
     /**

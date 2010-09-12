@@ -42,8 +42,10 @@ import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.id.IDGenerator;
 import org.tidal_app.tidal.sources.email.AbstractEmailDroplet;
-import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.util.EDTUtils;
+import org.tidal_app.tidal.views.models.DropletModel;
+import org.tidal_app.tidal.views.models.RippleModel;
 
 import com.google.common.collect.Lists;
 
@@ -159,46 +161,69 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     }
 
     @Override
-    public Iterable<EmailRipple> getRipples() {
+    public void update() {
+        outsideEDT();
+
+        Iterable<RippleModel> rms = getRipples();
+        final DropletModel dm = new DropletModel(getIdentifier(),
+                getUsername(), rms);
+
+        EDTUtils.runOnEDT(new Runnable() {
+            @Override
+            public void run() {
+                view.addDropletModel(dm);
+            }
+        });
+    }
+
+    public Iterable<RippleModel> getRipples() {
         outsideEDT();
 
         if (inbox == null) {
             return Lists.newLinkedList();
         }
+
         try {
             // This search option will only download unread messages.
             final FlagTerm searchOption = new FlagTerm(new Flags(
                     Flags.Flag.SEEN), false);
             final Message[] messages = inbox.search(searchOption);
 
-            // Make ripples
-            final List<EmailRipple> unreadRipples = Lists.newLinkedList();
+            // Make ripple models
+            final List<RippleModel> unreadRipples = Lists.newLinkedList();
             for (int i = 0; i < messages.length; i++) {
                 Address[] senderAddresses = messages[i].getFrom();
                 String subject = messages[i].getSubject();
                 Date sent = messages[i].getSentDate();
+                String origin = senderAddresses.length > 0 ? senderAddresses[0]
+                        .toString() : "Unknown";
 
                 ContentType ct = new ContentType(messages[i].getContentType());
-                // TODO externalize this message.
+                // TODO replace with resource map
                 String content = BUNDLE.getString("content-unsupported");
                 if (ct != null
                         && ("text/plain".equalsIgnoreCase(ct.getBaseType()) || "text/html"
                                 .equalsIgnoreCase(ct.getBaseType()))) {
                     content = (String) messages[i].getContent();
+
                 }
 
-                unreadRipples.add(new EmailRipple(messages[i]
-                        .getMessageNumber(),
-                        senderAddresses.length > 0 ? senderAddresses[0]
-                                .toString() : "Unknown", subject, content, sent
-                                .getTime()));
+                RippleModel rm = new RippleModel.Builder(
+                        messages[i].getMessageNumber()).origin(origin)
+                        .content(content).subject(subject)
+                        .received(sent.getTime()).build();
+
+                unreadRipples.add(rm);
             }
+
             return unreadRipples;
         } catch (final MessagingException e) {
             LOGGER.error("Could not download messages", e);
         } catch (final IOException e) {
             LOGGER.error("Could not download message content", e);
         }
+
         return Lists.newLinkedList();
     }
+
 }

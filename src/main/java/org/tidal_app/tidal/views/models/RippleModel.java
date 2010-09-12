@@ -16,7 +16,43 @@
 
 package org.tidal_app.tidal.views.models;
 
-public final class RippleModel implements Comparable<RippleModel> {; 
+public final class RippleModel implements Comparable<RippleModel> {
+
+    public static class Builder {
+        private final Object id;
+        private String origin;
+        private String subject;
+        private String content;
+        private long received;
+
+        public Builder(final Object id) {
+            this.id = id;
+        }
+
+        public Builder origin(final String origin) {
+            this.origin = origin;
+            return this;
+        }
+
+        public Builder subject(final String subject) {
+            this.subject = subject;
+            return this;
+        }
+
+        public Builder content(final String content) {
+            this.content = content;
+            return this;
+        }
+
+        public Builder received(final long received) {
+            this.received = received;
+            return this;
+        }
+
+        public RippleModel build() {
+            return new RippleModel(id, origin, subject, content, received);
+        }
+    }
 
     private final Object id;
     private final String origin;

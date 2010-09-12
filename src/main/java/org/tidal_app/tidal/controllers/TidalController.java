@@ -84,7 +84,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
 
     /** Controllers */
     private final MenuBarController menuBarC;
-    private final DropletsViewController dropletsViewC;
+    private final DropletsViewManager dropletsViewC;
     private final ConfigurationController configC;
     private final EmailDropletsController emailC;
 
@@ -97,7 +97,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
      *            Controller responsible for email droplets.
      * @param menuBarController
      *            Controller responsible for handling the menu bar.
-     * @param dropletsViewController
+     * @param dropletsViewManager
      *            Controller responsible for handling the main application view.
      */
     @Inject
@@ -105,11 +105,11 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
             final ConfigurationController configurationController,
             final EmailDropletsController emailDropletsController,
             final MenuBarController menuBarController,
-            final DropletsViewController dropletsViewController) {
+            final DropletsViewManager dropletsViewManager) {
         configC = configurationController;
         emailC = emailDropletsController;
         menuBarC = menuBarController;
-        dropletsViewC = dropletsViewController;
+        dropletsViewC = dropletsViewManager;
         menuBarC.addMenuBarViewListener(this);
 
         initView();

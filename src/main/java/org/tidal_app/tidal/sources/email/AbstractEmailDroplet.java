@@ -16,11 +16,16 @@
 
 package org.tidal_app.tidal.sources.email;
 
+import static org.tidal_app.tidal.util.EDTUtils.inEDT;
+
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.sources.Droplet;
-import org.tidal_app.tidal.sources.email.models.EmailRipple;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.util.EDTUtils;
+import org.tidal_app.tidal.views.DropletView;
+import org.tidal_app.tidal.views.DropletViews;
+import org.tidal_app.tidal.views.models.RippleModel;
 
 /**
  * Generic email droplet.
@@ -29,40 +34,80 @@ import org.tidal_app.tidal.sources.email.models.EmailSettings;
  */
 public abstract class AbstractEmailDroplet implements Droplet {
 
+    /** Droplet identifier. */
     protected final ID identifier;
+
+    /** Email settings. */
     protected EmailSettings settings;
+
+    /** View associated with the droplet. */
+    protected DropletView view;
 
     protected AbstractEmailDroplet(final ID identifier,
             final EmailSettings settings) {
         this.settings = settings;
         this.identifier = identifier;
+        initView();
     }
 
     protected AbstractEmailDroplet(final ID identifier, final String host,
             final String protocol, final String username, final String password) {
         settings = new EmailSettings(host, protocol, username, password);
         this.identifier = identifier;
+        initView();
     }
 
+    /**
+     * Initialize the droplet view.
+     */
+    protected void initView() {
+        EDTUtils.runOnEDT(new Runnable() {
+            @Override
+            public void run() {
+                view = DropletViews.newListView();
+            }
+        });
+    }
+
+    /**
+     * Returns the username associated with this droplet.
+     */
     public String getUsername() {
         return settings.getUsername();
     }
 
+    /**
+     * Returns the settings associated with this droplet.
+     */
     public EmailSettings getSettings() {
         return settings;
     }
 
+    /**
+     * Returns the identifier associated with this droplet.
+     */
     public ID getIdentifier() {
         return identifier;
     }
 
+    @Override
     public abstract void init() throws DropletInitException;
 
+    @Override
+    public abstract void update();
+
+    @Override
     public abstract void destroy();
 
+    @Override
+    public DropletView getDropletView() {
+        inEDT();
+        return view;
+    }
+
     /**
-     * @return Most recent EmailRipple objects.
+     * Retrieves updated information feed items.
      */
-    public abstract Iterable<EmailRipple> getRipples();
+    public abstract Iterable<RippleModel> getRipples();
 
 }

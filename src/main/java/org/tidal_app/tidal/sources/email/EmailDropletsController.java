@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.tidal_app.tidal.configuration.SaveConfigurable;
+import org.tidal_app.tidal.controllers.ViewManager;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.guice.InjectLogger;
@@ -42,7 +43,7 @@ import org.tidal_app.tidal.sources.SetupDroplet;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.sources.email.views.EmailDropletSetup;
-import org.tidal_app.tidal.views.DropletsView;
+import org.tidal_app.tidal.util.EDTUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -80,7 +81,7 @@ public final class EmailDropletsController implements SetupDroplet {
 
     /** View used for displaying droplet updates. */
     @Inject
-    private DropletsView dropletsView;
+    private ViewManager viewManager;
 
     /** View used for setting up new email droplets. */
     private EmailDropletSetup setupView;
@@ -148,14 +149,18 @@ public final class EmailDropletsController implements SetupDroplet {
                 }
 
                 droplets.put(imapsDroplet.getIdentifier(), imapsDroplet);
-
                 saveConfig.addConfigurable(imapsDroplet);
 
-                /*
-                 * Get any emails from the newly created droplet and show to the
-                 * user.
-                 */
-                new EmailDropletsUpdater(dropletsView, imapsDroplet).execute();
+                EDTUtils.runOnEDT(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewManager.displayView(imapsDroplet.getDropletView());
+                    }
+                });
+
+                // Get any emails from the newly created droplet and display to
+                // the user.
+                imapsDroplet.update();
 
                 return imapsDroplet;
             } else {
@@ -203,8 +208,9 @@ public final class EmailDropletsController implements SetupDroplet {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                new EmailDropletsUpdater(dropletsView,
-                        Lists.newLinkedList(droplets.values())).execute();
+                for (AbstractEmailDroplet d : droplets.values()) {
+                    d.update();
+                }
             }
         };
         scheduler.schedule(task, UPDATE_SCHEDULE, UPDATE_SCHEDULE);

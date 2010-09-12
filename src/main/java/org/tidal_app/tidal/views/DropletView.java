@@ -16,141 +16,28 @@
 
 package org.tidal_app.tidal.views;
 
-import static org.tidal_app.tidal.util.EDTUtils.inEDT;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import net.miginfocom.swing.MigLayout;
-
 import org.tidal_app.tidal.views.models.DropletModel;
-import org.tidal_app.tidal.views.models.RippleModel;
-import org.tidal_app.tidal.views.swing.DropShadowPanel;
-import org.tidal_app.tidal.views.swing.GradientPanel;
 
 /**
- * Used to visualize a single {@link DropletModel} on the interface.
+ * Interface for modifying a droplet view.
  * 
  * @author Douglas Teoh
+ * 
  */
-public final class DropletView extends DropShadowPanel {
-
-    /** Models */
-    protected DropletModel dropletModel;
-
-    /** Views */
-    private JPanel ripplesPanel;
-    private JLabel nameLabel;
-
-    private static final Font HEADER_FONT = new Font(Font.SANS_SERIF,
-            Font.BOLD, 24);
-    private static final Color HEADER_FOREGROUND = new Color(50, 60, 70);
-
-    public DropletView(final DropletModel dropletModel) {
-        super(6, 0.5F);
-        this.dropletModel = dropletModel;
-        initView();
-    }
+public interface DropletView extends View {
 
     /**
-     * Initialize the view.
+     * Sets the {@link DropletModel} to visualize.
+     * 
+     * @param model
      */
-    private void initView() {
-        inEDT();
+    void setDropletModel(final DropletModel model);
 
-        setLayout(new MigLayout("wrap", "[grow 100]", "[]0[]"));
-        setOpaque(false);
+    /**
+     * Add a {@link DropletModel} to the existing visualization.
+     * 
+     * @param model
+     */
+    void addDropletModel(final DropletModel model);
 
-        nameLabel = new JLabel(dropletModel.getDropletName().toUpperCase());
-        nameLabel.setForeground(HEADER_FOREGROUND);
-        nameLabel.setFont(HEADER_FONT);
-        nameLabel.setName("DropletViewNameLabel");
-
-        // Construct header panel
-        final GradientPanel headerPanel = new GradientPanel(new Color(235, 240,
-                250), new Color(215, 225, 235));
-        headerPanel.setName("DropletViewHeaderPanel");
-        headerPanel.setLayout(new MigLayout("ins 0", "[]unrel push[][]"));
-        headerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-                .createMatteBorder(1, 1, 1, 1, new Color(178, 178, 178)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-
-        headerPanel.add(nameLabel);
-
-        // Control buttons, one for delete, another for show/hide
-        headerPanel.add(new JButton(), "w 24!, h 24!");
-        headerPanel.add(new JButton(), "w 24!, h 24!, wrap");
-
-        add(headerPanel, "pushx, growx");
-
-        // Construct content panel
-        ripplesPanel = new JPanel();
-        ripplesPanel.setName("DropletViewRipplesPanel");
-        ripplesPanel.setLayout(new MigLayout("wrap 1, gapy 1, ins 0",
-                "[grow 100]", "[]0"));
-        ripplesPanel.setOpaque(false);
-
-        add(ripplesPanel, "pushx, growx");
-
-        if (dropletModel != null) {
-            for (final RippleModel contentModel : dropletModel
-                    .getDropletContents()) {
-                ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
-            }
-        }
-    }
-
-    public void setDropletModel(final DropletModel model) {
-        inEDT();
-
-        if (model != null) {
-            nameLabel.setText(model.getDropletName().toUpperCase());
-
-            ripplesPanel.removeAll();
-            dropletModel = model;
-
-            for (final RippleModel contentModel : model.getDropletContents()) {
-                ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
-            }
-        }
-    }
-
-    public void addDropletModel(final DropletModel model) {
-        inEDT();
-
-        final Component[] oldRippleViews = ripplesPanel.getComponents();
-        int ripple = 0;
-
-        if (oldRippleViews.length == 0) {
-            setDropletModel(model);
-            return;
-        }
-
-        if (model != null) {
-            ripplesPanel.removeAll();
-            dropletModel = dropletModel.mergeWith(model);
-
-            for (final RippleModel contentModel : dropletModel
-                    .getDropletContents()) {
-                RippleView oldView = null;
-                if (ripple < oldRippleViews.length) {
-                    oldView = (RippleView) oldRippleViews[ripple];
-                }
-                if (oldView != null && oldView.hasSameModel(contentModel)) {
-                    ripplesPanel.add(oldView, "pushx, growx");
-                    ripple++;
-                } else {
-                    ripplesPanel.add(new RippleView(contentModel),
-                            "pushx, growx");
-                }
-            }
-        }
-
-    }
 }

@@ -18,39 +18,37 @@ package org.tidal_app.tidal.controllers;
 
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.tidal_app.tidal.views.DropletView;
-import org.tidal_app.tidal.views.DropletsView;
-import org.tidal_app.tidal.views.models.DropletModel;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import org.tidal_app.tidal.util.EDTUtils;
+import org.tidal_app.tidal.views.View;
 
 /**
- * Used to manage the various droplets.
+ * Displays Views on the user interface.
  * 
  * @author Douglas Teoh
  */
-public class DropletsViewController implements DropletsView {
+public class DropletsViewManager implements ViewManager, View {
 
     /** View objects */
     private JPanel dropletsPanel;
 
-    private final Map<String, DropletView> dropletViews;
+    /**
+     * 
+     * @return
+     */
+    public static DropletsViewManager create() {
+        return new DropletsViewManager();
+    }
 
-    public DropletsViewController() {
-        dropletViews = Maps.newHashMap();
+    private DropletsViewManager() {
         initView();
     }
 
+    /** Initialize the view. */
     private void initView() {
         final Runnable swingTask = new Runnable() {
             @Override
@@ -60,38 +58,32 @@ public class DropletsViewController implements DropletsView {
             }
         };
 
-        if (SwingUtilities.isEventDispatchThread()) {
-            swingTask.run();
-        } else {
-            SwingUtilities.invokeLater(swingTask);
-        }
+        EDTUtils.runOnEDT(swingTask);
     }
 
+    @Override
     public JComponent getView() {
+        inEDT();
         return dropletsPanel;
     }
 
-    public void updateDropletViews(final DropletModel... dropletModels) {
+    @Override
+    public void displayView(final View view) {
         inEDT();
-
-        final List<DropletModel> models = Lists.newArrayList(dropletModels);
-
-        updateDropletViews(models);
+        if (view == null || view.getView() == null) {
+            throw new NullPointerException();
+        }
+        dropletsPanel.add(view.getView(), "growx,pushx");
+        dropletsPanel.validate();
     }
 
-    public void updateDropletViews(final Iterable<DropletModel> dropletModels) {
+    @Override
+    public void removeView(final View view) {
         inEDT();
-
-        for (final DropletModel dropletModel : dropletModels) {
-            DropletView dv = dropletViews.get(dropletModel.getDropletName());
-            if (dv == null) {
-                dv = new DropletView(dropletModel);
-                dropletViews.put(dropletModel.getDropletName(), dv);
-            } else {
-                dv.setDropletModel(dropletModel);
-            }
-            dropletsPanel.add(dv, "growx, pushx");
-            dropletsPanel.validate();
+        if (view == null || view.getView() == null) {
+            throw new NullPointerException();
         }
+        dropletsPanel.remove(view.getView());
+        dropletsPanel.validate();
     }
 }

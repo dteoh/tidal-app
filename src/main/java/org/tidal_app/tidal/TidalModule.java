@@ -18,12 +18,12 @@ package org.tidal_app.tidal;
 
 import org.tidal_app.tidal.configuration.ConfigurationController;
 import org.tidal_app.tidal.configuration.SaveConfigurable;
-import org.tidal_app.tidal.controllers.DropletsViewController;
+import org.tidal_app.tidal.controllers.DropletsViewManager;
 import org.tidal_app.tidal.controllers.MenuBarController;
 import org.tidal_app.tidal.controllers.TidalController;
+import org.tidal_app.tidal.controllers.ViewManager;
 import org.tidal_app.tidal.guice.LoggerListener;
 import org.tidal_app.tidal.sources.email.EmailDropletsController;
-import org.tidal_app.tidal.views.DropletsView;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
@@ -39,9 +39,9 @@ public class TidalModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        DropletsViewController dropletsViewC = new DropletsViewController();
-        bind(DropletsViewController.class).toInstance(dropletsViewC);
-        bind(DropletsView.class).toInstance(dropletsViewC);
+        DropletsViewManager dropletsViewC = DropletsViewManager.create();
+        bind(DropletsViewManager.class).toInstance(dropletsViewC);
+        bind(ViewManager.class).toInstance(dropletsViewC);
 
         ConfigurationController configC = new ConfigurationController();
         bind(ConfigurationController.class).toInstance(configC);
