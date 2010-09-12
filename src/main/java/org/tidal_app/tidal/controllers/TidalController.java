@@ -45,7 +45,7 @@ import org.tidal_app.tidal.guice.InjectLogger;
 import org.tidal_app.tidal.sources.email.EmailDropletsController;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
-import org.tidal_app.tidal.views.AccountsView;
+import org.tidal_app.tidal.views.AccountsDialog;
 import org.tidal_app.tidal.views.events.AccessViewEvent;
 import org.tidal_app.tidal.views.events.AccessViewListener;
 import org.tidal_app.tidal.views.events.MenuBarViewEvent;
@@ -376,7 +376,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     }
 
     /**
-     * Handles the menu button click event. Displays the account setup view.
+     * Handles the menu button click event. Displays the account setup dialog.
      * 
      * @see org.tidal_app.tidal.views.events.MenuBarViewListener#menuButtonClicked
      *      (org.tidal_app.tidal.views.events.MenuBarViewEvent)
@@ -384,15 +384,15 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     @Override
     public void menuButtonClicked(final MenuBarViewEvent evt) {
         // Make the account setup view.
-        AccountsView view = new AccountsView(mainFrame, true);
-        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        view.setMinimumSize(getDimension(BUNDLE
+        AccountsDialog dialog = new AccountsDialog(mainFrame, true);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setMinimumSize(getDimension(BUNDLE
                 .getString("accountsView.minimumSize")));
-        view.setLocationRelativeTo(mainFrame);
+        dialog.setLocationRelativeTo(mainFrame);
 
         // Register available droplets with the view.
-        view.addSetupView(emailC);
+        dialog.addSetupView(emailC);
 
-        view.setVisible(true);
+        dialog.setVisible(true);
     }
 }

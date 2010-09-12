@@ -44,7 +44,7 @@ import org.tidal_app.tidal.util.ResourceUtils;
  * @author Douglas Teoh
  * 
  */
-public class AccountsViewTests {
+public class AccountsDialogTests {
 
     /** Mock setup handler 1. */
     private SetupDroplet mockSD1;
@@ -57,7 +57,7 @@ public class AccountsViewTests {
     private ImageIcon mockSDIcon2;
 
     /** The accounts setup window. */
-    private AccountsView av;
+    private AccountsDialog av;
     private DialogFixture dialog;
 
     @Before
@@ -90,10 +90,10 @@ public class AccountsViewTests {
             }
         });
 
-        av = GuiActionRunner.execute(new GuiQuery<AccountsView>() {
+        av = GuiActionRunner.execute(new GuiQuery<AccountsDialog>() {
             @Override
-            protected AccountsView executeInEDT() throws Throwable {
-                return new AccountsView();
+            protected AccountsDialog executeInEDT() throws Throwable {
+                return new AccountsDialog();
             }
         });
 

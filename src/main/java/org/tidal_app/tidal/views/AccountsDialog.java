@@ -57,11 +57,11 @@ import foxtrot.Worker;
  * @author Douglas Teoh
  * 
  */
-public final class AccountsView extends JDialog {
+public final class AccountsDialog extends JDialog {
 
     /** Resource bundle for this class. */
     private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(AccountsView.class.getName());
+            .getBundle(AccountsDialog.class.getName());
 
     /** Panel for the various droplet icons. */
     private JPanel iconPanel;
@@ -84,7 +84,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView() {
+    public AccountsDialog() {
         super();
         init();
         initView();
@@ -93,7 +93,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Dialog owner, final boolean modal) {
+    public AccountsDialog(final Dialog owner, final boolean modal) {
         super(owner, modal);
         init();
         initView();
@@ -102,7 +102,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Dialog owner, final String title,
+    public AccountsDialog(final Dialog owner, final String title,
             final boolean modal, final GraphicsConfiguration gc) {
         super(owner, title, modal, gc);
         init();
@@ -112,7 +112,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Dialog owner, final String title,
+    public AccountsDialog(final Dialog owner, final String title,
             final boolean modal) {
         super(owner, title, modal);
         init();
@@ -122,7 +122,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Dialog owner, final String title) {
+    public AccountsDialog(final Dialog owner, final String title) {
         super(owner, title);
         init();
         initView();
@@ -131,7 +131,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Dialog owner) {
+    public AccountsDialog(final Dialog owner) {
         super(owner);
         init();
         initView();
@@ -140,7 +140,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Frame owner, final boolean modal) {
+    public AccountsDialog(final Frame owner, final boolean modal) {
         super(owner, modal);
         init();
         initView();
@@ -149,7 +149,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Frame owner, final String title,
+    public AccountsDialog(final Frame owner, final String title,
             final boolean modal, final GraphicsConfiguration gc) {
         super(owner, title, modal, gc);
         init();
@@ -159,7 +159,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Frame owner, final String title,
+    public AccountsDialog(final Frame owner, final String title,
             final boolean modal) {
         super(owner, title, modal);
         init();
@@ -169,7 +169,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Frame owner, final String title) {
+    public AccountsDialog(final Frame owner, final String title) {
         super(owner, title);
         init();
         initView();
@@ -178,7 +178,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Frame owner) {
+    public AccountsDialog(final Frame owner) {
         super(owner);
         init();
         initView();
@@ -187,7 +187,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Window owner, final ModalityType modalityType) {
+    public AccountsDialog(final Window owner, final ModalityType modalityType) {
         super(owner, modalityType);
         init();
         initView();
@@ -196,7 +196,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Window owner, final String title,
+    public AccountsDialog(final Window owner, final String title,
             final ModalityType modalityType, final GraphicsConfiguration gc) {
         super(owner, title, modalityType, gc);
         init();
@@ -206,7 +206,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Window owner, final String title,
+    public AccountsDialog(final Window owner, final String title,
             final ModalityType modalityType) {
         super(owner, title, modalityType);
         init();
@@ -216,7 +216,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Window owner, final String title) {
+    public AccountsDialog(final Window owner, final String title) {
         super(owner, title);
         init();
         initView();
@@ -225,7 +225,7 @@ public final class AccountsView extends JDialog {
     /**
      * @see {@link #JDialog()}
      */
-    public AccountsView(final Window owner) {
+    public AccountsDialog(final Window owner) {
         super(owner);
         init();
         initView();
