@@ -38,6 +38,7 @@ import org.jvnet.mock_javamail.Mailbox;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.tidal_app.tidal.views.models.RippleModel;
 
 import com.google.common.collect.Iterables;
@@ -47,7 +48,7 @@ public class ImapDropletTests {
     private EmailSettings settings;
 
     private final String hostName = "tidal-app.org";
-    private final String imapProtocol = "imap";
+    private final Protocol imapProtocol = Protocol.imap;
     private final String testUser = "tester";
     private final String testPassword = "password";
 
@@ -97,7 +98,7 @@ public class ImapDropletTests {
     @Test
     public void testCreate3() {
         try {
-            ImapDroplet.create(settings.getHost(), "imap",
+            ImapDroplet.create(settings.getHost(), Protocol.imap,
                     settings.getUsername(), settings.getPassword());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
@@ -110,24 +111,10 @@ public class ImapDropletTests {
     @Test
     public void testCreate4() {
         try {
-            ImapDroplet.create(settings.getHost(), "imaps",
+            ImapDroplet.create(settings.getHost(), Protocol.imaps,
                     settings.getUsername(), settings.getPassword());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
-        }
-    }
-
-    /**
-     * Test support for other protocols.
-     */
-    @Test
-    public void testCreate5() {
-        try {
-            ImapDroplet.create(settings.getHost(), "pop3",
-                    settings.getUsername(), settings.getPassword());
-            fail("Expecting DropletCreationException.");
-        } catch (final DropletCreationException e) {
-            // Pass.
         }
     }
 

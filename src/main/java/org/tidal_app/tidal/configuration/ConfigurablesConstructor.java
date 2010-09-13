@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.jasypt.util.text.StrongTextEncryptor;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
@@ -64,8 +65,14 @@ public final class ConfigurablesConstructor extends Constructor {
                 return null;
             }
 
-            final String protocol = (String) enc.get("prot");
-            if (protocol == null) {
+            final String protStr = (String) enc.get("prot");
+            if (protStr == null) {
+                return null;
+            }
+            Protocol protocol = null;
+            try {
+                protocol = Protocol.valueOf(protStr);
+            } catch (IllegalArgumentException ex) {
                 return null;
             }
 

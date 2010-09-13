@@ -35,14 +35,14 @@ public class EmailSettingsTests {
 
     private String host;
     private String password;
-    private String protocol;
+    private Protocol protocol;
     private String username;
 
     @Before
     public void setUp() {
         host = "localhost";
         password = "password123";
-        protocol = "imaps";
+        protocol = Protocol.imaps;
         username = "tester@tidal-app.org";
 
         model = new EmailSettings(host, protocol, username, password);

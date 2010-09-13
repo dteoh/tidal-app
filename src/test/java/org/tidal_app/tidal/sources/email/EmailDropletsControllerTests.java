@@ -33,6 +33,7 @@ import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.sources.email.models.Protocol;
 
 /**
  * Tests for the email droplets controller.
@@ -46,7 +47,7 @@ public class EmailDropletsControllerTests {
     private EmailDropletsController controller;
 
     private final String hostName = "tidal-app.org";
-    private final String imapProtocol = "imap";
+    private final Protocol imapProtocol = Protocol.imap;
     private final String testUser = "tester";
     private final String testPassword = "password";
 
@@ -62,7 +63,7 @@ public class EmailDropletsControllerTests {
 
         field("saveConfig").ofType(SaveConfigurable.class).in(controller)
                 .set(sc);
-        field("dropletsView").ofType(ViewManager.class).in(controller).set(dv);
+        field("viewManager").ofType(ViewManager.class).in(controller).set(dv);
     }
 
     @After
@@ -72,12 +73,12 @@ public class EmailDropletsControllerTests {
     }
 
     /**
-     * Test adding a droplet from email settings with IMAP protocol.
+     * Test adding a droplet from email settings with imap protocol.
      */
     @Test
     public void testAddEmailDropletEmailSettings1() {
         try {
-            settings = new EmailSettings(hostName, "imap", testUser,
+            settings = new EmailSettings(hostName, Protocol.imap, testUser,
                     testPassword);
             final AbstractEmailDroplet droplet = controller
                     .addEmailDroplet(settings);
@@ -88,33 +89,18 @@ public class EmailDropletsControllerTests {
     }
 
     /**
-     * Test adding a droplet from email settings with IMAPS protocol.
+     * Test adding a droplet from email settings with imaps protocol.
      */
     @Test
     public void testAddEmailDropletEmailSettings2() {
         try {
-            settings = new EmailSettings(hostName, "imaps", testUser,
+            settings = new EmailSettings(hostName, Protocol.imaps, testUser,
                     testPassword);
             final AbstractEmailDroplet droplet = controller
                     .addEmailDroplet(settings);
             assertEquals(ImapDroplet.class, droplet.getClass());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
-        }
-    }
-
-    /**
-     * Test adding a droplet from email settings with unsupported protocol.
-     */
-    @Test
-    public void testAddEmailDropletEmailSettings3() {
-        try {
-            settings = new EmailSettings(hostName, "unknown", testUser,
-                    testPassword);
-            controller.addEmailDroplet(settings);
-            fail("Expecting DropletCreationException.");
-        } catch (final DropletCreationException e) {
-            // Test passes.
         }
     }
 
@@ -122,9 +108,9 @@ public class EmailDropletsControllerTests {
      * Test adding duplicate droplet from email settings.
      */
     @Test
-    public void testAddEmailDropletEmailSettings4() {
+    public void testAddEmailDropletEmailSettings3() {
         try {
-            settings = new EmailSettings(hostName, "imap", testUser,
+            settings = new EmailSettings(hostName, Protocol.imap, testUser,
                     testPassword);
             controller.addEmailDroplet(settings);
             controller.addEmailDroplet(settings);

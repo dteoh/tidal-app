@@ -60,7 +60,8 @@ public final class ConfigurablesRepresenter extends Representer {
             final EmailSettings settings = (EmailSettings) obj;
             final Map enc = new TreeMap();
             enc.put("host", settings.getHost());
-            enc.put("prot", settings.getProtocol());
+            enc.put("prot", settings.getProtocol() != null ? settings
+                    .getProtocol().toString() : null);
             enc.put("user", encryptor.encrypt(settings.getUsername()));
             enc.put("pass", encryptor.encrypt(settings.getPassword()));
             return representMapping(new Tag("!email"), enc, true);

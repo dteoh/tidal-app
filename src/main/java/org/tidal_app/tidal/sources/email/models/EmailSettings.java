@@ -24,7 +24,7 @@ package org.tidal_app.tidal.sources.email.models;
 public final class EmailSettings {
 
     private final String host;
-    private final String protocol;
+    private final Protocol protocol;
     private final String username;
     private final String password;
 
@@ -39,8 +39,12 @@ public final class EmailSettings {
      * @param password
      *            password
      */
-    public EmailSettings(final String host, final String protocol,
+    public EmailSettings(final String host, final Protocol protocol,
             final String username, final String password) {
+        if (protocol == null) {
+            throw new NullPointerException();
+        }
+
         this.host = host;
         this.protocol = protocol;
         this.username = username;
@@ -51,7 +55,7 @@ public final class EmailSettings {
         return host;
     }
 
-    public String getProtocol() {
+    public Protocol getProtocol() {
         return protocol;
     }
 
@@ -88,7 +92,7 @@ public final class EmailSettings {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final EmailSettings other = (EmailSettings) obj;
+        EmailSettings other = (EmailSettings) obj;
         if (host == null) {
             if (other.host != null) {
                 return false;
@@ -103,11 +107,7 @@ public final class EmailSettings {
         } else if (!password.equals(other.password)) {
             return false;
         }
-        if (protocol == null) {
-            if (other.protocol != null) {
-                return false;
-            }
-        } else if (!protocol.equals(other.protocol)) {
+        if (protocol != other.protocol) {
             return false;
         }
         if (username == null) {

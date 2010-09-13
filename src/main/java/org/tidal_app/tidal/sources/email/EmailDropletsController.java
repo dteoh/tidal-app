@@ -20,7 +20,6 @@ import static org.tidal_app.tidal.util.EDTUtils.outsideEDT;
 import static org.tidal_app.tidal.util.ResourceUtils.getImage;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -42,10 +41,10 @@ import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.sources.SetupDroplet;
 import org.tidal_app.tidal.sources.email.impl.ImapDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.tidal_app.tidal.sources.email.views.EmailDropletSetup;
 import org.tidal_app.tidal.util.EDTUtils;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
@@ -96,14 +95,11 @@ public final class EmailDropletsController implements SetupDroplet {
     private EmailDropletsController() {
         droplets = Maps.newHashMap();
 
-        // Supported email protocols.
-        final List<String> protocols = Lists.newArrayList("imap", "imaps");
-
         Runnable swingTask = new Runnable() {
             @Override
             public void run() {
                 setupView = new EmailDropletSetup();
-                setupView.addProtocols(protocols);
+                setupView.addProtocols(Protocol.values());
             }
         };
         SwingUtilities.invokeLater(swingTask);
@@ -126,10 +122,9 @@ public final class EmailDropletsController implements SetupDroplet {
         synchronized (this) {
             // Determine what type of droplet to build based on the given
             // protocol.
-            final String protocol = emailSettings.getProtocol();
-            if (protocol.equalsIgnoreCase("imap")
-                    || protocol.equalsIgnoreCase("imaps")) {
-                // IMAP(S) protocol
+            final Protocol protocol = emailSettings.getProtocol();
+            if (protocol == Protocol.imap || protocol == Protocol.imaps) {
+                // imap(S) protocol
                 final ImapDroplet imapsDroplet = ImapDroplet
                         .create(emailSettings);
 
@@ -145,7 +140,7 @@ public final class EmailDropletsController implements SetupDroplet {
                     imapsDroplet.init();
                 } catch (DropletInitException e) {
                     throw new DropletCreationException(
-                            "Could not initialize IMAP droplet", e);
+                            "Could not initialize imap droplet", e);
                 }
 
                 droplets.put(imapsDroplet.getIdentifier(), imapsDroplet);

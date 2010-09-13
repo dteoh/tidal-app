@@ -43,6 +43,7 @@ import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.id.IDGenerator;
 import org.tidal_app.tidal.sources.email.AbstractEmailDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.tidal_app.tidal.util.EDTUtils;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
@@ -50,7 +51,7 @@ import org.tidal_app.tidal.views.models.RippleModel;
 import com.google.common.collect.Lists;
 
 /**
- * This Droplet is used to handle IMAP/IMAPS email services.
+ * This Droplet is used to handle imap/imaps email services.
  * 
  * @author Douglas Teoh
  */
@@ -68,25 +69,14 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     public static ImapDroplet create(final EmailSettings settings)
             throws DropletCreationException {
         outsideEDT();
-
-        final String protocol = settings.getProtocol();
-        if (!"imap".equalsIgnoreCase(protocol)
-                && !"imaps".equalsIgnoreCase(protocol)) {
-            throw new DropletCreationException("Unsupported protocol: "
-                    + protocol);
-        }
         return new ImapDroplet(IDGenerator.generateID(), settings);
     }
 
-    public static ImapDroplet create(final String host, final String protocol,
-            final String username, final String password)
-            throws DropletCreationException {
+    public static ImapDroplet create(final String host,
+            final Protocol protocol, final String username,
+            final String password) throws DropletCreationException {
         outsideEDT();
 
-        if (!"imap".equals(protocol) && !"imaps".equals(protocol)) {
-            throw new DropletCreationException("Unsupported protocol: "
-                    + protocol);
-        }
         return new ImapDroplet(IDGenerator.generateID(), host, protocol,
                 username, password);
     }
@@ -98,12 +88,13 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     /**
      * @param host
      * @param protocol
-     *            must be either IMAP or IMAPS
+     *            must be either imap or imaps
      * @param username
      * @param password
      */
     private ImapDroplet(final ID identifier, final String host,
-            final String protocol, final String username, final String password) {
+            final Protocol protocol, final String username,
+            final String password) {
         super(identifier, host, protocol, username, password);
     }
 
@@ -135,7 +126,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
         // Don't overwrite system properties.
         final Properties props = new Properties(System.getProperties());
-        if ("imaps".equalsIgnoreCase(settings.getProtocol())) {
+        if (settings.getProtocol() == Protocol.imaps) {
             props.setProperty("mail.imaps.starttls.enable", "true");
             props.setProperty("mail.imaps.host", settings.getHost());
             props.setProperty("mail.imaps.port", "993");
@@ -146,7 +137,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
         // Set up the mailbox to read from
         try {
-            store = session.getStore(settings.getProtocol());
+            store = session.getStore(settings.getProtocol().toString());
             store.connect(settings.getHost(), settings.getUsername(),
                     settings.getPassword());
             inbox = store.getFolder("INBOX");
@@ -176,6 +167,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         });
     }
 
+    @Override
     public Iterable<RippleModel> getRipples() {
         outsideEDT();
 

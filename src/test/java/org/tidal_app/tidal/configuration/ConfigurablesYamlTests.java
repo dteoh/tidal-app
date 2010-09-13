@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.yaml.snakeyaml.Dumper;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Loader;
@@ -68,7 +69,7 @@ public class ConfigurablesYamlTests {
     @Test
     public void testEmailSettings1() {
         final String host = "tidal-app.org";
-        final String protocol = "imap";
+        final Protocol protocol = Protocol.imap;
         final String username = "unittester";
         final String password = "junittesting";
         final EmailSettings es = new EmailSettings(host, protocol, username,
@@ -91,7 +92,7 @@ public class ConfigurablesYamlTests {
 
         // Check for field values
         assertTrue(result.contains(host));
-        assertTrue(result.contains(protocol));
+        assertTrue(result.contains(protocol.toString()));
         assertFalse(result.contains(username));
         assertFalse(result.contains(password));
     }
@@ -102,7 +103,7 @@ public class ConfigurablesYamlTests {
     @Test
     public void testEmailSettings2() {
         final String host = "tidal-app.org";
-        final String protocol = "imap";
+        final Protocol protocol = Protocol.imap;
         final String username = "unittester";
         final String password = "junittesting";
         final EmailSettings es = new EmailSettings(host, protocol, username,
@@ -123,7 +124,7 @@ public class ConfigurablesYamlTests {
     @Test
     public void testEmailSettings3() {
         final String host = null;
-        final String protocol = "imap";
+        final Protocol protocol = Protocol.imap;
         final String username = "unittester";
         final String password = "junittesting";
         final EmailSettings es = new EmailSettings(host, protocol, username,
@@ -144,8 +145,8 @@ public class ConfigurablesYamlTests {
     @Test
     public void testEmailSettings4() {
         final String host = "tidal-app.org";
-        final String protocol = null;
-        final String username = "unittester";
+        final Protocol protocol = Protocol.imap;
+        final String username = null;
         final String password = "junittesting";
         final EmailSettings es = new EmailSettings(host, protocol, username,
                 password);
@@ -165,28 +166,7 @@ public class ConfigurablesYamlTests {
     @Test
     public void testEmailSettings5() {
         final String host = "tidal-app.org";
-        final String protocol = "imap";
-        final String username = null;
-        final String password = "junittesting";
-        final EmailSettings es = new EmailSettings(host, protocol, username,
-                password);
-
-        final StringWriter sw = new StringWriter();
-
-        yamlRepresent.dump(es, sw);
-
-        final EmailSettings result = (EmailSettings) yamlConstruct.load(sw
-                .toString());
-        assertNull(result);
-    }
-
-    /**
-     * Test deserialization of invalid EmailSettings object.
-     */
-    @Test
-    public void testEmailSettings6() {
-        final String host = "tidal-app.org";
-        final String protocol = "imap";
+        final Protocol protocol = Protocol.imap;
         final String username = "unittester";
         final String password = null;
         final EmailSettings es = new EmailSettings(host, protocol, username,

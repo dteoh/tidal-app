@@ -35,6 +35,7 @@ import javax.swing.WindowConstants;
 import net.miginfocom.swing.MigLayout;
 
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
+import org.tidal_app.tidal.sources.email.models.Protocol;
 
 /**
  * Setup view for email droplets.
@@ -149,10 +150,10 @@ public final class EmailDropletSetup extends JPanel {
      * @param protocols
      *            collection of protocols.
      */
-    public void addProtocols(final Iterable<String> protocols) {
+    public void addProtocols(final Protocol... protocols) {
         inEDT();
 
-        for (String p : protocols) {
+        for (Protocol p : protocols) {
             protocolField.addItem(p);
         }
     }
@@ -180,9 +181,23 @@ public final class EmailDropletSetup extends JPanel {
 
         String password = new String(passwordField.getPassword());
         EmailSettings settings = new EmailSettings(serverField.getText(),
-                (String) protocolField.getSelectedItem(),
+                (Protocol) protocolField.getSelectedItem(),
                 usernameField.getText(), password);
         return settings;
+    }
+
+    /**
+     * Set the field values using the given settings model.
+     * 
+     * @param settings
+     */
+    public void setSettings(final EmailSettings settings) {
+        inEDT();
+
+        serverField.setText(settings.getHost());
+        protocolField.setSelectedItem(settings.getProtocol());
+        usernameField.setText(settings.getUsername());
+        passwordField.setText(settings.getPassword());
     }
 
 }
