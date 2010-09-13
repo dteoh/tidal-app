@@ -21,6 +21,7 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -30,10 +31,13 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.tidal_app.tidal.views.events.DropletViewListener;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.GradientPanel;
+
+import com.google.common.collect.Lists;
 
 /**
  * Used to visualize {@link DropletModel}s on the interface. The visualization
@@ -52,6 +56,8 @@ public final class ListDropletView extends DropShadowPanel implements
 
     /** Droplet name label. */
     private JLabel nameLabel;
+
+    private final List<DropletViewListener> listeners;
 
     // TODO refactor out into resource map.
     private static final Font HEADER_FONT = new Font(Font.SANS_SERIF,
@@ -73,6 +79,8 @@ public final class ListDropletView extends DropShadowPanel implements
     private ListDropletView() {
         // TODO refactor magic constants.
         super(6, 0.5F);
+
+        listeners = Lists.newArrayList();
         initView();
     }
 
@@ -170,5 +178,23 @@ public final class ListDropletView extends DropShadowPanel implements
     @Override
     public JComponent getView() {
         return this;
+    }
+
+    @Override
+    public void addDropletViewListener(final DropletViewListener listener) {
+        if (listener != null) {
+            synchronized (this) {
+                listeners.add(listener);
+            }
+        }
+    }
+
+    @Override
+    public void removeDropletViewListener(final DropletViewListener listener) {
+        if (listener != null) {
+            synchronized (this) {
+                listeners.remove(listener);
+            }
+        }
     }
 }

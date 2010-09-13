@@ -16,6 +16,7 @@
 
 package org.tidal_app.tidal.views;
 
+import org.tidal_app.tidal.views.events.DropletViewListener;
 import org.tidal_app.tidal.views.models.DropletModel;
 
 /**
@@ -39,5 +40,21 @@ public interface DropletView extends View {
      * @param model
      */
     void addDropletModel(final DropletModel model);
+
+    /**
+     * Adds the specified droplet view listener to receive droplet view events
+     * from this view.
+     * 
+     * @param listener
+     */
+    void addDropletViewListener(final DropletViewListener listener);
+
+    /**
+     * Removes the specified droplet view listener so that it no longer receives
+     * droplet view events from this view.
+     * 
+     * @param listener
+     */
+    void removeDropletViewListener(final DropletViewListener listener);
 
 }
