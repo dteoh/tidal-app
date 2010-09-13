@@ -21,8 +21,11 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -109,9 +112,16 @@ public final class ListDropletView extends DropShadowPanel implements
 
         headerPanel.add(nameLabel);
 
-        // Control buttons, one for delete, another for show/hide
-        headerPanel.add(new JButton(), "w 24!, h 24!");
-        headerPanel.add(new JButton(), "w 24!, h 24!, wrap");
+        JButton configButton = new JButton();
+        configButton.setName("ListDropletViewConfigButton");
+        Action configAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                handleConfigAction(e);
+            }
+        };
+        configButton.setAction(configAction);
+        headerPanel.add(configButton, "skip, w 24!, h 24!, wrap");
 
         add(headerPanel, "pushx, growx");
 
@@ -194,6 +204,19 @@ public final class ListDropletView extends DropShadowPanel implements
         if (listener != null) {
             synchronized (this) {
                 listeners.remove(listener);
+            }
+        }
+    }
+
+    /**
+     * Event handler for the config button action.
+     * 
+     * @param evt
+     */
+    private void handleConfigAction(final ActionEvent evt) {
+        synchronized (this) {
+            for (DropletViewListener listener : listeners) {
+                listener.configAction(evt);
             }
         }
     }
