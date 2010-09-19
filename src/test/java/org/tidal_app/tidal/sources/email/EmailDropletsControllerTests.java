@@ -124,7 +124,7 @@ public class EmailDropletsControllerTests {
      */
     @Test
     public void testDestroyEmailDroplet1() {
-        assertFalse(controller.destroyEmailDroplet(mock(ID.class)));
+        assertFalse(controller.destroyDroplet(mock(ID.class)));
     }
 
     /**
@@ -134,7 +134,7 @@ public class EmailDropletsControllerTests {
     public void testDestroyEmailDroplet2() {
         try {
             AbstractEmailDroplet d = controller.addEmailDroplet(settings);
-            assertTrue(controller.destroyEmailDroplet(d.getIdentifier()));
+            assertTrue(controller.destroyDroplet(d.getIdentifier()));
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
         }
@@ -147,7 +147,7 @@ public class EmailDropletsControllerTests {
     public void testDestroyEmailDroplet3() {
         try {
             AbstractEmailDroplet d = controller.addEmailDroplet(settings);
-            assertTrue(controller.destroyEmailDroplet(d.getIdentifier()));
+            assertTrue(controller.destroyDroplet(d.getIdentifier()));
             controller.addEmailDroplet(settings);
         } catch (final DropletCreationException e) {
             fail(e.getMessage());

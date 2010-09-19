@@ -85,5 +85,6 @@ public class DropletsViewManager implements ViewManager, View {
         }
         dropletsPanel.remove(view.getView());
         dropletsPanel.validate();
+        dropletsPanel.repaint();
     }
 }

@@ -55,7 +55,8 @@ import foxtrot.Worker;
  * @author Douglas Teoh
  * 
  */
-public final class EmailDropletsController implements SetupDroplet {
+public final class EmailDropletsController implements SetupDroplet,
+        EmailsController {
 
     /** Logger for this class. */
     @InjectLogger
@@ -134,6 +135,7 @@ public final class EmailDropletsController implements SetupDroplet {
                             "Could not initialize imap droplet", e);
                 }
 
+                imapsDroplet.setEmailsController(this);
                 droplets.put(imapsDroplet.getIdentifier(), imapsDroplet);
                 saveConfig.addConfigurable(imapsDroplet);
 
@@ -164,18 +166,50 @@ public final class EmailDropletsController implements SetupDroplet {
      *            identifier of the droplet being removed.
      * @return true if the droplet exists and is destroyed, false otherwise.
      */
-    public boolean destroyEmailDroplet(final ID dropletID) {
-        outsideEDT();
-
+    public boolean destroyDroplet(final ID dropletID) {
         synchronized (this) {
+            if (SwingUtilities.isEventDispatchThread()) {
+                boolean result = (Boolean) Worker.post(new Job() {
+                    @Override
+                    public Object run() {
+                        final AbstractEmailDroplet abstractEmailDroplet = droplets
+                                .remove(dropletID);
+                        if (abstractEmailDroplet != null) {
+                            abstractEmailDroplet.destroy();
+                            saveConfig.removeConfigurable(abstractEmailDroplet);
+
+                            EDTUtils.runOnEDT(new Runnable() {
+                                @Override
+                                public void run() {
+                                    viewManager.removeView(abstractEmailDroplet
+                                            .getDropletView());
+                                }
+                            });
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                return result;
+            }
+
+            // Should be a mirror of the posted job.
             final AbstractEmailDroplet abstractEmailDroplet = droplets
                     .remove(dropletID);
             if (abstractEmailDroplet != null) {
                 abstractEmailDroplet.destroy();
+                saveConfig.removeConfigurable(abstractEmailDroplet);
+                EDTUtils.runOnEDT(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewManager.removeView(abstractEmailDroplet
+                                .getDropletView());
+                    }
+                });
                 return true;
             }
+            return false;
         }
-        return false;
     }
 
     /**

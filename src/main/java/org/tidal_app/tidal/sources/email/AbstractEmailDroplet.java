@@ -20,6 +20,8 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.SwingUtilities;
+
 import org.slf4j.Logger;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.id.ID;
@@ -58,8 +60,14 @@ public abstract class AbstractEmailDroplet implements Droplet {
     protected DropletViewListener dvl = new DropletViewListener() {
         @Override
         public void configAction(final ActionEvent evt) {
-            configHandler.getConfigurationView().setSettings(getSettings());
-            configHandler.show();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    configHandler.getConfigurationView().setSettings(
+                            getSettings());
+                    configHandler.show();
+                }
+            });
         }
     };
 
@@ -70,8 +78,15 @@ public abstract class AbstractEmailDroplet implements Droplet {
     protected ConfigDialogListener cdl = new ConfigDialogListener() {
         @Override
         public void delete() {
-            // TODO Auto-generated method stub
-
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    configHandler.hide();
+                    if (emc != null) {
+                        emc.destroyDroplet(getIdentifier());
+                    }
+                }
+            });
         }
 
         @Override
@@ -86,6 +101,9 @@ public abstract class AbstractEmailDroplet implements Droplet {
             handleReconfig(newSettings);
         }
     };
+
+    /** Manages email droplets. */
+    private EmailsController emc;
 
     protected AbstractEmailDroplet(final ID identifier,
             final EmailSettings settings) {
@@ -139,6 +157,16 @@ public abstract class AbstractEmailDroplet implements Droplet {
         return identifier;
     }
 
+    /**
+     * Set the emails controller to use.
+     * 
+     * @param controller
+     *            Controller to use.
+     */
+    public void setEmailsController(final EmailsController controller) {
+        emc = controller;
+    }
+
     @Override
     public abstract void init() throws DropletInitException;
 
@@ -147,7 +175,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
 
     @Override
     public void destroy() {
-        EDTUtils.runOnEDT(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 view.removeDropletViewListener(dvl);
