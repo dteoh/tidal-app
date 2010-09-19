@@ -219,6 +219,7 @@ public final class AccessView extends DropShadowPanel {
         inEDT();
         if (unlockAction != null) {
             unlockAction.setEnabled(false);
+            passwordField.setEnabled(false);
         }
     }
 
@@ -229,6 +230,7 @@ public final class AccessView extends DropShadowPanel {
         inEDT();
         if (unlockAction != null) {
             unlockAction.setEnabled(true);
+            passwordField.setEnabled(true);
         }
     }
 
