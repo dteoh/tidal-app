@@ -114,9 +114,8 @@ public class EmailDropletsControllerTests {
                     testPassword);
             controller.addEmailDroplet(settings);
             controller.addEmailDroplet(settings);
-            fail("Expecting DropletCreationException.");
         } catch (final DropletCreationException e) {
-            // Test passes.
+            fail("Duplicate droplets allowed.");
         }
     }
 

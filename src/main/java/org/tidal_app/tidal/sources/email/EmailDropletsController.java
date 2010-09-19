@@ -122,16 +122,9 @@ public final class EmailDropletsController implements SetupDroplet {
             // protocol.
             final Protocol protocol = emailSettings.getProtocol();
             if (protocol == Protocol.imap || protocol == Protocol.imaps) {
-                // imap(S) protocol
+                // IMAP(S) protocol
                 final ImapDroplet imapsDroplet = ImapDroplet
                         .create(emailSettings);
-
-                // Disallow overwriting existing mappings.
-                if (isManaging(emailSettings.getUsername())) {
-                    throw new DropletCreationException(
-                            "Duplicate AbstractEmailDroplet for "
-                                    + emailSettings.getUsername());
-                }
 
                 // Initialize the droplet
                 try {
@@ -252,24 +245,6 @@ public final class EmailDropletsController implements SetupDroplet {
         });
 
         return result;
-    }
-
-    /**
-     * Check if we are already managing an email droplet with the same username.
-     * 
-     * @param username
-     *            Username to check.
-     * @return true if already managing a droplet with the same email address,
-     *         false otherwise.
-     */
-    private boolean isManaging(final String username) {
-        for (AbstractEmailDroplet droplet : droplets.values()) {
-            if (droplet.getUsername().equals(username) == true) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
 }
