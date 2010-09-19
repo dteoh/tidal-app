@@ -24,8 +24,6 @@ import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -40,7 +38,6 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.application.ResourceMap;
-import org.tidal_app.tidal.util.EDTUtils;
 import org.tidal_app.tidal.views.events.ConfigDialogListener;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
@@ -67,17 +64,6 @@ public final class ConfigDialog extends JDialog {
 
     /** Listeners interested in events from the config dialog. */
     private List<ConfigDialogListener> listeners;
-
-    public static void main(final String[] args) {
-        EDTUtils.runOnEDT(new Runnable() {
-
-            @Override
-            public void run() {
-                ConfigDialog cd = new ConfigDialog();
-                cd.setVisible(true);
-            }
-        });
-    }
 
     /**
      * @see {@link #JDialog()}
@@ -246,8 +232,8 @@ public final class ConfigDialog extends JDialog {
         setTitle(BUNDLE.getString("dialog.title"));
 
         Container container = getContentPane();
-        container.setLayout(new MigLayout("ins 0, wrap", "[grow]",
-                "[][][grow][]"));
+        container
+                .setLayout(new MigLayout("ins 0, wrap", "[grow]", "[][grow][]"));
 
         // Header panel
         final GradientPanel headerPanel = new GradientPanel(
@@ -265,7 +251,7 @@ public final class ConfigDialog extends JDialog {
 
         container.add(headerPanel, "growx");
 
-        // Construct the setup panel
+        // Construct the configuration panel
         configPanel = new JPanel(new MigLayout("", "[grow]", "[grow]"));
         container.add(configPanel, "grow");
 
@@ -312,15 +298,6 @@ public final class ConfigDialog extends JDialog {
         commandPanel.add(applyButton, "tag apply");
 
         container.add(commandPanel, "growx");
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(final WindowEvent e) {
-                cancelButton.doClick();
-            }
-        });
-
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -330,6 +307,7 @@ public final class ConfigDialog extends JDialog {
      */
     public void setConfigView(final JComponent view) {
         inEDT();
+        configPanel.removeAll();
         configPanel.add(view, "grow");
         validate();
     }

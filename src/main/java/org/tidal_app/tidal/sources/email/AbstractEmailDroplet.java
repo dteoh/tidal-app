@@ -47,13 +47,17 @@ public abstract class AbstractEmailDroplet implements Droplet {
     /** View associated with the droplet. */
     protected DropletView view;
 
+    /** Listener to droplet view events. */
     protected DropletViewListener dvl = new DropletViewListener() {
         @Override
         public void configAction(final ActionEvent evt) {
-            // TODO Auto-generated method stub
-
+            configHandler.getConfigurationView().setSettings(getSettings());
+            configHandler.show();
         }
     };
+
+    /** Handles the configuration view. */
+    protected EmailDropletConfig configHandler;
 
     protected AbstractEmailDroplet(final ID identifier,
             final EmailSettings settings) {
@@ -79,6 +83,8 @@ public abstract class AbstractEmailDroplet implements Droplet {
             public void run() {
                 view = DropletViews.newListView();
                 view.addDropletViewListener(dvl);
+
+                configHandler = new EmailDropletConfig();
             }
         });
     }
