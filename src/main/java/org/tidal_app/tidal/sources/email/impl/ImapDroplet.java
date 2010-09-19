@@ -102,24 +102,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     @Override
     public void destroy() {
         outsideEDT();
-
-        if (inbox != null) {
-            try {
-                // False, because deleted messages get expunged if true.
-                inbox.close(false);
-            } catch (final MessagingException e) {
-                LOGGER.error("Destroy exception", e);
-            }
-        }
-
-        if (store != null) {
-            try {
-                store.close();
-            } catch (final MessagingException e) {
-                LOGGER.error("Destroy exception", e);
-            }
-        }
-
+        cleanup();
         super.destroy();
     }
 
@@ -218,6 +201,36 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         }
 
         return Lists.newLinkedList();
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOGGER;
+    }
+
+    @Override
+    protected void restart() throws DropletInitException {
+        cleanup();
+        init();
+    }
+
+    private void cleanup() {
+        if (inbox != null) {
+            try {
+                // False, because deleted messages get expunged if true.
+                inbox.close(false);
+            } catch (final MessagingException e) {
+                LOGGER.error("Destroy exception", e);
+            }
+        }
+
+        if (store != null) {
+            try {
+                store.close();
+            } catch (final MessagingException e) {
+                LOGGER.error("Destroy exception", e);
+            }
+        }
     }
 
 }

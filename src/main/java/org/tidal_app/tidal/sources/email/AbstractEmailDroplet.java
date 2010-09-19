@@ -20,6 +20,7 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.event.ActionEvent;
 
+import org.slf4j.Logger;
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.sources.Droplet;
@@ -28,8 +29,14 @@ import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.tidal_app.tidal.util.EDTUtils;
 import org.tidal_app.tidal.views.DropletView;
 import org.tidal_app.tidal.views.DropletViews;
+import org.tidal_app.tidal.views.events.ConfigDialogListener;
 import org.tidal_app.tidal.views.events.DropletViewListener;
+import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
+
+import foxtrot.Job;
+import foxtrot.Task;
+import foxtrot.Worker;
 
 /**
  * Generic email droplet.
@@ -59,6 +66,27 @@ public abstract class AbstractEmailDroplet implements Droplet {
     /** Handles the configuration view. */
     protected EmailDropletConfig configHandler;
 
+    /** Listener to configuration dialog events. */
+    protected ConfigDialogListener cdl = new ConfigDialogListener() {
+        @Override
+        public void delete() {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void cancel() {
+            configHandler.hide();
+        }
+
+        @Override
+        public void apply() {
+            EmailSettings newSettings = configHandler.getConfigurationView()
+                    .getSettings();
+            handleReconfig(newSettings);
+        }
+    };
+
     protected AbstractEmailDroplet(final ID identifier,
             final EmailSettings settings) {
         this.settings = settings;
@@ -85,6 +113,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
                 view.addDropletViewListener(dvl);
 
                 configHandler = new EmailDropletConfig();
+                configHandler.addConfigDialogListener(cdl);
             }
         });
     }
@@ -122,6 +151,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
             @Override
             public void run() {
                 view.removeDropletViewListener(dvl);
+                configHandler.removeConfigDialogListener(cdl);
             }
         });
     }
@@ -136,5 +166,66 @@ public abstract class AbstractEmailDroplet implements Droplet {
      * Retrieves updated information feed items.
      */
     public abstract Iterable<RippleModel> getRipples();
+
+    /**
+     * Get logger instance.
+     */
+    protected abstract Logger getLogger();
+
+    /**
+     * Restart the droplet.
+     */
+    protected abstract void restart() throws DropletInitException;
+
+    /**
+     * Reconfigure the current droplet using the given settings.
+     * 
+     * @param settings
+     *            The new settings.
+     */
+    protected void handleReconfig(final EmailSettings settings) {
+        if (settings == null) {
+            throw new NullPointerException();
+        }
+
+        EmailSettings oldSettings = this.settings;
+        this.settings = settings;
+        try {
+            Worker.post(new Task() {
+                @Override
+                public Object run() throws Exception {
+                    restart();
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            getLogger().error("Droplet reconfiguration error", e);
+
+            // Restore the old settings so that we have something that works.
+            handleReconfig(oldSettings);
+            return;
+        }
+
+        // Success, lets get fresh emails.
+        @SuppressWarnings("unchecked")
+        Iterable<RippleModel> rms = (Iterable<RippleModel>) Worker
+                .post(new Job() {
+                    @Override
+                    public Object run() {
+                        return getRipples();
+                    }
+                });
+
+        final DropletModel dm = new DropletModel(getIdentifier(),
+                getUsername(), rms);
+
+        EDTUtils.runOnEDT(new Runnable() {
+            @Override
+            public void run() {
+                view.setDropletModel(dm);
+                configHandler.hide();
+            }
+        });
+    }
 
 }
