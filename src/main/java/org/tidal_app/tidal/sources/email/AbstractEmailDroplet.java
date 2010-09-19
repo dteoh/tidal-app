@@ -18,6 +18,8 @@ package org.tidal_app.tidal.sources.email;
 
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
+import java.awt.event.ActionEvent;
+
 import org.tidal_app.tidal.exceptions.DropletInitException;
 import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.sources.Droplet;
@@ -26,6 +28,7 @@ import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.tidal_app.tidal.util.EDTUtils;
 import org.tidal_app.tidal.views.DropletView;
 import org.tidal_app.tidal.views.DropletViews;
+import org.tidal_app.tidal.views.events.DropletViewListener;
 import org.tidal_app.tidal.views.models.RippleModel;
 
 /**
@@ -43,6 +46,14 @@ public abstract class AbstractEmailDroplet implements Droplet {
 
     /** View associated with the droplet. */
     protected DropletView view;
+
+    protected DropletViewListener dvl = new DropletViewListener() {
+        @Override
+        public void configAction(final ActionEvent evt) {
+            // TODO Auto-generated method stub
+
+        }
+    };
 
     protected AbstractEmailDroplet(final ID identifier,
             final EmailSettings settings) {
@@ -67,6 +78,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
             @Override
             public void run() {
                 view = DropletViews.newListView();
+                view.addDropletViewListener(dvl);
             }
         });
     }
@@ -99,7 +111,14 @@ public abstract class AbstractEmailDroplet implements Droplet {
     public abstract void update();
 
     @Override
-    public abstract void destroy();
+    public void destroy() {
+        EDTUtils.runOnEDT(new Runnable() {
+            @Override
+            public void run() {
+                view.removeDropletViewListener(dvl);
+            }
+        });
+    }
 
     @Override
     public DropletView getDropletView() {

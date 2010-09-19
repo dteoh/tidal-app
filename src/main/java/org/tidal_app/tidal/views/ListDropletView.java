@@ -34,12 +34,14 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.application.ResourceMap;
 import org.tidal_app.tidal.views.events.DropletViewListener;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
+import com.dteoh.treasuremap.ResourceMaps;
 import com.google.common.collect.Lists;
 
 /**
@@ -50,6 +52,9 @@ import com.google.common.collect.Lists;
  */
 public final class ListDropletView extends DropShadowPanel implements
         DropletView {
+
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            ListDropletView.class).build();
 
     /** Models */
     private DropletModel dropletModel;
@@ -62,10 +67,9 @@ public final class ListDropletView extends DropShadowPanel implements
 
     private final List<DropletViewListener> listeners;
 
-    // TODO refactor out into resource map.
-    private static final Font HEADER_FONT = new Font(Font.SANS_SERIF,
-            Font.BOLD, 24);
-    private static final Color HEADER_FOREGROUND = new Color(50, 60, 70);
+    private static final Font HEADER_FONT = BUNDLE.getFont("header.font");
+    private static final Color HEADER_FOREGROUND = BUNDLE
+            .getColor("header.foreground");
 
     /**
      * Creates a new ListDropletView with no model.
@@ -80,8 +84,8 @@ public final class ListDropletView extends DropShadowPanel implements
      * Creates a new ListDropletView with no model.
      */
     private ListDropletView() {
-        // TODO refactor magic constants.
-        super(6, 0.5F);
+        super(BUNDLE.getInteger("shadow.size"), BUNDLE
+                .getFloat("shadow.opacity"));
 
         listeners = Lists.newArrayList();
         initView();
@@ -102,13 +106,20 @@ public final class ListDropletView extends DropShadowPanel implements
         nameLabel.setName("DropletViewNameLabel");
 
         // Construct header panel
-        final GradientPanel headerPanel = new GradientPanel(new Color(235, 240,
-                250), new Color(215, 225, 235));
+        final GradientPanel headerPanel = new GradientPanel(
+                BUNDLE.getColor("header.top.color"),
+                BUNDLE.getColor("header.bottom.color"));
         headerPanel.setName("DropletViewHeaderPanel");
         headerPanel.setLayout(new MigLayout("ins 0", "[]unrel push[][]"));
+        int headerBorderSize = BUNDLE.getInteger("header.border.size");
+        int headerBorderPadding = BUNDLE.getInteger("header.border.padding");
+
         headerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-                .createMatteBorder(1, 1, 1, 1, new Color(178, 178, 178)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+                .createMatteBorder(headerBorderSize, headerBorderSize,
+                        headerBorderSize, headerBorderSize,
+                        BUNDLE.getColor("header.border.color")), BorderFactory
+                .createEmptyBorder(headerBorderPadding, headerBorderPadding,
+                        headerBorderPadding, headerBorderPadding)));
 
         headerPanel.add(nameLabel);
 

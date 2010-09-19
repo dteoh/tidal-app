@@ -17,20 +17,17 @@
 package org.tidal_app.tidal.sources.email;
 
 import static org.tidal_app.tidal.util.EDTUtils.outsideEDT;
-import static org.tidal_app.tidal.util.ResourceUtils.getImage;
 
-import java.io.IOException;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+import org.jdesktop.application.ResourceMap;
 import org.slf4j.Logger;
 import org.tidal_app.tidal.configuration.SaveConfigurable;
 import org.tidal_app.tidal.controllers.ViewManager;
@@ -45,6 +42,7 @@ import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.tidal_app.tidal.sources.email.views.EmailDropletSetup;
 import org.tidal_app.tidal.util.EDTUtils;
 
+import com.dteoh.treasuremap.ResourceMaps;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
@@ -64,8 +62,8 @@ public final class EmailDropletsController implements SetupDroplet {
     private Logger logger;
 
     /** Resource bundle for this class. */
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(EmailDropletsController.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            EmailDropletsController.class).build();
 
     /** Email update schedule. */
     private static final long UPDATE_SCHEDULE = TimeUnit.MILLISECONDS.convert(
@@ -219,15 +217,7 @@ public final class EmailDropletsController implements SetupDroplet {
     @Override
     public Icon getSetupIcon() {
         outsideEDT();
-
-        Icon setupIcon = null;
-
-        try {
-            setupIcon = new ImageIcon(getImage(getClass(),
-                    BUNDLE.getString("email.image")));
-        } catch (IOException e) {
-            logger.error("Failed to load icon", e);
-        }
+        Icon setupIcon = BUNDLE.getImageIcon("email.image");
         return setupIcon;
     }
 

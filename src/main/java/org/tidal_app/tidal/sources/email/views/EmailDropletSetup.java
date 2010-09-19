@@ -19,7 +19,6 @@ package org.tidal_app.tidal.sources.email.views;
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.util.Arrays;
-import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -34,8 +33,11 @@ import javax.swing.WindowConstants;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.application.ResourceMap;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.sources.email.models.Protocol;
+
+import com.dteoh.treasuremap.ResourceMaps;
 
 /**
  * Setup view for email droplets.
@@ -46,8 +48,8 @@ import org.tidal_app.tidal.sources.email.models.Protocol;
 public final class EmailDropletSetup extends JPanel {
 
     /** Resource bundle for this class. */
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(EmailDropletSetup.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            EmailDropletSetup.class).build();
 
     public static void main(final String[] args) {
 

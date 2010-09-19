@@ -72,7 +72,7 @@ public final class ConfigurablesConstructor extends Constructor {
             Protocol protocol = null;
             try {
                 protocol = Protocol.valueOf(protStr);
-            } catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException e) {
                 return null;
             }
 

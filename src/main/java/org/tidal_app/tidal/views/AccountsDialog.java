@@ -18,10 +18,8 @@ package org.tidal_app.tidal.views;
 
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.Window;
@@ -30,7 +28,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -43,9 +40,11 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.application.ResourceMap;
 import org.tidal_app.tidal.sources.SetupDroplet;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
+import com.dteoh.treasuremap.ResourceMaps;
 import com.google.common.collect.Maps;
 
 import foxtrot.Job;
@@ -60,8 +59,8 @@ import foxtrot.Worker;
 public final class AccountsDialog extends JDialog {
 
     /** Resource bundle for this class. */
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(AccountsDialog.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            AccountsDialog.class).build();
 
     /** Panel for the various droplet icons. */
     private JPanel iconPanel;
@@ -252,13 +251,14 @@ public final class AccountsDialog extends JDialog {
                 "[][][grow][]"));
 
         // Header panel
-        final GradientPanel headerPanel = new GradientPanel(new Color(0, 100,
-                175), new Color(0, 55, 125));
+        final GradientPanel headerPanel = new GradientPanel(
+                BUNDLE.getColor("header.top.color"),
+                BUNDLE.getColor("header.bottom.color"));
         headerPanel.setLayout(new MigLayout());
 
         JLabel heading = new JLabel();
-        heading.setForeground(Color.WHITE);
-        heading.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
+        heading.setForeground(BUNDLE.getColor("heading.color"));
+        heading.setFont(BUNDLE.getFont("heading.font"));
         heading.setName("AccountsViewHeading");
         heading.setText(BUNDLE.getString("heading.text"));
 
@@ -267,8 +267,8 @@ public final class AccountsDialog extends JDialog {
         container.add(headerPanel, "growx");
 
         // Construct our icon panel
-        iconPanel = new GradientPanel(new Color(235, 240, 250), new Color(215,
-                225, 235));
+        iconPanel = new GradientPanel(BUNDLE.getColor("iconPanel.top.color"),
+                BUNDLE.getColor("iconPanel.bottom.color"));
         iconPanel.setLayout(new MigLayout());
 
         container.add(iconPanel, "growx");

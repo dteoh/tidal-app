@@ -17,14 +17,12 @@
 package org.tidal_app.tidal.controllers;
 
 import static org.tidal_app.tidal.util.ResourceUtils.getDimension;
-import static org.tidal_app.tidal.util.ResourceUtils.getImage;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -37,6 +35,7 @@ import javax.swing.WindowConstants;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.application.ResourceMap;
 import org.slf4j.Logger;
 import org.tidal_app.tidal.configuration.ConfigurationController;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
@@ -53,6 +52,7 @@ import org.tidal_app.tidal.views.events.MenuBarViewListener;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.TiledImagePanel;
 
+import com.dteoh.treasuremap.ResourceMaps;
 import com.google.inject.Inject;
 
 import foxtrot.Task;
@@ -71,8 +71,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     private Logger logger;
 
     /** Resource bundle. */
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(TidalController.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            TidalController.class).build();
 
     /** Views */
     /** This is the main application frame. */
@@ -147,13 +147,13 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                 accessViewPanel
                         .setLayout(new MigLayout("", "push[center]push"));
 
-                BufferedImage backgroundImage = null;
+                Image backgroundImage = null;
                 try {
-                    backgroundImage = (BufferedImage) Worker.post(new Task() {
+                    backgroundImage = (Image) Worker.post(new Task() {
                         @Override
                         public Object run() throws Exception {
-                            return getImage(getClass(),
-                                    BUNDLE.getString("background.image"));
+                            return BUNDLE.getImageIcon("background.image")
+                                    .getImage();
                         }
                     });
                 } catch (final Exception e) {
@@ -262,7 +262,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
      * (non-Javadoc)
      * 
      * @see
-     * org.tidal_app.tidal.views.events.AccessViewListener#loginAttempted(org
+     * org.tidal_app.tidal.views.resources.events.AccessViewListener#loginAttempted(org
      * .tidal_app.tidal.events.views.AccessViewEvent)
      */
     @Override
@@ -335,7 +335,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
      * (non-Javadoc)
      * 
      * @see
-     * org.tidal_app.tidal.views.events.AccessViewListener#setupPassword(org
+     * org.tidal_app.tidal.views.resources.events.AccessViewListener#setupPassword(org
      * .tidal_app.tidal.events.views.AccessViewEvent)
      */
     @Override
@@ -378,8 +378,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     /**
      * Handles the menu button click event. Displays the account setup dialog.
      * 
-     * @see org.tidal_app.tidal.views.events.MenuBarViewListener#menuButtonClicked
-     *      (org.tidal_app.tidal.views.events.MenuBarViewEvent)
+     * @see org.tidal_app.tidal.views.resources.events.MenuBarViewListener#menuButtonClicked
+     *      (org.tidal_app.tidal.views.resources.events.MenuBarViewEvent)
      */
     @Override
     public void menuButtonClicked(final MenuBarViewEvent evt) {

@@ -18,14 +18,11 @@ package org.tidal_app.tidal.views;
 
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -36,11 +33,13 @@ import javax.swing.JPasswordField;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.application.ResourceMap;
 import org.tidal_app.tidal.views.events.AccessViewEvent;
 import org.tidal_app.tidal.views.events.AccessViewListener;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
+import com.dteoh.treasuremap.ResourceMaps;
 import com.google.common.collect.Lists;
 
 /**
@@ -51,8 +50,8 @@ import com.google.common.collect.Lists;
 public final class AccessView extends DropShadowPanel {
 
     /** Resource bundle for this class. */
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(AccessView.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(AccessView.class)
+            .build();
 
     /** Heading label. */
     private JLabel heading;
@@ -75,7 +74,8 @@ public final class AccessView extends DropShadowPanel {
      * Creates the login screen.
      */
     public AccessView() {
-        super(6, 0.5F);
+        super(BUNDLE.getInteger("shadow.size"), BUNDLE
+                .getFloat("shadow.opacity"));
         listeners = Lists.newLinkedList();
         initView();
     }
@@ -90,13 +90,14 @@ public final class AccessView extends DropShadowPanel {
 
         // Construct our header panel and header contents
 
-        final GradientPanel headerPanel = new GradientPanel(new Color(0, 100,
-                175), new Color(0, 55, 125));
+        final GradientPanel headerPanel = new GradientPanel(
+                BUNDLE.getColor("header.top.color"),
+                BUNDLE.getColor("header.bottom.color"));
         headerPanel.setLayout(new MigLayout());
 
         heading = new JLabel();
-        heading.setForeground(Color.WHITE);
-        heading.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
+        heading.setForeground(BUNDLE.getColor("heading.foreground"));
+        heading.setFont(BUNDLE.getFont("heading.font"));
         heading.setName("AccessViewHeading");
 
         headerPanel.add(heading);
@@ -104,8 +105,9 @@ public final class AccessView extends DropShadowPanel {
         add(headerPanel, "growx, wrap");
 
         // Construct our information panel
-        final GradientPanel infoPanel = new GradientPanel(new Color(235, 240,
-                250), new Color(215, 225, 235));
+        final GradientPanel infoPanel = new GradientPanel(
+                BUNDLE.getColor("infoPanel.top.color"),
+                BUNDLE.getColor("infoPanel.bottom.color"));
         infoPanel.setLayout(new MigLayout());
         information = new JLabel();
         information.setName("AccessViewInformation");

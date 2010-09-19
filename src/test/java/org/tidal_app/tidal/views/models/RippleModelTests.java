@@ -57,7 +57,7 @@ public class RippleModelTests {
 
     /**
      * Test method for
-     * {@link org.tidal_app.tidal.views.models.RippleModel#getId()}.
+     * {@link org.tidal_app.tidal.views.resources.models.RippleModel#getId()}.
      */
     @Test
     public void testGetId() {
@@ -66,7 +66,7 @@ public class RippleModelTests {
 
     /**
      * Test method for
-     * {@link org.tidal_app.tidal.views.models.RippleModel#getOrigin()}.
+     * {@link org.tidal_app.tidal.views.resources.models.RippleModel#getOrigin()}.
      */
     @Test
     public void testGetOrigin() {
@@ -75,7 +75,7 @@ public class RippleModelTests {
 
     /**
      * Test method for
-     * {@link org.tidal_app.tidal.views.models.RippleModel#getSubject()}.
+     * {@link org.tidal_app.tidal.views.resources.models.RippleModel#getSubject()}.
      */
     @Test
     public void testGetSubject() {
@@ -84,7 +84,7 @@ public class RippleModelTests {
 
     /**
      * Test method for
-     * {@link org.tidal_app.tidal.views.models.RippleModel#getContent()}.
+     * {@link org.tidal_app.tidal.views.resources.models.RippleModel#getContent()}.
      */
     @Test
     public void testGetContent() {
@@ -93,7 +93,7 @@ public class RippleModelTests {
 
     /**
      * Test method for
-     * {@link org.tidal_app.tidal.views.models.RippleModel#getReceived()}.
+     * {@link org.tidal_app.tidal.views.resources.models.RippleModel#getReceived()}.
      */
     @Test
     public void testGetReceived() {
@@ -102,7 +102,7 @@ public class RippleModelTests {
 
     /**
      * Test method for
-     * {@link org.tidal_app.tidal.views.models.RippleModel#equals(java.lang.Object)}
+     * {@link org.tidal_app.tidal.views.resources.models.RippleModel#equals(java.lang.Object)}
      * .
      */
     @Test
@@ -112,7 +112,7 @@ public class RippleModelTests {
 
     /**
      * Test method for
-     * {@link org.tidal_app.tidal.views.models.RippleModel#equals(java.lang.Object)}
+     * {@link org.tidal_app.tidal.views.resources.models.RippleModel#equals(java.lang.Object)}
      * .
      */
     @Test

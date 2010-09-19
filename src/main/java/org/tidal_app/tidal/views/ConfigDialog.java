@@ -18,10 +18,8 @@ package org.tidal_app.tidal.views;
 
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.Window;
@@ -29,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -42,10 +39,12 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.application.ResourceMap;
 import org.tidal_app.tidal.util.EDTUtils;
 import org.tidal_app.tidal.views.events.ConfigDialogListener;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
+import com.dteoh.treasuremap.ResourceMaps;
 import com.google.common.collect.Lists;
 
 /**
@@ -57,8 +56,8 @@ import com.google.common.collect.Lists;
 public final class ConfigDialog extends JDialog {
 
     /** Resource bundle for this class. */
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(ConfigDialog.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            ConfigDialog.class).build();
 
     /** Panel for droplet setup screen. */
     private JPanel configPanel;
@@ -250,15 +249,15 @@ public final class ConfigDialog extends JDialog {
         container.setLayout(new MigLayout("ins 0, wrap", "[grow]",
                 "[][][grow][]"));
 
-        // TODO refactor colors into props file.
         // Header panel
-        final GradientPanel headerPanel = new GradientPanel(new Color(0, 100,
-                175), new Color(0, 55, 125));
+        final GradientPanel headerPanel = new GradientPanel(
+                BUNDLE.getColor("header.top.color"),
+                BUNDLE.getColor("header.bottom.color"));
         headerPanel.setLayout(new MigLayout());
 
         JLabel heading = new JLabel();
-        heading.setForeground(Color.WHITE);
-        heading.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
+        heading.setForeground(BUNDLE.getColor("heading.color"));
+        heading.setFont(BUNDLE.getFont("heading.font"));
         heading.setName("ConfigDialogHeading");
         heading.setText(BUNDLE.getString("heading.text"));
 

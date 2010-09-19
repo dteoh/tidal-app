@@ -19,25 +19,22 @@ package org.tidal_app.tidal.views;
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.tidal_app.tidal.util.ResourceUtils;
+import org.jdesktop.application.ResourceMap;
 import org.tidal_app.tidal.views.events.MenuBarViewEvent;
 import org.tidal_app.tidal.views.events.MenuBarViewListener;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
+import com.dteoh.treasuremap.ResourceMaps;
 import com.google.common.collect.Sets;
 
 /**
@@ -47,15 +44,19 @@ import com.google.common.collect.Sets;
  */
 public final class MenuBarView extends GradientPanel {
 
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(MenuBarView.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            MenuBarView.class).build();
 
     /** Colors */
-    private static final Color APP_NAME_FOREGROUND = new Color(255, 255, 255);
-    private static final Color APP_VERSION_FOREGROUND = new Color(176, 176, 176);
-    private static final Color BAR_BOTTOM_COLOR = new Color(0, 55, 125);
-    private static final Color BAR_TOP_COLOR = new Color(0, 100, 175);
-    private static final Color BAR_BORDER_COLOR = new Color(0, 35, 110);
+    private static final Color APP_NAME_FOREGROUND = BUNDLE
+            .getColor("appName.foreground");
+    private static final Color APP_VERSION_FOREGROUND = BUNDLE
+            .getColor("appVersion.foreground");
+    private static final Color BAR_BOTTOM_COLOR = BUNDLE
+            .getColor("bottom.color");
+    private static final Color BAR_TOP_COLOR = BUNDLE.getColor("top.color");
+    private static final Color BAR_BORDER_COLOR = BUNDLE
+            .getColor("border.color");
 
     private final Set<MenuBarViewListener> listeners;
 
@@ -78,11 +79,7 @@ public final class MenuBarView extends GradientPanel {
         menuButton.setName("MenuBarViewMenuButton");
         menuButton.setContentAreaFilled(false);
         menuButton.setSelected(false);
-        try {
-            menuButton.setIcon(new ImageIcon(ResourceUtils.getImage(getClass(),
-                    BUNDLE.getString("menuButton.icon"))));
-        } catch (IOException e) {
-        }
+        menuButton.setIcon(BUNDLE.getImageIcon("menuButton.icon"));
         menuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -93,14 +90,13 @@ public final class MenuBarView extends GradientPanel {
 
         // Application name
         final JLabel appName = new JLabel(BUNDLE.getString("appName.text"));
-        appName.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
+        appName.setFont(BUNDLE.getFont("appName.font"));
         appName.setForeground(APP_NAME_FOREGROUND);
         add(appName);
 
-        // TODO: Externalize application version number
         final JLabel appVersion = new JLabel(
                 BUNDLE.getString("appVersion.text"));
-        appVersion.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 22));
+        appVersion.setFont(BUNDLE.getFont("appVersion.font"));
         appVersion.setForeground(APP_VERSION_FOREGROUND);
         add(appVersion);
     }

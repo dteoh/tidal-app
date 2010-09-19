@@ -16,7 +16,9 @@
 
 package org.tidal_app.tidal.exceptions;
 
-import java.util.ResourceBundle;
+import org.jdesktop.application.ResourceMap;
+
+import com.dteoh.treasuremap.ResourceMaps;
 
 /**
  * Exception class for operations that should not be invoked on the EDT.
@@ -26,8 +28,8 @@ import java.util.ResourceBundle;
  */
 public class LongOperationException extends IllegalStateException {
 
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(LongOperationException.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            LongOperationException.class).build();
 
     public LongOperationException() {
         super(BUNDLE.getString("LongOperationException.message"));

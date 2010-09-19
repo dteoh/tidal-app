@@ -16,7 +16,9 @@
 
 package org.tidal_app.tidal.exceptions;
 
-import java.util.ResourceBundle;
+import org.jdesktop.application.ResourceMap;
+
+import com.dteoh.treasuremap.ResourceMaps;
 
 /**
  * Exception class for EDT thread violations.
@@ -26,8 +28,8 @@ import java.util.ResourceBundle;
  */
 public final class EDTViolationException extends IllegalStateException {
 
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(EDTViolationException.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            EDTViolationException.class).build();
 
     public EDTViolationException() {
         super(BUNDLE.getString("EDTViolationException.message"));

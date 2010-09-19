@@ -33,7 +33,10 @@ import javax.swing.text.html.HTMLDocument;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.application.ResourceMap;
 import org.tidal_app.tidal.views.models.RippleModel;
+
+import com.dteoh.treasuremap.ResourceMaps;
 
 /**
  * Used to visualize a ripple model.
@@ -42,22 +45,29 @@ import org.tidal_app.tidal.views.models.RippleModel;
  */
 public final class RippleView extends JPanel {
 
+    /** Class resource bundle. */
+    private static final ResourceMap BUNDLE = new ResourceMaps(RippleView.class)
+            .build();
+
     // Colors for the various message states
-    private static final Color SEEN_BG_COLOR = new Color(245, 250, 250);
-    private static final Color UNSEEN_BG_COLOR = new Color(250, 250, 250);
-    private static final Color SEEN_FONT_COLOR = Color.black;
-    private static final Color READING_FONT_COLOR = Color.BLACK;
-    private static final Color PREVIEW_FONT_COLOR = new Color(119, 119, 119);
+    private static final Color SEEN_BG_COLOR = BUNDLE.getColor("seen.bg.color");
+    private static final Color UNSEEN_BG_COLOR = BUNDLE
+            .getColor("unseen.bg.color");
+    private static final Color SEEN_FONT_COLOR = BUNDLE
+            .getColor("seen.font.color");
+    private static final Color READING_FONT_COLOR = BUNDLE
+            .getColor("reading.font.color");
+    private static final Color PREVIEW_FONT_COLOR = BUNDLE
+            .getColor("preview.font.color");
 
     // Font styles for the various message states
-    private static final Font UNSEEN_FONT_STYLE = new Font(Font.SANS_SERIF,
-            Font.BOLD, 13);
-    private static final Font SEEN_FONT_STYLE = new Font(Font.SANS_SERIF,
-            Font.PLAIN, 13);
-    private static final Font READING_SUBJECT_FONT_STYLE = new Font(
-            Font.SANS_SERIF, Font.BOLD, 16);
-    private static final Font READING_DATE_FONT_STYLE = new Font(
-            Font.SANS_SERIF, Font.PLAIN, 16);
+    private static final Font UNSEEN_FONT_STYLE = BUNDLE.getFont("unseen.font");
+    private static final Font SEEN_FONT_STYLE = BUNDLE.getFont("seen.font");
+    private static final Font READING_SUBJECT_FONT_STYLE = BUNDLE
+            .getFont("reading.subject.font");
+    private static final Font READING_DATE_FONT_STYLE = BUNDLE
+            .getFont("reading.date.font");
+
     /** Model */
     private final RippleModel contentModel;
     /** View components */
@@ -87,8 +97,8 @@ public final class RippleView extends JPanel {
 
         setLayout(new MigLayout("hidemode 1, wrap 3", "[215][grow 100][115]",
                 ""));
-        setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(178,
-                178, 178)));
+        setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1,
+                BUNDLE.getColor("border.color")));
         setBackground(UNSEEN_BG_COLOR);
 
         originLabel = new JLabel(contentModel.getOrigin());
@@ -135,7 +145,9 @@ public final class RippleView extends JPanel {
         contents.setContentType("text/html");
         contents.setText(wrapHTML(contentModel.getContent()));
         contents.setFont(SEEN_FONT_STYLE);
-        contents.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        int contentsPadding = BUNDLE.getInteger("contents.padding");
+        contents.setBorder(BorderFactory.createEmptyBorder(contentsPadding,
+                contentsPadding, contentsPadding, contentsPadding));
         // Need to add custom CSS rule or the editor pane will use a serif font
         // with a small font size.
         final StringBuilder bodyRule = new StringBuilder();

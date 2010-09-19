@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.ResourceBundle;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -35,6 +34,7 @@ import javax.mail.Store;
 import javax.mail.internet.ContentType;
 import javax.mail.search.FlagTerm;
 
+import org.jdesktop.application.ResourceMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
@@ -48,6 +48,7 @@ import org.tidal_app.tidal.util.EDTUtils;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 
+import com.dteoh.treasuremap.ResourceMaps;
 import com.google.common.collect.Lists;
 
 /**
@@ -60,8 +61,8 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ImapDroplet.class);
 
-    private static final ResourceBundle BUNDLE = ResourceBundle
-            .getBundle(ImapDroplet.class.getName());
+    private static final ResourceMap BUNDLE = new ResourceMaps(
+            ImapDroplet.class).build();
 
     private Store store = null;
     private Folder inbox = null;
@@ -118,6 +119,8 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                 LOGGER.error("Destroy exception", e);
             }
         }
+
+        super.destroy();
     }
 
     @Override
@@ -191,7 +194,6 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                         .toString() : "Unknown";
 
                 ContentType ct = new ContentType(messages[i].getContentType());
-                // TODO replace with resource map
                 String content = BUNDLE.getString("content-unsupported");
                 if (ct != null
                         && ("text/plain".equalsIgnoreCase(ct.getBaseType()) || "text/html"
