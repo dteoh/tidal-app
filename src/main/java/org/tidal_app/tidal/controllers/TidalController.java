@@ -262,7 +262,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
      * (non-Javadoc)
      * 
      * @see
-     * org.tidal_app.tidal.views.resources.events.AccessViewListener#loginAttempted(org
+     * org.tidal_app.tidal.views.events.AccessViewListener#loginAttempted(org
      * .tidal_app.tidal.events.views.AccessViewEvent)
      */
     @Override
@@ -334,9 +334,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.tidal_app.tidal.views.resources.events.AccessViewListener#setupPassword(org
-     * .tidal_app.tidal.events.views.AccessViewEvent)
+     * @see org.tidal_app.tidal.views.events.AccessViewListener#setupPassword
+     * (org .tidal_app.tidal.events.views.AccessViewEvent)
      */
     @Override
     public void setupPassword(final AccessViewEvent evt) {
@@ -378,8 +377,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     /**
      * Handles the menu button click event. Displays the account setup dialog.
      * 
-     * @see org.tidal_app.tidal.views.resources.events.MenuBarViewListener#menuButtonClicked
-     *      (org.tidal_app.tidal.views.resources.events.MenuBarViewEvent)
+     * @see org.tidal_app.tidal.views.events.MenuBarViewListener#menuButtonClicked
+     *      (org.tidal_app.tidal.views.events.MenuBarViewEvent)
      */
     @Override
     public void menuButtonClicked(final MenuBarViewEvent evt) {
