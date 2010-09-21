@@ -94,8 +94,7 @@ public final class RippleView extends JPanel {
     private void initView() {
         inEDT();
 
-        setLayout(new MigLayout("hidemode 1, wrap 3", "[215][grow 100][115]",
-                ""));
+        setLayout(new MigLayout("hidemode 1, wrap 3", "[][grow 100][]", ""));
         setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1,
                 BUNDLE.getColor("border.color")));
         setBackground(UNSEEN_BG_COLOR);
@@ -103,7 +102,7 @@ public final class RippleView extends JPanel {
         originLabel = new JLabel(contentModel.getOrigin());
         originLabel.setFont(UNSEEN_FONT_STYLE);
         originLabel.setName("RippleViewOriginLabel");
-        add(originLabel);
+        add(originLabel, "w ::15%");
 
         subjectLabel = new JLabel(contentModel.getSubject());
         subjectLabel.setFont(UNSEEN_FONT_STYLE);
@@ -133,7 +132,7 @@ public final class RippleView extends JPanel {
         receivedLabel = new JLabel(sdf.format(received.getTime()));
         receivedLabel.setFont(UNSEEN_FONT_STYLE);
         receivedLabel.setName("RippleViewReceivedLabel");
-        add(receivedLabel, "right");
+        add(receivedLabel, "right, w ::10%");
 
         contents = new JEditorPane();
         contents.setName("RippleViewContents");
