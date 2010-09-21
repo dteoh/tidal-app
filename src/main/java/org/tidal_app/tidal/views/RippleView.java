@@ -29,7 +29,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.text.html.HTMLDocument;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -139,25 +138,34 @@ public final class RippleView extends JPanel {
         contents = new JEditorPane();
         contents.setName("RippleViewContents");
         contents.setEditable(false);
-        contents.setEditable(false);
         contents.setVisible(false);
         contents.setOpaque(false);
-        contents.setContentType("text/html");
-        contents.setText(wrapHTML(contentModel.getContent()));
+
+        // Don't bother with HTML for now; this is just too slow + it seems
+        // that external content are being downloaded from the EDT, thus
+        // causing GUI freeze.
+        contents.setContentType("text/plain");
+
+        // Running into problems with large amounts of content slowing rendering
+        // down; implemented temporary fix of limiting content length.
+        contents.setText(contentModel.getContent().substring(0,
+                Math.min(contentModel.getContent().length(), 2048)));
         contents.setFont(SEEN_FONT_STYLE);
         int contentsPadding = BUNDLE.getInteger("contents.padding");
         contents.setBorder(BorderFactory.createEmptyBorder(contentsPadding,
                 contentsPadding, contentsPadding, contentsPadding));
+
+        // Disabled; not needed for plain text documents.
         // Need to add custom CSS rule or the editor pane will use a serif font
         // with a small font size.
-        final StringBuilder bodyRule = new StringBuilder();
-        bodyRule.append("body { font-family: ");
-        bodyRule.append(SEEN_FONT_STYLE.getFamily());
-        bodyRule.append("; font-size: ");
-        bodyRule.append(SEEN_FONT_STYLE.getSize());
-        bodyRule.append("pt; }");
-        ((HTMLDocument) contents.getDocument()).getStyleSheet().addRule(
-                bodyRule.toString());
+        // final StringBuilder bodyRule = new StringBuilder();
+        // bodyRule.append("body { font-family: ");
+        // bodyRule.append(SEEN_FONT_STYLE.getFamily());
+        // bodyRule.append("; font-size: ");
+        // bodyRule.append(SEEN_FONT_STYLE.getSize());
+        // bodyRule.append("pt; }");
+        // ((HTMLDocument) contents.getDocument()).getStyleSheet().addRule(
+        // bodyRule.toString());
         add(contents, "skip, growx, pushx");
     }
 

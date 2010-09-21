@@ -31,7 +31,6 @@ import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.internet.ContentType;
 import javax.mail.search.FlagTerm;
 
 import org.jdesktop.application.ResourceMap;
@@ -176,14 +175,18 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                 String origin = senderAddresses.length > 0 ? senderAddresses[0]
                         .toString() : "Unknown";
 
-                ContentType ct = new ContentType(messages[i].getContentType());
-                String content = BUNDLE.getString("content-unsupported");
-                if (ct != null
-                        && ("text/plain".equalsIgnoreCase(ct.getBaseType()) || "text/html"
-                                .equalsIgnoreCase(ct.getBaseType()))) {
-                    content = (String) messages[i].getContent();
+                // ContentType ct = new
+                // ContentType(messages[i].getContentType());
+                // String content = BUNDLE.getString("content-unsupported");
 
-                }
+                // YAGNI; add it back in when its a problem.
+
+                // if (ct != null
+                // && ("text/plain".equalsIgnoreCase(ct.getBaseType()) ||
+                // "text/html"
+                // .equalsIgnoreCase(ct.getBaseType()))) {
+                String content = (String) messages[i].getContent();
+                // }
 
                 RippleModel rm = new RippleModel.Builder(
                         messages[i].getMessageNumber()).origin(origin)
