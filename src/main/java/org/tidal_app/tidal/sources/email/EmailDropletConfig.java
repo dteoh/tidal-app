@@ -17,7 +17,6 @@
 package org.tidal_app.tidal.sources.email;
 
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
-import static org.tidal_app.tidal.util.ResourceUtils.getDimension;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.event.WindowAdapter;
@@ -62,8 +61,7 @@ final class EmailDropletConfig {
         confDialog = new ConfigDialog();
         confDialog.setModalityType(ModalityType.APPLICATION_MODAL);
         confDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        confDialog.setMinimumSize(getDimension(BUNDLE
-                .getString("confDialog.minSize")));
+        confDialog.setMinimumSize(BUNDLE.getDimension("confDialog.minSize"));
         confDialog.setLocationRelativeTo(null);
         confDialog.addWindowListener(new WindowAdapter() {
             @Override

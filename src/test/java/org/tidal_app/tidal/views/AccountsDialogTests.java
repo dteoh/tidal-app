@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import java.awt.Dimension;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -36,7 +37,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tidal_app.tidal.sources.SetupDroplet;
-import org.tidal_app.tidal.util.ResourceUtils;
 
 /**
  * Tests for the accounts setup view.
@@ -63,8 +63,8 @@ public class AccountsDialogTests {
     @Before
     public void setUp() {
         try {
-            mockSDIcon1 = new ImageIcon(ResourceUtils.getImage(getClass(),
-                    "one.png"));
+            mockSDIcon1 = new ImageIcon(ImageIO.read(getClass().getResource(
+                    "one.png")));
         } catch (IOException e1) {
             mockSDIcon1 = null;
         }
@@ -77,8 +77,8 @@ public class AccountsDialogTests {
         });
 
         try {
-            mockSDIcon2 = new ImageIcon(ResourceUtils.getImage(getClass(),
-                    "two.png"));
+            mockSDIcon2 = new ImageIcon(ImageIO.read(getClass().getResource(
+                    "two.png")));
         } catch (IOException e1) {
             mockSDIcon2 = null;
         }

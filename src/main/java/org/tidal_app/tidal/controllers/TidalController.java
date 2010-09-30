@@ -16,8 +16,6 @@
 
 package org.tidal_app.tidal.controllers;
 
-import static org.tidal_app.tidal.util.ResourceUtils.getDimension;
-
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Image;
@@ -133,8 +131,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                         exitHandler();
                     }
                 });
-                mainFrame.setMinimumSize(getDimension(BUNDLE
-                        .getString("mainFrame.minimumsize")));
+                mainFrame.setMinimumSize(BUNDLE
+                        .getDimension("mainFrame.minimumsize"));
                 mainFrame.setLocationRelativeTo(null);
 
                 mainFramePanel = new JPanel(new CardLayout());
@@ -152,8 +150,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                     backgroundImage = (Image) Worker.post(new Task() {
                         @Override
                         public Object run() throws Exception {
-                            return BUNDLE.getImageIcon("background.image")
-                                    .getImage();
+                            return BUNDLE.getImage("background.image");
                         }
                     });
                 } catch (final Exception e) {
@@ -385,8 +382,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         // Make the account setup view.
         AccountsDialog dialog = new AccountsDialog(mainFrame, true);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setMinimumSize(getDimension(BUNDLE
-                .getString("accountsView.minimumSize")));
+        dialog.setMinimumSize(BUNDLE.getDimension("accountsView.minimumSize"));
         dialog.setLocationRelativeTo(mainFrame);
 
         // Register available droplets with the view.

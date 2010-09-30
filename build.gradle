@@ -28,7 +28,7 @@ dependencies {
     compile 'org.yaml:snakeyaml:1.6'
     compile 'foxtrot:foxtrot-core:3.0'
     compile 'commons-io:commons-io:1.4'
-    compile 'com.dteoh:treasuremap:0.1'
+    compile 'com.dteoh:treasuremap:0.1.1'
     
     testCompile 'junit:junit:4.7'
     testCompile 'org.easytesting:fest-swing-junit:1.2a4'
