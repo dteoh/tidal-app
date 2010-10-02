@@ -24,13 +24,17 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Address;
+import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.ContentType;
+import javax.mail.internet.ParseException;
 import javax.mail.search.FlagTerm;
 
 import org.jdesktop.application.ResourceMap;
@@ -44,6 +48,7 @@ import org.tidal_app.tidal.sources.email.AbstractEmailDroplet;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.sources.email.models.Protocol;
 import org.tidal_app.tidal.util.EDTUtils;
+import org.tidal_app.tidal.util.HTMLUtils;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 
@@ -175,18 +180,22 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                 String origin = senderAddresses.length > 0 ? senderAddresses[0]
                         .toString() : "Unknown";
 
-                // ContentType ct = new
-                // ContentType(messages[i].getContentType());
-                // String content = BUNDLE.getString("content-unsupported");
+                ContentType ct = new ContentType(messages[i].getContentType());
+                String ctBaseType = ct.getBaseType();
+                String content;
 
-                // YAGNI; add it back in when its a problem.
-
-                // if (ct != null
-                // && ("text/plain".equalsIgnoreCase(ct.getBaseType()) ||
-                // "text/html"
-                // .equalsIgnoreCase(ct.getBaseType()))) {
-                String content = (String) messages[i].getContent();
-                // }
+                if ("text/plain".equalsIgnoreCase(ctBaseType)) {
+                    content = (String) messages[i].getContent();
+                } else if ("text/html".equalsIgnoreCase(ctBaseType)) {
+                    content = (String) messages[i].getContent();
+                    content = HTMLUtils.html2text(content);
+                } else if ("multipart".equalsIgnoreCase(ct.getPrimaryType())) {
+                    content = extractMultipartContent((Multipart) messages[i]
+                            .getContent());
+                } else {
+                    content = "Unhandled content type: " + ctBaseType;
+                    LOGGER.info(content);
+                }
 
                 RippleModel rm = new RippleModel.Builder(
                         messages[i].getMessageNumber()).origin(origin)
@@ -215,6 +224,59 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     protected void restart() throws DropletInitException {
         cleanup();
         init();
+    }
+
+    /**
+     * Extract plain text content from the given multipart message.
+     * 
+     * @param message
+     *            The message to extract from.
+     * @return The extracted plain text content.
+     * @throws ParseException
+     *             When the content type fails to parse correctly.
+     * @throws IOException
+     *             When there is an error retrieving the multipart body content.
+     */
+    private String extractMultipartContent(final Multipart message)
+            throws ParseException, IOException {
+        ContentType ct = new ContentType(message.getContentType());
+        String subType = ct.getSubType();
+
+        String multipartContent = "";
+
+        try {
+            for (int part = 0; part < message.getCount(); part++) {
+                BodyPart bodyPart = message.getBodyPart(part);
+                ContentType bodyCT = new ContentType(bodyPart.getContentType());
+                LOGGER.debug("Body CT is {}", bodyCT.toString());
+
+                // Supposed to check if disposition is inline or not, but for
+                // some reason the messages are being parsed as being inside
+                // the attachment part.
+
+                if ("alternative".equalsIgnoreCase(subType)) {
+                    // Multipart alternative has a text and HTML
+                    // version of the contents.
+                    if ("plain".equalsIgnoreCase(bodyCT.getSubType())) {
+                        multipartContent = (String) bodyPart.getContent();
+                    }
+                } else if ("mixed".equalsIgnoreCase(subType)) {
+                    // Multipart mixed has a plain text part for the reply
+                    // and rfc822 for the original.
+                    if ("plain".equalsIgnoreCase(bodyCT.getSubType())) {
+                        multipartContent = (String) bodyPart.getContent();
+                    }
+                } else {
+                    LOGGER.info(
+                            "Unhandled multipart inline content subtype {}",
+                            subType);
+                }
+            }
+        } catch (MessagingException e) {
+            LOGGER.error("Could not retrieve multipart contents", e);
+        }
+
+        return multipartContent;
     }
 
     private void cleanup() {
