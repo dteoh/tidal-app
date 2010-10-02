@@ -54,3 +54,7 @@ task copyLibs << {
         into 'build/libs'
     }    
 }
+
+task makeDist(type: Zip, dependsOn: [copyLibs]) {
+    from 'build/libs'
+}
