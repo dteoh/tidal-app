@@ -51,8 +51,11 @@ dependencies {
 task copyLibs << {
     copy {
         from configurations.compile.copy()
+        from('COPYING') {
+            rename 'COPYING', 'LICENSE'
+        }
         into 'build/libs'
-    }    
+    }
 }
 
 task makeDist(type: Zip, dependsOn: [copyLibs]) {
