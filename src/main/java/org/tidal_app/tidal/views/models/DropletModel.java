@@ -18,13 +18,13 @@ package org.tidal_app.tidal.views.models;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.tidal_app.tidal.id.ID;
 import org.tidal_app.tidal.views.DropletView;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 /**
  * View model for {@link DropletView}.
@@ -127,57 +127,25 @@ public class DropletModel {
         dropletID = first.getIdentifier();
         dropletName = first.getDropletName();
 
-        final List<RippleModel> models = new ArrayList<RippleModel>();
+        ArrayList<RippleModel> models = Lists.newArrayList(first
+                .getDropletContents());
+        models.addAll(second.dropletContents);
+        Collections.sort(models);
 
-        final Iterator<RippleModel> firstIt = first.getDropletContents()
-                .iterator();
-        final Iterator<RippleModel> secondIt = second.getDropletContents()
-                .iterator();
+        ArrayList<RippleModel> uniques = Lists.newArrayList();
 
-        // Merge the sorted ripple models together; duplicates will be removed.
-        while (firstIt.hasNext() || secondIt.hasNext()) {
-            RippleModel firstModel = null;
-            RippleModel secondModel = null;
-            if (firstIt.hasNext()) {
-                firstModel = firstIt.next();
+        RippleModel prev = null;
+        for (RippleModel model : models) {
+            if (prev != null && model.equals(prev)) {
+                continue;
             }
-            if (secondIt.hasNext()) {
-                secondModel = secondIt.next();
-            }
-            if (firstModel != null && secondModel != null) {
-                if (firstModel.compareTo(secondModel) <= 0) {
-                    /*
-                     * Add only unique models. compareTo does not have same
-                     * semantics as equals.
-                     */
-                    if (!firstModel.equals(secondModel)) {
-                        models.add(firstModel);
-                        models.add(secondModel);
-                    } else {
-                        models.add(firstModel);
-                    }
-                } else {
-                    /*
-                     * Add only unique models. compareTo does not have same
-                     * semantics as equals.
-                     */
-                    if (!firstModel.equals(secondModel)) {
-                        models.add(secondModel);
-                        models.add(firstModel);
-                    } else {
-                        models.add(firstModel);
-                    }
-                }
-            } else if (firstModel != null) {
-                models.add(firstModel);
-            } else if (secondModel != null) {
-                models.add(secondModel);
-            }
+            uniques.add(model);
+            prev = model;
         }
 
         final ImmutableList.Builder<RippleModel> modelBuilder = ImmutableList
                 .builder();
-        modelBuilder.addAll(models);
+        modelBuilder.addAll(uniques);
 
         dropletContents = modelBuilder.build();
     }

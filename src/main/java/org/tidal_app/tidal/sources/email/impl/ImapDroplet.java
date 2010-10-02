@@ -145,7 +145,14 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     public void update() {
         outsideEDT();
 
+        try {
+            restart();
+        } catch (DropletInitException e) {
+            LOGGER.error("Failed to restart IMAP droplet", e);
+        }
+
         Iterable<RippleModel> rms = getRipples();
+
         final DropletModel dm = new DropletModel(getIdentifier(),
                 getUsername(), rms);
 

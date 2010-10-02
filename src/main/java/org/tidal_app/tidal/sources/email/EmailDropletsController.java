@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.jdesktop.application.ResourceMap;
 import org.slf4j.Logger;
@@ -228,8 +229,24 @@ public final class EmailDropletsController implements SetupDroplet,
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                for (AbstractEmailDroplet d : droplets.values()) {
-                    d.update();
+                for (final AbstractEmailDroplet d : droplets.values()) {
+                    new SwingWorker<Void, Void>() {
+                        @Override
+                        protected Void doInBackground() throws Exception {
+                            d.update();
+                            return null;
+                        }
+
+                        @Override
+                        protected void done() {
+                            try {
+                                get();
+                            } catch (Exception e) {
+                                logger.error("Update error", e);
+                            }
+                        }
+                    }.execute();
+
                 }
             }
         };
