@@ -104,8 +104,9 @@ public final class RippleView extends JPanel {
 
         JTextPane previewPane = new JTextPane();
         previewPane.setEditable(false);
-        previewPane.setText(contentModel.getContent().trim().substring(0,
-                Math.min(contentModel.getContent().length(), 250)));
+        String content = contentModel.getContent().trim();
+        previewPane.setText(content.substring(0,
+                Math.min(content.length(), 250)));
         previewPane.setBackground(UNSEEN_BG_COLOR);
         previewPane.setForeground(CONTENT_FONT_COLOR);
         add(previewPane, "span 2, growx, pushx, wrap");
