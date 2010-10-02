@@ -5,3 +5,4 @@ glob:.pmd
 glob:build/*
 glob:.settings/*
 glob:gradle-app.setting
+glob:.gradle/*
