@@ -31,10 +31,12 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.application.ResourceMap;
+import org.tidal_app.tidal.util.PunchIconFactory;
 import org.tidal_app.tidal.views.events.DropletViewListener;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
@@ -132,6 +134,9 @@ public final class ListDropletView extends DropShadowPanel implements
             }
         };
         configButton.setAction(configAction);
+        configButton.setIcon(PunchIconFactory.createPunchedIcon(
+                BUNDLE.getImage("settings.icon"), 2));
+        configButton.setHorizontalAlignment(SwingConstants.CENTER);
         headerPanel.add(configButton, "skip, w 24!, h 24!, wrap");
 
         add(headerPanel, "pushx, growx");
