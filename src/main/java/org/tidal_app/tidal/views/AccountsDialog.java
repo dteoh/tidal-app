@@ -37,6 +37,10 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -327,9 +331,14 @@ public final class AccountsDialog extends JDialog {
      * Helper function for cancelling setup across all views.
      */
     private void cancelSetups() {
-        for (SetupDroplet droplet : buttonMap.values()) {
-            droplet.cancelSetup();
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                for (SetupDroplet droplet : buttonMap.values()) {
+                    droplet.cancelSetup();
+                }
+            }
+        });
     }
 
     /**
@@ -419,5 +428,36 @@ public final class AccountsDialog extends JDialog {
             setupPanel.add(droplet.getSetupView(), "grow");
             validate();
         }
+    }
+
+    /**
+     * Helper for creating the progress dialog. Not currently in use as the EDT
+     * seems to die.
+     */
+    private JDialog createProgressDialog() {
+        JDialog progDialog = new JDialog(this);
+
+        progDialog.setTitle(BUNDLE.getString("progress.title"));
+        progDialog.setModalityType(ModalityType.APPLICATION_MODAL);
+        progDialog.setLocationRelativeTo(this);
+        progDialog
+                .setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        progDialog.setSize(BUNDLE.getDimension("progress.size"));
+        progDialog.setResizable(false);
+
+        Container progContainer = progDialog.getContentPane();
+        progContainer.setLayout(new MigLayout());
+
+        // Progress bar.
+        JProgressBar progBar = new JProgressBar(SwingConstants.HORIZONTAL);
+        progBar.setIndeterminate(true);
+        progContainer.add(progBar, "growx, pushx, wrap");
+
+        // Progress message.
+        JLabel progLabel = new JLabel(BUNDLE.getString("progress.text"));
+        progLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        progContainer.add(progLabel, "growx, pushx");
+
+        return progDialog;
     }
 }
