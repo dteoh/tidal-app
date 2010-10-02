@@ -20,15 +20,13 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -48,42 +46,41 @@ public final class RippleView extends JPanel {
     private static final ResourceMap BUNDLE = new ResourceMaps(RippleView.class)
             .build();
 
-    // Colors for the various message states
-    private static final Color SEEN_BG_COLOR = BUNDLE.getColor("seen.bg.color");
+    // Style resources
     private static final Color UNSEEN_BG_COLOR = BUNDLE
             .getColor("unseen.bg.color");
-    private static final Color SEEN_FONT_COLOR = BUNDLE
-            .getColor("seen.font.color");
-    private static final Color READING_FONT_COLOR = BUNDLE
-            .getColor("reading.font.color");
-    private static final Color PREVIEW_FONT_COLOR = BUNDLE
-            .getColor("preview.font.color");
-
-    // Font styles for the various message states
+    private static final Color UNSEEN_FONT_COLOR = BUNDLE
+            .getColor("unseen.font.color");
     private static final Font UNSEEN_FONT_STYLE = BUNDLE.getFont("unseen.font");
-    private static final Font SEEN_FONT_STYLE = BUNDLE.getFont("seen.font");
-    private static final Font READING_SUBJECT_FONT_STYLE = BUNDLE
-            .getFont("reading.subject.font");
-    private static final Font READING_DATE_FONT_STYLE = BUNDLE
-            .getFont("reading.date.font");
+    private static final Color ORIGIN_FONT_COLOR = BUNDLE
+            .getColor("originLabel.foreground");
+    private static final Color RECV_FONT_COLOR = BUNDLE
+            .getColor("receivedLabel.foreground");
+    private static final Color CONTENT_FONT_COLOR = BUNDLE
+            .getColor("content.font.color");
 
     /** Model */
     private final RippleModel contentModel;
     /** View components */
     private JLabel originLabel;
     private JLabel subjectLabel;
-    private JLabel previewLabel;
     private JLabel receivedLabel;
-    private JEditorPane contents;
 
+    /**
+     * Construct a new ripple view for visualizing the given model.
+     * 
+     * @param contentModel
+     */
     public RippleView(final RippleModel contentModel) {
         super();
 
         this.contentModel = contentModel;
         initView();
-        addMouseListener(new RippleViewMouseAdapter());
     }
 
+    /**
+     * Test if this view has the same view model.
+     */
     public boolean hasSameModel(final RippleModel model) {
         return contentModel.equals(model);
     }
@@ -94,139 +91,38 @@ public final class RippleView extends JPanel {
     private void initView() {
         inEDT();
 
-        setLayout(new MigLayout("hidemode 1, wrap 3", "[][grow 100][]", ""));
+        setLayout(new MigLayout("hidemode 1, wrap 3", "[][]", ""));
         setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1,
                 BUNDLE.getColor("border.color")));
         setBackground(UNSEEN_BG_COLOR);
 
-        originLabel = new JLabel(contentModel.getOrigin());
-        originLabel.setFont(UNSEEN_FONT_STYLE);
-        originLabel.setName("RippleViewOriginLabel");
-        add(originLabel, "w ::15%");
-
         subjectLabel = new JLabel(contentModel.getSubject());
         subjectLabel.setFont(UNSEEN_FONT_STYLE);
+        subjectLabel.setForeground(UNSEEN_FONT_COLOR);
         subjectLabel.setName("RippleViewSubjectLabel");
-        add(subjectLabel, "split 2, left");
+        add(subjectLabel, "span 2, wrap");
 
-        final int previewLength = contentModel.getContent().length() > 100 ? 100
-                : contentModel.getContent().length();
-        String previewString = contentModel.getContent().substring(0,
-                previewLength);
-        if (!previewString.isEmpty()) {
-            previewString = " - ".concat(previewString);
-        }
-        if (contentModel.getContent().length() > 100) {
-            previewString = previewString.concat(" ...");
-        }
+        JTextPane previewPane = new JTextPane();
+        previewPane.setEditable(false);
+        previewPane.setText(contentModel.getContent().substring(0,
+                Math.min(contentModel.getContent().length(), 250)));
+        previewPane.setBackground(UNSEEN_BG_COLOR);
+        previewPane.setForeground(CONTENT_FONT_COLOR);
+        add(previewPane, "span 2, growx, pushx, wrap");
 
-        previewLabel = new JLabel(previewString);
-        previewLabel.setForeground(PREVIEW_FONT_COLOR);
-        previewLabel.setFont(SEEN_FONT_STYLE);
-        previewLabel.setName("RippleViewPreviewLabel");
-        add(previewLabel, "left");
+        originLabel = new JLabel(contentModel.getOrigin());
+        originLabel.setFont(UNSEEN_FONT_STYLE);
+        originLabel.setForeground(ORIGIN_FONT_COLOR);
+        originLabel.setName("RippleViewOriginLabel");
+        add(originLabel);
 
         final SimpleDateFormat sdf = new SimpleDateFormat("MMM d, h:mm aa");
         final Calendar received = Calendar.getInstance();
         received.setTimeInMillis(contentModel.getReceived());
         receivedLabel = new JLabel(sdf.format(received.getTime()));
         receivedLabel.setFont(UNSEEN_FONT_STYLE);
+        receivedLabel.setForeground(RECV_FONT_COLOR);
         receivedLabel.setName("RippleViewReceivedLabel");
-        add(receivedLabel, "right, w ::10%");
-
-        contents = new JEditorPane();
-        contents.setName("RippleViewContents");
-        contents.setEditable(false);
-        contents.setVisible(false);
-        contents.setOpaque(false);
-
-        // Don't bother with HTML for now; this is just too slow + it seems
-        // that external content are being downloaded from the EDT, thus
-        // causing GUI freeze.
-        contents.setContentType("text/plain");
-
-        // Running into problems with large amounts of content slowing rendering
-        // down; implemented temporary fix of limiting content length.
-        contents.setText(contentModel.getContent().substring(0,
-                Math.min(contentModel.getContent().length(), 2048)));
-        contents.setFont(SEEN_FONT_STYLE);
-        int contentsPadding = BUNDLE.getInteger("contents.padding");
-        contents.setBorder(BorderFactory.createEmptyBorder(contentsPadding,
-                contentsPadding, contentsPadding, contentsPadding));
-
-        // Disabled; not needed for plain text documents.
-        // Need to add custom CSS rule or the editor pane will use a serif font
-        // with a small font size.
-        // final StringBuilder bodyRule = new StringBuilder();
-        // bodyRule.append("body { font-family: ");
-        // bodyRule.append(SEEN_FONT_STYLE.getFamily());
-        // bodyRule.append("; font-size: ");
-        // bodyRule.append(SEEN_FONT_STYLE.getSize());
-        // bodyRule.append("pt; }");
-        // ((HTMLDocument) contents.getDocument()).getStyleSheet().addRule(
-        // bodyRule.toString());
-        add(contents, "skip, growx, pushx");
+        add(receivedLabel, "right");
     }
-
-    /**
-     * Hides or shows the message, depending on previous state.
-     */
-    private void showHideMessage() {
-        inEDT();
-
-        if (contents.isVisible()) {
-            // Hide the contents of the message
-            contents.setVisible(false);
-
-            setBackground(SEEN_BG_COLOR);
-
-            originLabel.setFont(SEEN_FONT_STYLE);
-            subjectLabel.setFont(SEEN_FONT_STYLE);
-            receivedLabel.setFont(SEEN_FONT_STYLE);
-
-            receivedLabel.setForeground(SEEN_FONT_COLOR);
-            originLabel.setForeground(SEEN_FONT_COLOR);
-            subjectLabel.setForeground(SEEN_FONT_COLOR);
-            previewLabel.setVisible(true);
-        } else {
-            // Show the contents of the message
-            contents.setVisible(true);
-            setBackground(UNSEEN_BG_COLOR);
-
-            subjectLabel.setFont(READING_SUBJECT_FONT_STYLE);
-            receivedLabel.setFont(READING_DATE_FONT_STYLE);
-
-            receivedLabel.setForeground(READING_FONT_COLOR);
-            originLabel.setForeground(READING_FONT_COLOR);
-            subjectLabel.setForeground(READING_FONT_COLOR);
-            previewLabel.setVisible(false);
-        }
-    }
-
-    /**
-     * Helper method for wrapping strings into HTML content.
-     * 
-     * @param content
-     * @return Original string wrapped in div markup.
-     */
-    private String wrapHTML(final String content) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("<div width=\"500px\">");
-        sb.append(content);
-        sb.append("</div>");
-        return sb.toString();
-    }
-
-    /**
-     * Inner class for handling mouse events.
-     * 
-     * @author Douglas Teoh
-     */
-    private class RippleViewMouseAdapter extends MouseAdapter {
-        @Override
-        public void mouseClicked(final MouseEvent e) {
-            showHideMessage();
-        }
-    }
-
 }
