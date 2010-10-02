@@ -20,6 +20,8 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
@@ -35,8 +37,12 @@ import javax.swing.JPanel;
  */
 public class DropShadowPanel extends JPanel {
 
+    /** Shadow radius. */
     private int size;
+    /** Shadow opacity. */
     private float opacity;
+    /** Cached drop shadow. */
+    private BufferedImage dropShadow;
 
     /**
      * Creates a new drop shadow panel.
@@ -63,27 +69,40 @@ public class DropShadowPanel extends JPanel {
             this.opacity = opacity;
         }
 
+        // Invalidate the cache when the panel resizes.
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(final ComponentEvent e) {
+                dropShadow = null;
+                repaint();
+            }
+        });
+
     }
 
     @Override
     protected void paintComponent(final Graphics g) {
         final Graphics2D g2 = (Graphics2D) g.create();
-
-        BufferedImage shadow = new BufferedImage(getWidth() - 2 * size,
-                getHeight() - 2 * size, BufferedImage.TYPE_INT_ARGB);
-
-        for (int x = 0; x < shadow.getWidth(); x++) {
-            for (int y = 0; y < shadow.getHeight(); y++) {
-                shadow.setRGB(x, y, 0xFF000000);
-            }
-        }
-
         g2.setComposite(AlphaComposite.SrcOver.derive(opacity));
 
-        shadow = createDropShadow(shadow, size);
+        if (dropShadow != null) {
+            // Paint from cache.
+            g2.drawImage(dropShadow, -size, -size, null);
+        } else {
 
-        g2.drawImage(shadow, -size, -size, null);
+            BufferedImage shadow = new BufferedImage(getWidth() - 2 * size,
+                    getHeight() - 2 * size, BufferedImage.TYPE_INT_ARGB);
 
+            for (int x = 0; x < shadow.getWidth(); x++) {
+                for (int y = 0; y < shadow.getHeight(); y++) {
+                    shadow.setRGB(x, y, 0xFF000000);
+                }
+            }
+            shadow = createDropShadow(shadow, size);
+            g2.drawImage(shadow, -size, -size, null);
+
+            dropShadow = shadow;
+        }
         g2.dispose();
     }
 
