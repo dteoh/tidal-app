@@ -139,6 +139,9 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             LOGGER.error("Init exception", e);
             throw new DropletInitException(e);
         }
+
+        // All is well, update UI.
+        updateUI(EMPTY);
     }
 
     @Override
@@ -152,16 +155,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         }
 
         Iterable<RippleModel> rms = getRipples();
-
-        final DropletModel dm = new DropletModel(getIdentifier(),
-                getUsername(), rms);
-
-        EDTUtils.runOnEDT(new Runnable() {
-            @Override
-            public void run() {
-                view.addDropletModel(dm);
-            }
-        });
+        updateUI(rms);
     }
 
     @Override
@@ -169,7 +163,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         outsideEDT();
 
         if (inbox == null) {
-            return Lists.newLinkedList();
+            return EMPTY;
         }
 
         try {
@@ -219,7 +213,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             LOGGER.error("Could not download message content", e);
         }
 
-        return Lists.newLinkedList();
+        return EMPTY;
     }
 
     @Override
@@ -303,6 +297,18 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                 LOGGER.error("Destroy exception", e);
             }
         }
+    }
+
+    private void updateUI(final Iterable<RippleModel> models) {
+        final DropletModel dm = new DropletModel(getIdentifier(),
+                getUsername(), models);
+
+        EDTUtils.runOnEDT(new Runnable() {
+            @Override
+            public void run() {
+                view.addDropletModel(dm);
+            }
+        });
     }
 
 }

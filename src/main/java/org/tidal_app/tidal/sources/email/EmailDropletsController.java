@@ -47,6 +47,8 @@ import com.dteoh.treasuremap.ResourceMaps;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
+import foxtrot.AsyncTask;
+import foxtrot.AsyncWorker;
 import foxtrot.Job;
 import foxtrot.Worker;
 
@@ -68,6 +70,8 @@ public final class EmailDropletsController implements SetupDroplet,
             EmailDropletsController.class).build();
 
     /** Email update schedule. */
+    private static final long UPDATE_START_DELAY = TimeUnit.MILLISECONDS
+            .convert(5, TimeUnit.SECONDS);
     private static final long UPDATE_SCHEDULE = TimeUnit.MILLISECONDS.convert(
             5, TimeUnit.MINUTES);
 
@@ -146,10 +150,6 @@ public final class EmailDropletsController implements SetupDroplet,
                         viewManager.displayView(imapsDroplet.getDropletView());
                     }
                 });
-
-                // Get any emails from the newly created droplet and display to
-                // the user.
-                imapsDroplet.update();
 
                 return imapsDroplet;
             } else {
@@ -250,7 +250,8 @@ public final class EmailDropletsController implements SetupDroplet,
                 }
             }
         };
-        scheduler.schedule(task, UPDATE_SCHEDULE, UPDATE_SCHEDULE);
+
+        scheduler.schedule(task, UPDATE_START_DELAY, UPDATE_SCHEDULE);
     }
 
     @Override
@@ -285,7 +286,24 @@ public final class EmailDropletsController implements SetupDroplet,
             public Object run() {
                 try {
                     logger.debug("Creating droplet from setup");
-                    EmailDropletsController.this.addEmailDroplet(settings);
+                    final AbstractEmailDroplet d = EmailDropletsController.this
+                            .addEmailDroplet(settings);
+                    AsyncWorker.post(new AsyncTask() {
+
+                        @Override
+                        public Object run() throws Exception {
+                            d.update();
+                            return null;
+                        }
+
+                        @Override
+                        public void success(final Object arg0) {
+                        }
+
+                        @Override
+                        public void failure(final Throwable arg0) {
+                        }
+                    });
                     logger.debug("Sucessfully created droplet");
                     return true;
                 } catch (DropletCreationException e) {
@@ -297,5 +315,4 @@ public final class EmailDropletsController implements SetupDroplet,
 
         return result;
     }
-
 }

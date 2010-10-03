@@ -19,6 +19,7 @@ package org.tidal_app.tidal.sources.email;
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
@@ -36,6 +37,8 @@ import org.tidal_app.tidal.views.events.DropletViewListener;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
 
+import com.google.common.collect.ImmutableList;
+
 import foxtrot.Job;
 import foxtrot.Task;
 import foxtrot.Worker;
@@ -46,6 +49,9 @@ import foxtrot.Worker;
  * @author Douglas Teoh
  */
 public abstract class AbstractEmailDroplet implements Droplet {
+
+    /** Reusable empty list. */
+    protected static final List<RippleModel> EMPTY = ImmutableList.of();
 
     /** Droplet identifier. */
     protected final ID identifier;
