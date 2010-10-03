@@ -6,7 +6,7 @@ targetCompatibility = 1.6
 
 metaInf = [file('build/javamail.providers')]
 
-version = '0.1'
+version = '0.2'
 
 compileJava.doFirst {
     copy {
