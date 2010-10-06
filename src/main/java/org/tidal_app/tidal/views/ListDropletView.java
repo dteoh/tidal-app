@@ -20,6 +20,7 @@ import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -40,6 +41,8 @@ import org.tidal_app.tidal.util.PunchIconFactory;
 import org.tidal_app.tidal.views.events.DropletViewListener;
 import org.tidal_app.tidal.views.models.DropletModel;
 import org.tidal_app.tidal.views.models.RippleModel;
+import org.tidal_app.tidal.views.swing.AnimatedIcon;
+import org.tidal_app.tidal.views.swing.AnimatedLabel;
 import org.tidal_app.tidal.views.swing.DropShadowPanel;
 import org.tidal_app.tidal.views.swing.GradientPanel;
 
@@ -67,8 +70,13 @@ public final class ListDropletView extends DropShadowPanel implements
     /** Droplet name label. */
     private JLabel nameLabel;
 
+    /** Droplet updating label. */
+    private AnimatedLabel updatingLabel;
+
+    /** Droplet view listeners. */
     private final List<DropletViewListener> listeners;
 
+    /** UI settings. */
     private static final Font HEADER_FONT = BUNDLE.getFont("header.font");
     private static final Color HEADER_FOREGROUND = BUNDLE
             .getColor("header.foreground");
@@ -102,17 +110,12 @@ public final class ListDropletView extends DropShadowPanel implements
         setLayout(new MigLayout("wrap", "[grow 100]", "[]0[]"));
         setOpaque(false);
 
-        nameLabel = new JLabel();
-        nameLabel.setForeground(HEADER_FOREGROUND);
-        nameLabel.setFont(HEADER_FONT);
-        nameLabel.setName("DropletViewNameLabel");
-
         // Construct header panel
         final GradientPanel headerPanel = new GradientPanel(
                 BUNDLE.getColor("header.top.color"),
                 BUNDLE.getColor("header.bottom.color"));
         headerPanel.setName("DropletViewHeaderPanel");
-        headerPanel.setLayout(new MigLayout("ins 0", "[]unrel push[][]"));
+        headerPanel.setLayout(new MigLayout("ins 0", "[][]unrel push[]"));
         int headerBorderSize = BUNDLE.getInteger("header.border.size");
         int headerBorderPadding = BUNDLE.getInteger("header.border.padding");
 
@@ -123,7 +126,21 @@ public final class ListDropletView extends DropShadowPanel implements
                 .createEmptyBorder(headerBorderPadding, headerBorderPadding,
                         headerBorderPadding, headerBorderPadding)));
 
+        nameLabel = new JLabel();
+        nameLabel.setForeground(HEADER_FOREGROUND);
+        nameLabel.setFont(HEADER_FONT);
+        nameLabel.setName("DropletViewNameLabel");
         headerPanel.add(nameLabel);
+
+        Dimension frameSize = BUNDLE.getDimension("updating.frameSize");
+        AnimatedIcon updatingIcon = new AnimatedIcon(
+                BUNDLE.getImage("updating.image"), frameSize.width,
+                frameSize.height);
+        updatingLabel = new AnimatedLabel(updatingIcon,
+                BUNDLE.getInteger("updating.frameInterval"));
+        updatingLabel.setVisible(false);
+        updatingLabel.setToolTipText(BUNDLE.getString("updating.tooltip"));
+        headerPanel.add(updatingLabel, "w 22!, h 22!");
 
         JButton configButton = new JButton();
         configButton.setName("ListDropletViewConfigButton");
@@ -137,7 +154,7 @@ public final class ListDropletView extends DropShadowPanel implements
         configButton.setIcon(PunchIconFactory.createPunchedIcon(
                 BUNDLE.getImage("settings.icon"), 2));
         configButton.setHorizontalAlignment(SwingConstants.CENTER);
-        headerPanel.add(configButton, "skip, w 24!, h 24!, wrap");
+        headerPanel.add(configButton, "w 24!, h 24!, wrap");
 
         add(headerPanel, "pushx, growx");
 
@@ -198,7 +215,6 @@ public final class ListDropletView extends DropShadowPanel implements
                 }
             }
         }
-
     }
 
     @Override
@@ -224,6 +240,17 @@ public final class ListDropletView extends DropShadowPanel implements
         }
     }
 
+    @Override
+    public void dropletUpdating(final boolean status) {
+        if (status == true) {
+            updatingLabel.start();
+        } else {
+            updatingLabel.stop();
+        }
+
+        updatingLabel.setVisible(status);
+    }
+
     /**
      * Event handler for the config button action.
      * 
@@ -236,4 +263,5 @@ public final class ListDropletView extends DropShadowPanel implements
             }
         }
     }
+
 }

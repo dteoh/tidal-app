@@ -57,4 +57,12 @@ public interface DropletView extends View {
      */
     void removeDropletViewListener(final DropletViewListener listener);
 
+    /**
+     * Sets the droplet updating status.
+     * 
+     * @param status
+     *            True if the droplet is currently updating, false otherwise.
+     */
+    void dropletUpdating(boolean status);
+
 }

@@ -148,6 +148,8 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     public void update() {
         outsideEDT();
 
+        view.dropletUpdating(true);
+
         try {
             restart();
         } catch (DropletInitException e) {
@@ -307,6 +309,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             @Override
             public void run() {
                 view.addDropletModel(dm);
+                view.dropletUpdating(false);
             }
         });
     }
