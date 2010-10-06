@@ -181,6 +181,8 @@ public final class ListDropletView extends DropShadowPanel implements
             for (final RippleModel contentModel : model.getDropletContents()) {
                 ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
             }
+
+            ripplesPanel.validate();
         }
     }
 
@@ -214,6 +216,8 @@ public final class ListDropletView extends DropShadowPanel implements
                             "pushx, growx");
                 }
             }
+
+            ripplesPanel.validate();
         }
     }
 
