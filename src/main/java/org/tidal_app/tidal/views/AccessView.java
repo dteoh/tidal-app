@@ -19,6 +19,7 @@ package org.tidal_app.tidal.views;
 import static org.tidal_app.tidal.util.EDTUtils.inEDT;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
@@ -141,6 +142,12 @@ public final class AccessView extends DropShadowPanel {
                 }
             }
         });
+        passwordField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                confirmationField.requestFocusInWindow();
+            }
+        });
 
         confirmationField = new JPasswordField();
         confirmationField.setName("AccessViewConfirmationField");
@@ -155,6 +162,12 @@ public final class AccessView extends DropShadowPanel {
                 } else {
                     unlockAction.setEnabled(false);
                 }
+            }
+        });
+        confirmationField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                unlockButton.doClick();
             }
         });
 
@@ -192,6 +205,12 @@ public final class AccessView extends DropShadowPanel {
 
         passwordField = new JPasswordField();
         passwordField.setName("AccessViewPasswordField");
+        passwordField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                unlockButton.doClick();
+            }
+        });
 
         unlockButton = new JButton();
         unlockAction = new AbstractAction(
