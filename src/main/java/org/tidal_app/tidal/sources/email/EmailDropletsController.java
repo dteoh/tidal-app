@@ -288,22 +288,27 @@ public final class EmailDropletsController implements SetupDroplet,
                     logger.debug("Creating droplet from setup");
                     final AbstractEmailDroplet d = EmailDropletsController.this
                             .addEmailDroplet(settings);
-                    AsyncWorker.post(new AsyncTask() {
 
-                        @Override
-                        public Object run() throws Exception {
-                            d.update();
-                            return null;
-                        }
+                    if (SwingUtilities.isEventDispatchThread()) {
+                        AsyncWorker.post(new AsyncTask() {
 
-                        @Override
-                        public void success(final Object arg0) {
-                        }
+                            @Override
+                            public Object run() throws Exception {
+                                d.update();
+                                return null;
+                            }
 
-                        @Override
-                        public void failure(final Throwable arg0) {
-                        }
-                    });
+                            @Override
+                            public void success(final Object arg0) {
+                            }
+
+                            @Override
+                            public void failure(final Throwable arg0) {
+                            }
+                        });
+                    } else {
+                        d.update();
+                    }
                     logger.debug("Sucessfully created droplet");
                     return true;
                 } catch (DropletCreationException e) {
