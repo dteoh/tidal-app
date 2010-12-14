@@ -61,7 +61,7 @@ The Java cryptography unlimited strength extension should be installed.
 # Install Mercurial.
 #  Configure Mercurial user settings. Username and email should be the same as used in BitBucket. Might want to configure your BitBucket public-private keys so that SSH push/pull can be used.
 # Install Gradle.
-# Pull the source code using {{{$ hg clone ssh://hg@bitbucket.org/dteoh/tidal/ <target destination>}}}
+# Pull the source code.
 # Change directory: {{{$ cd <target destination>}}}
 # Tell gradle to configure Eclipse project: {{{$ gradle eclipse}}}
 # Run Eclipse. Import the project.
