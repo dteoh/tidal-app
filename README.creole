@@ -1,0 +1,90 @@
+== Tidal ==
+
+Tidal is a simple stateless aggregator for IMAP email accounts.
+
+[[http://imgur.com/xcxh2.png|Screenshot]]
+
+The application supports:
+
+* retrieving HTML and plaintext emails through IMAP
+* automatic checking every 5 minutes
+* displaying snippets of retrieved emails on the user interface
+* multiple IMAP accounts
+* storing user settings locally with encryption
+
+Program requirements include [[http://www.java.com|Java 6]] and the [[http://java.sun.com/javase/downloads/index.jsp|Java Cryptography Extension]]. Only Windows is supported at the moment.
+
+----
+
+<<toc>>
+
+== Installing and Using Tidal ==
+
+# Install Java 6.
+# Install the [[http://java.sun.com/javase/downloads/index.jsp|Java Cryptography Extension]]. If you have both the Java runtime (JRE) and development kit (JDK) installed, make sure the extension is installed for both.
+# Unzip Tidal into its own directory.
+# Double click on "tidal-<x>.jar" (x is just the build number).
+
+The first thing you will do with Tidal is to set up your password. This password is used as a key to encrypt your account settings. You will need to use this password whenever you re-start Tidal. If you forgot your password, delete the ".tidal" directory from your home directory (usually C:/users/<your username> on Windows 7, C:/Documents and Settings/<your username> on XP).
+
+To add an account to Tidal, click on the question mark icon on the top left corner.
+
+You can find IMAP account settings from your email provider. If you are using GMail or Google Apps, the details are "imap.gmail.com" for the server and "imaps" for the protocol. Use your full email address as the username.
+
+If the account was added, the interface should show you a preview of unread emails.
+
+You can modify an account by clicking on the gear icon on the top right corner of each preview list.
+
+User settings are automatically saved as long as the program exits normally. Exit the program by clicking on the close button on the main Tidal window.
+
+== Developing Tidal ==
+
+=== Tools ===
+
+The only required development tools are [[http://www.gradle.org/|Gradle]] 0.9 (build system) and a Mercurial client of your choice.
+
+=== Security ===
+
+Tidal will save user settings encrypted in a text file. Jasypt is used to implement the encryption and decryption functionality.
+
+The Java cryptography unlimited strength extension should be installed.
+
+* Jasypt: http://www.jasypt.org/index.html
+* Java Cryptography Extension: http://java.sun.com/javase/downloads/index.jsp
+* Java Cryptography article: http://www.developer.com/security/article.php/3778011/Unlocking-the-Secrets-of-Java-Cryptography-Extensions-The-Basics.htm
+
+=== Helpful Links ===
+
+* [[http://www.miglayout.com/|MigLayout]]: preferred layout manager.
+* [[http://code.google.com/p/snakeyaml/|SnakeYAML]]: used for (de)serializing user settings.
+
+=== Eclipse Quick Start ===
+
+# Install Mercurial.
+#  Configure Mercurial user settings. Username and email should be the same as used in BitBucket. Might want to configure your BitBucket public-private keys so that SSH push/pull can be used.
+# Install Gradle.
+# Pull the source code using {{{$ hg clone ssh://hg@bitbucket.org/dteoh/tidal/ <target destination>}}}
+# Change directory: {{{$ cd <target destination>}}}
+# Tell gradle to configure Eclipse project: {{{$ gradle eclipse}}}
+# Run Eclipse. Import the project.
+# Make changes, etc. Make a patch file from the changesets, etc.
+# Build the project into a zip distribution: {{{$ gradle clean assemble -q makeDist}}}
+
+=== Coding Conventions ===
+
+Use Eclipse's built-in Code Formatter.
+
+# Window -> Preferences -> Java -> Code Style -> Formatter
+# Choose "Java Conventions".
+# Edit the profile. On the "Indentation" tab/page, choose "Tab policy" as "Spaces only".
+# Save the profile.
+# Window -> Preferences -> Java -> Editor -> Save Actions
+# Enable source code formatting for all lines and auto-organization of imports.
+# Configure the additional actions so that at the very least, trailing white space is removed on all lines, and indentation is corrected.
+
+=== Testing ===
+
+Tests are written using JUnit 4.
+
+To run the tests, the "NOPjavamail.providers" file in "src/test/resources/META-INF" should be renamed to "javamail.providers". This will allow the tests to use mock Javamail providers. After running the tests, rename the file back to "NOPjavamail.providers".
+
