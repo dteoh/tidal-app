@@ -39,7 +39,7 @@ User settings are automatically saved as long as the program exits normally. Exi
 
 === Tools ===
 
-The only required development tools are [[http://www.gradle.org/|Gradle]] 0.9 (build system) and a Mercurial client of your choice.
+The only required development tools are [[http://www.gradle.org/|Gradle]] 0.9 (build system).
 
 === Security ===
 
@@ -58,14 +58,12 @@ The Java cryptography unlimited strength extension should be installed.
 
 === Eclipse Quick Start ===
 
-# Install Mercurial.
-#  Configure Mercurial user settings. Username and email should be the same as used in BitBucket. Might want to configure your BitBucket public-private keys so that SSH push/pull can be used.
 # Install Gradle.
 # Pull the source code.
 # Change directory: {{{$ cd <target destination>}}}
 # Tell gradle to configure Eclipse project: {{{$ gradle eclipse}}}
 # Run Eclipse. Import the project.
-# Make changes, etc. Make a patch file from the changesets, etc.
+# Make changes, etc. Commit and submit a pull request.
 # Build the project into a zip distribution: {{{$ gradle clean assemble -q makeDist}}}
 
 === Coding Conventions ===
