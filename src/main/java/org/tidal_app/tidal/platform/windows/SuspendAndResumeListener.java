@@ -18,12 +18,13 @@ package org.tidal_app.tidal.platform.windows;
 
 import java.util.List;
 
-import javax.swing.JFrame;
+import javax.swing.JWindow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tidal_app.tidal.platform.windows.VistaUser32.WNDPROC;
 import org.tidal_app.tidal.platform.windows.events.PowerStateListener;
+import org.tidal_app.tidal.util.EDTUtils;
 
 import com.google.common.collect.Lists;
 import com.sun.jna.Native;
@@ -40,6 +41,8 @@ public final class SuspendAndResumeListener {
 
     private static final Logger logger = LoggerFactory.getLogger(SuspendAndResumeListener.class);
 
+    private JWindow broadcastTarget;
+
     private HWND broadcastWindow;
     private Pointer notificationHandle;
     private WNDPROC proc;
@@ -54,50 +57,58 @@ public final class SuspendAndResumeListener {
      *            A visible frame capable of receiving broadcast events. Must
      *            not be null.
      */
-    public SuspendAndResumeListener(final JFrame broadcastFrame) {
-        if (broadcastFrame == null) {
-            throw new NullPointerException();
-        }
-
+    public SuspendAndResumeListener() {
         listeners = Lists.newLinkedList();
-
         final VistaUser32 user32 = VistaUser32.INSTANCE;
 
-        broadcastWindow = new HWND(Native.getWindowPointer(broadcastFrame));
-        notificationHandle = user32.RegisterPowerSettingNotification(broadcastWindow, VistaUser32.GUID_SYSTEM_AWAYMODE,
-                0);
-        if (notificationHandle == null) {
-            logger.error("Failed to register for PowerSettingNotification");
-            return;
-        }
-
-        proc = new WNDPROC() {
+        Runnable edtTask = new Runnable() {
             @Override
-            public int WndProc(final HWND hWnd, final int uMsg, final WPARAM wParam, final LPARAM lParam) {
-                if (uMsg == VistaUser32.WM_POWERBROADCAST) {
-                    if (VistaUser32.PBT_APMSUSPEND.equals(wParam)) {
-                        // Notify listeners of impending system sleep.
-                        for (PowerStateListener l : listeners) {
-                            l.suspend();
-                        }
-                        return 0;
-                    }
-                    if (VistaUser32.PBT_APMRESUMESUSPEND.equals(wParam)) {
-                        // Notify listeners that system has resumed.
-                        for (PowerStateListener l : listeners) {
-                            l.resume();
-                        }
-                        return 0;
-                    }
+            public void run() {
+                broadcastTarget = new JWindow();
+                broadcastTarget.setSize(0, 0);
+                broadcastTarget.setLocation(-9999, 0);
+                broadcastTarget.setFocusable(false);
+                broadcastTarget.setVisible(true);
+
+                broadcastWindow = new HWND(Native.getWindowPointer(broadcastTarget));
+                notificationHandle = user32.RegisterPowerSettingNotification(broadcastWindow,
+                        VistaUser32.GUID_SYSTEM_AWAYMODE, 0);
+                if (notificationHandle == null) {
+                    logger.error("Failed to register for PowerSettingNotification");
+                    return;
                 }
-                return user32.DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+                proc = new WNDPROC() {
+                    @Override
+                    public int WndProc(final HWND hWnd, final int uMsg, final WPARAM wParam, final LPARAM lParam) {
+                        if (uMsg == VistaUser32.WM_POWERBROADCAST) {
+                            if (VistaUser32.PBT_APMSUSPEND.equals(wParam)) {
+                                // Notify listeners of impending system sleep.
+                                for (PowerStateListener l : listeners) {
+                                    l.suspend();
+                                }
+                                return 0;
+                            }
+                            if (VistaUser32.PBT_APMRESUMESUSPEND.equals(wParam)) {
+                                // Notify listeners that system has resumed.
+                                for (PowerStateListener l : listeners) {
+                                    l.resume();
+                                }
+                                return 0;
+                            }
+                        }
+                        return user32.DefWindowProc(hWnd, uMsg, wParam, lParam);
+                    }
+                };
+
+                LONG_PTR ptr = user32.SetWindowLongPtr(broadcastWindow, VistaUser32.GWL_WNDPROC, proc);
+                if (ptr.longValue() == 0) {
+                    logger.error("Failed to set new address of window procedure");
+                }
             }
         };
 
-        LONG_PTR ptr = user32.SetWindowLongPtr(broadcastWindow, VistaUser32.GWL_WNDPROC, proc);
-        if (ptr.longValue() == 0) {
-            logger.error("Failed to set new address of window procedure");
-        }
+        EDTUtils.runOnEDT(edtTask);
     }
 
     /**
@@ -135,6 +146,8 @@ public final class SuspendAndResumeListener {
 
         user32.UnregisterPowerSettingNotification(notificationHandle);
         notificationHandle = null;
+
+        user32.DestroyWindow(broadcastWindow);
     }
 
     /*
