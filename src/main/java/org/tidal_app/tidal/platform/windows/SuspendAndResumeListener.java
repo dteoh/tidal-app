@@ -144,10 +144,12 @@ public final class SuspendAndResumeListener {
 
         listeners.clear();
 
-        user32.UnregisterPowerSettingNotification(notificationHandle);
-        notificationHandle = null;
-
-        user32.DestroyWindow(broadcastWindow);
+        if (user32.UnregisterPowerSettingNotification(notificationHandle)) {
+            notificationHandle = null;
+            // If we don't destroy the window, the native side of things will
+            // crash.
+            broadcastTarget.dispose();
+        }
     }
 
     /*
