@@ -23,7 +23,7 @@ jar.doFirst {
 
 jar {
     manifest {
-        attributes("Main-Class": "org.tidal_app.tidal.Tidal",
+        attributes("Main-Class": "com.dteoh.tidal.Tidal",
                 "Implementation-Title" : "Tidal",
                 "Implementation-Version" : version,
                 "Sealed" : "true")
