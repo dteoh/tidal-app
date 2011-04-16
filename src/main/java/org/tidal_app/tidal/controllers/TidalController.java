@@ -39,6 +39,8 @@ import org.tidal_app.tidal.configuration.ConfigurationController;
 import org.tidal_app.tidal.exceptions.DropletCreationException;
 import org.tidal_app.tidal.exceptions.UnsecuredException;
 import org.tidal_app.tidal.guice.InjectLogger;
+import org.tidal_app.tidal.platform.windows.SuspendAndResumeListener;
+import org.tidal_app.tidal.platform.windows.events.PowerStateListener;
 import org.tidal_app.tidal.sources.email.EmailDropletsController;
 import org.tidal_app.tidal.sources.email.models.EmailSettings;
 import org.tidal_app.tidal.views.AccessView;
@@ -69,8 +71,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     private Logger logger;
 
     /** Resource bundle. */
-    private static final ResourceMap BUNDLE = new ResourceMaps(
-            TidalController.class).build();
+    private static final ResourceMap BUNDLE = new ResourceMaps(TidalController.class).build();
 
     /** Views */
     /** This is the main application frame. */
@@ -86,6 +87,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     private final ConfigurationController configC;
     private final EmailDropletsController emailC;
 
+    private final SuspendAndResumeListener windowsPowerEvents;
+
     /**
      * Creates a new TidalController.
      * 
@@ -99,16 +102,27 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
      *            Controller responsible for handling the main application view.
      */
     @Inject
-    private TidalController(
-            final ConfigurationController configurationController,
-            final EmailDropletsController emailDropletsController,
-            final MenuBarController menuBarController,
+    private TidalController(final ConfigurationController configurationController,
+            final EmailDropletsController emailDropletsController, final MenuBarController menuBarController,
             final DropletsViewManager dropletsViewManager) {
         configC = configurationController;
         emailC = emailDropletsController;
         menuBarC = menuBarController;
         dropletsViewC = dropletsViewManager;
         menuBarC.addMenuBarViewListener(this);
+
+        windowsPowerEvents = new SuspendAndResumeListener();
+        windowsPowerEvents.addPowerStateListener(new PowerStateListener() {
+            @Override
+            public void suspend() {
+                emailC.pause();
+            }
+
+            @Override
+            public void resume() {
+                emailC.schedule();
+            }
+        });
 
         initView();
     }
@@ -121,18 +135,16 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
             @Override
             public void run() {
                 // Make our application frame.
-                final JFrame mainFrame = new JFrame();
+                mainFrame = new JFrame();
                 mainFrame.setTitle(BUNDLE.getString("appTitle"));
-                mainFrame
-                        .setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 mainFrame.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosing(final WindowEvent e) {
                         exitHandler();
                     }
                 });
-                mainFrame.setMinimumSize(BUNDLE
-                        .getDimension("mainFrame.minimumsize"));
+                mainFrame.setMinimumSize(BUNDLE.getDimension("mainFrame.minimumsize"));
                 mainFrame.setLocationRelativeTo(null);
 
                 mainFramePanel = new JPanel(new CardLayout());
@@ -142,8 +154,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                 // START: Set up the AccessView panel
 
                 final TiledImagePanel accessViewPanel = new TiledImagePanel();
-                accessViewPanel
-                        .setLayout(new MigLayout("", "push[center]push"));
+                accessViewPanel.setLayout(new MigLayout("", "push[center]push"));
 
                 Image backgroundImage = null;
                 try {
@@ -189,13 +200,11 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                 // START: Set up the main application view.
 
                 appPanel = new TiledImagePanel();
-                appPanel.setLayout(new MigLayout("ins 0, wrap", "[grow]",
-                        "[grow]"));
+                appPanel.setLayout(new MigLayout("ins 0, wrap", "[grow]", "[grow]"));
                 appPanel.setBackground(new Color(90, 100, 115));
                 appPanel.setBackground(backgroundImage);
 
-                final DropShadowPanel menuBarPanel = new DropShadowPanel(6,
-                        0.5F);
+                final DropShadowPanel menuBarPanel = new DropShadowPanel(6, 0.5F);
                 menuBarPanel.setLayout(new MigLayout("", "0[grow]0", "0[]"));
                 menuBarPanel.add(menuBarC.getView(), "growx");
                 appPanel.add(menuBarPanel, "pushx, growx, north");
@@ -206,13 +215,10 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
 
                 // END: Set up the main application view.
 
-                final JScrollPane mainScrollPane = new JScrollPane(
-                        mainFramePanel);
+                final JScrollPane mainScrollPane = new JScrollPane(mainFramePanel);
                 mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
-                mainScrollPane
-                        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                mainScrollPane
-                        .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                mainScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                mainScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 mainFrame.add(mainScrollPane);
 
                 mainFrame.setVisible(true);
@@ -242,6 +248,19 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         } catch (final Exception e) {
             logger.error("Error saving application settings", e);
         }
+
+        try {
+            Worker.post(new Task() {
+                @Override
+                public Object run() throws Exception {
+                    windowsPowerEvents.destroy();
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("Error deregistering power events", e);
+        }
+
         System.exit(0);
     }
 
@@ -278,8 +297,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
 
                 logger.debug("Login OK");
 
-                final Iterable<Object> dropletSettings = configC
-                        .loadDropletSettings();
+                final Iterable<Object> dropletSettings = configC.loadDropletSettings();
 
                 for (final Object settings : dropletSettings) {
                     logger.debug("Processing a user setting");
@@ -312,13 +330,11 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                 try {
                     passwordOK = get();
                     if (passwordOK) {
-                        CardLayout cards = (CardLayout) mainFramePanel
-                                .getLayout();
+                        CardLayout cards = (CardLayout) mainFramePanel.getLayout();
                         cards.show(mainFramePanel, "MAIN_VIEW");
                     } else {
                         AccessView accessView = (AccessView) evt.getSource();
-                        accessView.displayMessage(BUNDLE
-                                .getString("loginError"));
+                        accessView.displayMessage(BUNDLE.getString("loginError"));
                         accessView.enableLogin();
                     }
                 } catch (Exception e) {
@@ -356,13 +372,11 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
                     final boolean passwordOK = get();
 
                     if (passwordOK) {
-                        CardLayout cards = (CardLayout) mainFramePanel
-                                .getLayout();
+                        CardLayout cards = (CardLayout) mainFramePanel.getLayout();
                         cards.show(mainFramePanel, "MAIN_VIEW");
                     } else {
                         AccessView accessView = (AccessView) evt.getSource();
-                        accessView.displayMessage(BUNDLE
-                                .getString("passwordError"));
+                        accessView.displayMessage(BUNDLE.getString("passwordError"));
                     }
                 } catch (final Exception e) {
                     logger.error("GUI update error", e);

@@ -58,22 +58,18 @@ import foxtrot.Worker;
  * @author Douglas Teoh
  * 
  */
-public final class EmailDropletsController implements SetupDroplet,
-        EmailsController {
+public final class EmailDropletsController implements SetupDroplet, EmailsController {
 
     /** Logger for this class. */
     @InjectLogger
     private Logger logger;
 
     /** Resource bundle for this class. */
-    private static final ResourceMap BUNDLE = new ResourceMaps(
-            EmailDropletsController.class).build();
+    private static final ResourceMap BUNDLE = new ResourceMaps(EmailDropletsController.class).build();
 
     /** Email update schedule. */
-    private static final long UPDATE_START_DELAY = TimeUnit.MILLISECONDS
-            .convert(5, TimeUnit.SECONDS);
-    private static final long UPDATE_SCHEDULE = TimeUnit.MILLISECONDS.convert(
-            5, TimeUnit.MINUTES);
+    private static final long UPDATE_START_DELAY = TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS);
+    private static final long UPDATE_SCHEDULE = TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES);
 
     /** Mapping between identifiers and email droplets. */
     private final Map<ID, AbstractEmailDroplet> droplets;
@@ -119,8 +115,7 @@ public final class EmailDropletsController implements SetupDroplet,
      *             AbstractEmailDroplet implementations.
      * @return the created AbstractEmailDroplet.
      */
-    public AbstractEmailDroplet addEmailDroplet(
-            final EmailSettings emailSettings) throws DropletCreationException {
+    public AbstractEmailDroplet addEmailDroplet(final EmailSettings emailSettings) throws DropletCreationException {
         outsideEDT();
 
         synchronized (this) {
@@ -129,15 +124,13 @@ public final class EmailDropletsController implements SetupDroplet,
             final Protocol protocol = emailSettings.getProtocol();
             if (protocol == Protocol.imap || protocol == Protocol.imaps) {
                 // IMAP(S) protocol
-                final ImapDroplet imapsDroplet = ImapDroplet
-                        .create(emailSettings);
+                final ImapDroplet imapsDroplet = ImapDroplet.create(emailSettings);
 
                 // Initialize the droplet
                 try {
                     imapsDroplet.init();
                 } catch (DropletInitException e) {
-                    throw new DropletCreationException(
-                            "Could not initialize imap droplet", e);
+                    throw new DropletCreationException("Could not initialize imap droplet", e);
                 }
 
                 imapsDroplet.setEmailsController(this);
@@ -154,8 +147,7 @@ public final class EmailDropletsController implements SetupDroplet,
                 return imapsDroplet;
             } else {
                 // Unknown/unsupported protocols.
-                throw new DropletCreationException("Unknown protocol: "
-                        + protocol);
+                throw new DropletCreationException("Unknown protocol: " + protocol);
             }
         }
     }
@@ -173,8 +165,7 @@ public final class EmailDropletsController implements SetupDroplet,
                 boolean result = (Boolean) Worker.post(new Job() {
                     @Override
                     public Object run() {
-                        final AbstractEmailDroplet abstractEmailDroplet = droplets
-                                .remove(dropletID);
+                        final AbstractEmailDroplet abstractEmailDroplet = droplets.remove(dropletID);
                         if (abstractEmailDroplet != null) {
                             abstractEmailDroplet.destroy();
                             saveConfig.removeConfigurable(abstractEmailDroplet);
@@ -182,8 +173,7 @@ public final class EmailDropletsController implements SetupDroplet,
                             EDTUtils.runOnEDT(new Runnable() {
                                 @Override
                                 public void run() {
-                                    viewManager.removeView(abstractEmailDroplet
-                                            .getDropletView());
+                                    viewManager.removeView(abstractEmailDroplet.getDropletView());
                                 }
                             });
                             return true;
@@ -195,16 +185,14 @@ public final class EmailDropletsController implements SetupDroplet,
             }
 
             // Should be a mirror of the posted job.
-            final AbstractEmailDroplet abstractEmailDroplet = droplets
-                    .remove(dropletID);
+            final AbstractEmailDroplet abstractEmailDroplet = droplets.remove(dropletID);
             if (abstractEmailDroplet != null) {
                 abstractEmailDroplet.destroy();
                 saveConfig.removeConfigurable(abstractEmailDroplet);
                 EDTUtils.runOnEDT(new Runnable() {
                     @Override
                     public void run() {
-                        viewManager.removeView(abstractEmailDroplet
-                                .getDropletView());
+                        viewManager.removeView(abstractEmailDroplet.getDropletView());
                     }
                 });
                 return true;
@@ -254,6 +242,16 @@ public final class EmailDropletsController implements SetupDroplet,
         scheduler.schedule(task, UPDATE_START_DELAY, UPDATE_SCHEDULE);
     }
 
+    /**
+     * Pause scheduled email updates. Resume by calling {@link #schedule()}.
+     */
+    public void pause() {
+        if (scheduler != null) {
+            scheduler.cancel();
+            scheduler = null;
+        }
+    }
+
     @Override
     public JComponent getSetupView() {
         return setupView;
@@ -286,8 +284,7 @@ public final class EmailDropletsController implements SetupDroplet,
             public Object run() {
                 try {
                     logger.debug("Creating droplet from setup");
-                    final AbstractEmailDroplet d = EmailDropletsController.this
-                            .addEmailDroplet(settings);
+                    final AbstractEmailDroplet d = EmailDropletsController.this.addEmailDroplet(settings);
 
                     if (SwingUtilities.isEventDispatchThread()) {
                         AsyncWorker.post(new AsyncTask() {
