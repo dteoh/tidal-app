@@ -21,12 +21,13 @@ import static com.dteoh.tidal.util.EDTUtils.outsideEDT;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
 import org.jdesktop.application.ResourceMap;
 import org.slf4j.Logger;
@@ -88,12 +89,16 @@ public final class EmailDropletsController implements SetupDroplet, EmailsContro
     /** Used to schedule periodic email updates. */
     private Timer scheduler;
 
+    /** Used to run tasks. */
+    private ExecutorService executor;
+
     /**
      * Creates a new email droplets controller.
      */
     @Inject
     private EmailDropletsController() {
         droplets = Maps.newHashMap();
+        executor = Executors.newCachedThreadPool();
 
         Runnable swingTask = new Runnable() {
             @Override
@@ -218,23 +223,12 @@ public final class EmailDropletsController implements SetupDroplet, EmailsContro
             @Override
             public void run() {
                 for (final AbstractEmailDroplet d : droplets.values()) {
-                    new SwingWorker<Void, Void>() {
+                    executor.submit(new Runnable() {
                         @Override
-                        protected Void doInBackground() throws Exception {
+                        public void run() {
                             d.update();
-                            return null;
                         }
-
-                        @Override
-                        protected void done() {
-                            try {
-                                get();
-                            } catch (Exception e) {
-                                logger.error("Update error", e);
-                            }
-                        }
-                    }.execute();
-
+                    });
                 }
             }
         };
@@ -250,6 +244,8 @@ public final class EmailDropletsController implements SetupDroplet, EmailsContro
             scheduler.cancel();
             scheduler = null;
         }
+        executor.shutdownNow();
+        executor = Executors.newCachedThreadPool();
     }
 
     @Override

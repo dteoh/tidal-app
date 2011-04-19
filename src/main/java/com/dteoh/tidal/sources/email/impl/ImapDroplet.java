@@ -62,28 +62,23 @@ import com.google.common.collect.Lists;
  */
 public final class ImapDroplet extends AbstractEmailDroplet {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(ImapDroplet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImapDroplet.class);
 
-    private static final ResourceMap BUNDLE = new ResourceMaps(
-            ImapDroplet.class).build();
+    private static final ResourceMap BUNDLE = new ResourceMaps(ImapDroplet.class).build();
 
     private Store store = null;
     private Folder inbox = null;
 
-    public static ImapDroplet create(final EmailSettings settings)
-            throws DropletCreationException {
+    public static ImapDroplet create(final EmailSettings settings) throws DropletCreationException {
         outsideEDT();
         return new ImapDroplet(IDGenerator.generateID(), settings);
     }
 
-    public static ImapDroplet create(final String host,
-            final Protocol protocol, final String username,
+    public static ImapDroplet create(final String host, final Protocol protocol, final String username,
             final String password) throws DropletCreationException {
         outsideEDT();
 
-        return new ImapDroplet(IDGenerator.generateID(), host, protocol,
-                username, password);
+        return new ImapDroplet(IDGenerator.generateID(), host, protocol, username, password);
     }
 
     private ImapDroplet(final ID identifier, final EmailSettings settings) {
@@ -97,8 +92,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
      * @param username
      * @param password
      */
-    private ImapDroplet(final ID identifier, final String host,
-            final Protocol protocol, final String username,
+    private ImapDroplet(final ID identifier, final String host, final Protocol protocol, final String username,
             final String password) {
         super(identifier, host, protocol, username, password);
     }
@@ -128,8 +122,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         // Set up the mailbox to read from
         try {
             store = session.getStore(settings.getProtocol().toString());
-            store.connect(settings.getHost(), settings.getUsername(),
-                    settings.getPassword());
+            store.connect(settings.getHost(), settings.getUsername(), settings.getPassword());
             inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
         } catch (final NoSuchProviderException e) {
@@ -154,6 +147,9 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             restart();
         } catch (DropletInitException e) {
             LOGGER.error("Failed to restart IMAP droplet", e);
+            // The network connection might be down.
+            view.dropletUpdating(false);
+            return;
         }
 
         Iterable<RippleModel> rms = getRipples();
@@ -170,8 +166,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
         try {
             // This search option will only download unread messages.
-            final FlagTerm searchOption = new FlagTerm(new Flags(
-                    Flags.Flag.SEEN), false);
+            final FlagTerm searchOption = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
             final Message[] messages = inbox.search(searchOption);
 
             // Make ripple models
@@ -180,8 +175,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                 Address[] senderAddresses = messages[i].getFrom();
                 String subject = messages[i].getSubject();
                 Date sent = messages[i].getSentDate();
-                String origin = senderAddresses.length > 0 ? senderAddresses[0]
-                        .toString() : "Unknown";
+                String origin = senderAddresses.length > 0 ? senderAddresses[0].toString() : "Unknown";
 
                 ContentType ct = new ContentType(messages[i].getContentType());
                 String ctBaseType = ct.getBaseType();
@@ -193,17 +187,14 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                     content = (String) messages[i].getContent();
                     content = HTMLUtils.html2text(content);
                 } else if ("multipart".equalsIgnoreCase(ct.getPrimaryType())) {
-                    content = extractMultipartContent((Multipart) messages[i]
-                            .getContent());
+                    content = extractMultipartContent((Multipart) messages[i].getContent());
                 } else {
                     content = "Unhandled content type: " + ctBaseType;
                     LOGGER.info(content);
                 }
 
-                RippleModel rm = new RippleModel.Builder(
-                        messages[i].getMessageNumber()).origin(origin)
-                        .content(content).subject(subject)
-                        .received(sent.getTime()).build();
+                RippleModel rm = new RippleModel.Builder(messages[i].getMessageNumber()).origin(origin)
+                        .content(content).subject(subject).received(sent.getTime()).build();
 
                 unreadRipples.add(rm);
             }
@@ -240,8 +231,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
      * @throws IOException
      *             When there is an error retrieving the multipart body content.
      */
-    private String extractMultipartContent(final Multipart message)
-            throws ParseException, IOException {
+    private String extractMultipartContent(final Multipart message) throws ParseException, IOException {
         ContentType ct = new ContentType(message.getContentType());
         String subType = ct.getSubType();
 
@@ -270,9 +260,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
                         multipartContent = (String) bodyPart.getContent();
                     }
                 } else {
-                    LOGGER.info(
-                            "Unhandled multipart inline content subtype {}",
-                            subType);
+                    LOGGER.info("Unhandled multipart inline content subtype {}", subType);
                 }
             }
         } catch (MessagingException e) {
@@ -302,8 +290,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     }
 
     private void updateUI(final Iterable<RippleModel> models) {
-        final DropletModel dm = new DropletModel(getIdentifier(),
-                getUsername(), models);
+        final DropletModel dm = new DropletModel(getIdentifier(), getUsername(), models);
 
         EDTUtils.runOnEDT(new Runnable() {
             @Override
