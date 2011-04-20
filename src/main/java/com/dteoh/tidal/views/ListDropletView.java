@@ -201,10 +201,10 @@ public final class ListDropletView extends DropShadowPanel implements DropletVie
                     oldView = (RippleView) oldRippleViews[ripple];
                 }
                 if (oldView != null && oldView.hasSameModel(contentModel)) {
-                    ripplesPanel.add(oldView, "pushx, growx");
+                    ripplesPanel.add(oldView, "growx, w 100px");
                     ripple++;
                 } else {
-                    ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
+                    ripplesPanel.add(new RippleView(contentModel), "growx, w 100px");
                 }
             }
 
