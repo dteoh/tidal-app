@@ -43,21 +43,15 @@ import com.dteoh.treasuremap.ResourceMaps;
 public final class RippleView extends JPanel {
 
     /** Class resource bundle. */
-    private static final ResourceMap BUNDLE = new ResourceMaps(RippleView.class)
-            .build();
+    private static final ResourceMap BUNDLE = new ResourceMaps(RippleView.class).build();
 
     // Style resources
-    private static final Color UNSEEN_BG_COLOR = BUNDLE
-            .getColor("unseen.bg.color");
-    private static final Color UNSEEN_FONT_COLOR = BUNDLE
-            .getColor("unseen.font.color");
+    private static final Color UNSEEN_BG_COLOR = BUNDLE.getColor("unseen.bg.color");
+    private static final Color UNSEEN_FONT_COLOR = BUNDLE.getColor("unseen.font.color");
     private static final Font UNSEEN_FONT_STYLE = BUNDLE.getFont("unseen.font");
-    private static final Color ORIGIN_FONT_COLOR = BUNDLE
-            .getColor("originLabel.foreground");
-    private static final Color RECV_FONT_COLOR = BUNDLE
-            .getColor("receivedLabel.foreground");
-    private static final Color CONTENT_FONT_COLOR = BUNDLE
-            .getColor("content.font.color");
+    private static final Color ORIGIN_FONT_COLOR = BUNDLE.getColor("originLabel.foreground");
+    private static final Color RECV_FONT_COLOR = BUNDLE.getColor("receivedLabel.foreground");
+    private static final Color CONTENT_FONT_COLOR = BUNDLE.getColor("content.font.color");
 
     /** Model */
     private final RippleModel contentModel;
@@ -92,8 +86,7 @@ public final class RippleView extends JPanel {
         inEDT();
 
         setLayout(new MigLayout("hidemode 1, wrap 3", "[][]", ""));
-        setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1,
-                BUNDLE.getColor("border.color")));
+        setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, BUNDLE.getColor("border.color")));
         setBackground(UNSEEN_BG_COLOR);
 
         subjectLabel = new JLabel(contentModel.getSubject());
@@ -105,8 +98,7 @@ public final class RippleView extends JPanel {
         JTextPane previewPane = new JTextPane();
         previewPane.setEditable(false);
         String content = contentModel.getContent().trim();
-        previewPane.setText(content.substring(0,
-                Math.min(content.length(), 250)));
+        previewPane.setText(content.substring(0, Math.min(content.length(), 250)));
         previewPane.setBackground(UNSEEN_BG_COLOR);
         previewPane.setForeground(CONTENT_FONT_COLOR);
         add(previewPane, "span 2, growx, pushx, wrap");
@@ -126,4 +118,5 @@ public final class RippleView extends JPanel {
         receivedLabel.setName("RippleViewReceivedLabel");
         add(receivedLabel, "right");
     }
+
 }

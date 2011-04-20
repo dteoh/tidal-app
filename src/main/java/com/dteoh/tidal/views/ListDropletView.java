@@ -55,11 +55,9 @@ import com.google.common.collect.Lists;
  * 
  * @author Douglas Teoh
  */
-public final class ListDropletView extends DropShadowPanel implements
-        DropletView {
+public final class ListDropletView extends DropShadowPanel implements DropletView {
 
-    private static final ResourceMap BUNDLE = new ResourceMaps(
-            ListDropletView.class).build();
+    private static final ResourceMap BUNDLE = new ResourceMaps(ListDropletView.class).build();
 
     /** Models */
     private DropletModel dropletModel;
@@ -78,8 +76,7 @@ public final class ListDropletView extends DropShadowPanel implements
 
     /** UI settings. */
     private static final Font HEADER_FONT = BUNDLE.getFont("header.font");
-    private static final Color HEADER_FOREGROUND = BUNDLE
-            .getColor("header.foreground");
+    private static final Color HEADER_FOREGROUND = BUNDLE.getColor("header.foreground");
 
     /**
      * Creates a new ListDropletView with no model.
@@ -94,8 +91,7 @@ public final class ListDropletView extends DropShadowPanel implements
      * Creates a new ListDropletView with no model.
      */
     private ListDropletView() {
-        super(BUNDLE.getInteger("shadow.size"), BUNDLE
-                .getFloat("shadow.opacity"));
+        super(BUNDLE.getInteger("shadow.size"), BUNDLE.getFloat("shadow.opacity"));
 
         listeners = Lists.newArrayList();
         initView();
@@ -111,20 +107,17 @@ public final class ListDropletView extends DropShadowPanel implements
         setOpaque(false);
 
         // Construct header panel
-        final GradientPanel headerPanel = new GradientPanel(
-                BUNDLE.getColor("header.top.color"),
+        final GradientPanel headerPanel = new GradientPanel(BUNDLE.getColor("header.top.color"),
                 BUNDLE.getColor("header.bottom.color"));
         headerPanel.setName("DropletViewHeaderPanel");
         headerPanel.setLayout(new MigLayout("ins 0", "[][]unrel push[]"));
         int headerBorderSize = BUNDLE.getInteger("header.border.size");
         int headerBorderPadding = BUNDLE.getInteger("header.border.padding");
 
-        headerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-                .createMatteBorder(headerBorderSize, headerBorderSize,
-                        headerBorderSize, headerBorderSize,
-                        BUNDLE.getColor("header.border.color")), BorderFactory
-                .createEmptyBorder(headerBorderPadding, headerBorderPadding,
-                        headerBorderPadding, headerBorderPadding)));
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(headerBorderSize,
+                headerBorderSize, headerBorderSize, headerBorderSize, BUNDLE.getColor("header.border.color")),
+                BorderFactory.createEmptyBorder(headerBorderPadding, headerBorderPadding, headerBorderPadding,
+                        headerBorderPadding)));
 
         nameLabel = new JLabel();
         nameLabel.setForeground(HEADER_FOREGROUND);
@@ -133,11 +126,9 @@ public final class ListDropletView extends DropShadowPanel implements
         headerPanel.add(nameLabel);
 
         Dimension frameSize = BUNDLE.getDimension("updating.frameSize");
-        AnimatedIcon updatingIcon = new AnimatedIcon(
-                BUNDLE.getImage("updating.image"), frameSize.width,
+        AnimatedIcon updatingIcon = new AnimatedIcon(BUNDLE.getImage("updating.image"), frameSize.width,
                 frameSize.height);
-        updatingLabel = new AnimatedLabel(updatingIcon,
-                BUNDLE.getInteger("updating.frameInterval"));
+        updatingLabel = new AnimatedLabel(updatingIcon, BUNDLE.getInteger("updating.frameInterval"));
         updatingLabel.setVisible(false);
         updatingLabel.setToolTipText(BUNDLE.getString("updating.tooltip"));
         headerPanel.add(updatingLabel, "w 22!, h 22!");
@@ -151,8 +142,7 @@ public final class ListDropletView extends DropShadowPanel implements
             }
         };
         configButton.setAction(configAction);
-        configButton.setIcon(PunchIconFactory.createPunchedIcon(
-                BUNDLE.getImage("settings.icon"), 2));
+        configButton.setIcon(PunchIconFactory.createPunchedIcon(BUNDLE.getImage("settings.icon"), 2));
         configButton.setHorizontalAlignment(SwingConstants.CENTER);
         headerPanel.add(configButton, "w 24!, h 24!, wrap");
 
@@ -161,8 +151,7 @@ public final class ListDropletView extends DropShadowPanel implements
         // Construct content panel
         ripplesPanel = new JPanel();
         ripplesPanel.setName("DropletViewRipplesPanel");
-        ripplesPanel.setLayout(new MigLayout("wrap 1, gapy 1, ins 0",
-                "[grow 100]", "[]0"));
+        ripplesPanel.setLayout(new MigLayout("wrap 1, gapy 1, ins 0", "[grow 100]", "[]0"));
         ripplesPanel.setOpaque(false);
 
         add(ripplesPanel, "pushx, growx");
@@ -179,7 +168,11 @@ public final class ListDropletView extends DropShadowPanel implements
             dropletModel = model;
 
             for (final RippleModel contentModel : model.getDropletContents()) {
-                ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
+                // I can't figure out why, but the 100px width makes the
+                // rippleview's width grow and shrink properly. i.e. it is only
+                // as wide as ripplesPanel instead of growing as wide as the
+                // text pane that shows the email contents.
+                ripplesPanel.add(new RippleView(contentModel), "growx, w 100px");
             }
 
             ripplesPanel.validate();
@@ -202,8 +195,7 @@ public final class ListDropletView extends DropShadowPanel implements
             ripplesPanel.removeAll();
             dropletModel = dropletModel.mergeWith(model);
 
-            for (final RippleModel contentModel : dropletModel
-                    .getDropletContents()) {
+            for (final RippleModel contentModel : dropletModel.getDropletContents()) {
                 RippleView oldView = null;
                 if (ripple < oldRippleViews.length) {
                     oldView = (RippleView) oldRippleViews[ripple];
@@ -212,8 +204,7 @@ public final class ListDropletView extends DropShadowPanel implements
                     ripplesPanel.add(oldView, "pushx, growx");
                     ripple++;
                 } else {
-                    ripplesPanel.add(new RippleView(contentModel),
-                            "pushx, growx");
+                    ripplesPanel.add(new RippleView(contentModel), "pushx, growx");
                 }
             }
 
