@@ -78,5 +78,7 @@ The Java cryptography unlimited strength extension should be installed.
 
 Tests are written using JUnit 4.
 
-To run the tests, the "NOPjavamail.providers" file in "src/test/resources/META-INF" should be renamed to "javamail.providers". This will allow the tests to use mock Javamail providers. After running the tests, rename the file back to "NOPjavamail.providers".
+The tests are run using {{{$ gradle tests}}}.
+
+To run the tests manually, the "NOPjavamail.providers" file in "src/test/resources/META-INF" should be renamed to "javamail.providers". This will allow the tests to use mock Javamail providers. After running the tests, rename the file back to "NOPjavamail.providers".
 
