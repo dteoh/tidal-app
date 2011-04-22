@@ -63,7 +63,8 @@ The Java cryptography unlimited strength extension should be installed.
 # Change directory: {{{$ cd <target destination>}}}
 # Tell gradle to configure Eclipse project: {{{$ gradle eclipse}}}
 # Run Eclipse. Import the project.
-# Make changes, etc. Commit and submit a pull request.
+# Make changes, etc. Run the tests: {{{$ gradle tests}}}
+# Commit and submit a pull request.
 # Build the project into a zip distribution: {{{$ gradle clean assemble -q makeDist}}}
 
 === Coding Conventions ===
