@@ -69,15 +69,10 @@ The Java cryptography unlimited strength extension should be installed.
 
 === Coding Conventions ===
 
-Use Eclipse's built-in Code Formatter.
-
-# Window -> Preferences -> Java -> Code Style -> Formatter
-# Choose "Java Conventions".
-# Edit the profile. On the "Indentation" tab/page, choose "Tab policy" as "Spaces only".
-# Save the profile.
-# Window -> Preferences -> Java -> Editor -> Save Actions
-# Enable source code formatting for all lines and auto-organization of imports.
-# Configure the additional actions so that at the very least, trailing white space is removed on all lines, and indentation is corrected.
+* Tabs are converted to four spaces.
+* A line can span up to 120 characters.
+* Remove trailing whitespace.
+* The rest follows standard Java coding conventions.
 
 === Testing ===
 
