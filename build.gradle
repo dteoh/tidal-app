@@ -72,6 +72,18 @@ task copyLibs << {
     }
 }
 
+task setupMockJavamail {
+     file('src/test/resources/META-INF/NOPjavamail.providers')
+         .renameTo(file('src/test/resources/META-INF/javamail.providers'))
+}
+
+test.dependsOn setupMockJavamail
+
+task tests(dependsOn: test) << {
+    file('src/test/resources/META-INF/javamail.providers')
+         .renameTo(file('src/test/resources/META-INF/NOPjavamail.providers'))
+}
+
 task makeDist(type: Zip, dependsOn: [copyLibs]) {
     from 'build/libs'
 }
