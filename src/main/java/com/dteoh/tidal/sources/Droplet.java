@@ -16,8 +16,8 @@
 
 package com.dteoh.tidal.sources;
 
-
 import com.dteoh.tidal.configuration.models.Configurable;
+import com.dteoh.tidal.exceptions.DisconnectedException;
 import com.dteoh.tidal.exceptions.DropletInitException;
 import com.dteoh.tidal.views.DropletView;
 
@@ -32,8 +32,9 @@ public interface Droplet extends Configurable {
      * Initialize the droplet.
      * 
      * @throws DropletInitException
+     * @throws DisconnectedException
      */
-    void init() throws DropletInitException;
+    void init() throws DropletInitException, DisconnectedException;
 
     /**
      * Ask the droplet to retrieve new information and display it on the view

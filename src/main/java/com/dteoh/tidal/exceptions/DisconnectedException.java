@@ -17,25 +17,25 @@
 package com.dteoh.tidal.exceptions;
 
 /**
- * This exception is thrown when a Droplet cannot be created.
+ * 
  * 
  * @author Douglas Teoh
  */
-public class DropletCreationException extends RuntimeException {
+public class DisconnectedException extends Exception {
 
-    public DropletCreationException() {
+    public DisconnectedException() {
         super();
     }
 
-    public DropletCreationException(final String message, final Throwable cause) {
+    public DisconnectedException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public DropletCreationException(final String message) {
+    public DisconnectedException(final String message) {
         super(message);
     }
 
-    public DropletCreationException(final Throwable cause) {
+    public DisconnectedException(final Throwable cause) {
         super(cause);
     }
 

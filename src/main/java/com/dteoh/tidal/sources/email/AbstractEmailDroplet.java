@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 
+import com.dteoh.tidal.exceptions.DisconnectedException;
 import com.dteoh.tidal.exceptions.DropletInitException;
 import com.dteoh.tidal.id.ID;
 import com.dteoh.tidal.sources.Droplet;
@@ -69,8 +70,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    configHandler.getConfigurationView().setSettings(
-                            getSettings());
+                    configHandler.getConfigurationView().setSettings(getSettings());
                     configHandler.show();
                 }
             });
@@ -102,8 +102,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
 
         @Override
         public void apply() {
-            EmailSettings newSettings = configHandler.getConfigurationView()
-                    .getSettings();
+            EmailSettings newSettings = configHandler.getConfigurationView().getSettings();
             handleReconfig(newSettings);
         }
     };
@@ -111,16 +110,14 @@ public abstract class AbstractEmailDroplet implements Droplet {
     /** Manages email droplets. */
     private EmailsController emc;
 
-    protected AbstractEmailDroplet(final ID identifier,
-            final EmailSettings settings) {
+    protected AbstractEmailDroplet(final ID identifier, final EmailSettings settings) {
         this.settings = settings;
         this.identifier = identifier;
         initView();
     }
 
-    protected AbstractEmailDroplet(final ID identifier, final String host,
-            final Protocol protocol, final String username,
-            final String password) {
+    protected AbstractEmailDroplet(final ID identifier, final String host, final Protocol protocol,
+            final String username, final String password) {
         settings = new EmailSettings(host, protocol, username, password);
         this.identifier = identifier;
         initView();
@@ -174,7 +171,7 @@ public abstract class AbstractEmailDroplet implements Droplet {
     }
 
     @Override
-    public abstract void init() throws DropletInitException;
+    public abstract void init() throws DropletInitException, DisconnectedException;
 
     @Override
     public abstract void update();
@@ -208,8 +205,10 @@ public abstract class AbstractEmailDroplet implements Droplet {
 
     /**
      * Restart the droplet.
+     * 
+     * @throws DisconnectedException
      */
-    protected abstract void restart() throws DropletInitException;
+    protected abstract void restart() throws DropletInitException, DisconnectedException;
 
     /**
      * Reconfigure the current droplet using the given settings.
@@ -242,16 +241,14 @@ public abstract class AbstractEmailDroplet implements Droplet {
 
         // Success, lets get fresh emails.
         @SuppressWarnings("unchecked")
-        Iterable<RippleModel> rms = (Iterable<RippleModel>) Worker
-                .post(new Job() {
-                    @Override
-                    public Object run() {
-                        return getRipples();
-                    }
-                });
+        Iterable<RippleModel> rms = (Iterable<RippleModel>) Worker.post(new Job() {
+            @Override
+            public Object run() {
+                return getRipples();
+            }
+        });
 
-        final DropletModel dm = new DropletModel(getIdentifier(),
-                getUsername(), rms);
+        final DropletModel dm = new DropletModel(getIdentifier(), getUsername(), rms);
 
         EDTUtils.runOnEDT(new Runnable() {
             @Override

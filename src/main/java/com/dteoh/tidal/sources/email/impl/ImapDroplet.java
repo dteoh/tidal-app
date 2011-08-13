@@ -41,6 +41,7 @@ import org.jdesktop.application.ResourceMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dteoh.tidal.exceptions.DisconnectedException;
 import com.dteoh.tidal.exceptions.DropletCreationException;
 import com.dteoh.tidal.exceptions.DropletInitException;
 import com.dteoh.tidal.id.ID;
@@ -50,6 +51,7 @@ import com.dteoh.tidal.sources.email.models.EmailSettings;
 import com.dteoh.tidal.sources.email.models.Protocol;
 import com.dteoh.tidal.util.EDTUtils;
 import com.dteoh.tidal.util.HTMLUtils;
+import com.dteoh.tidal.util.NetworkUtils;
 import com.dteoh.tidal.views.models.DropletModel;
 import com.dteoh.tidal.views.models.RippleModel;
 import com.dteoh.treasuremap.ResourceMaps;
@@ -105,12 +107,17 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     }
 
     @Override
-    public void init() throws DropletInitException {
+    public void init() throws DropletInitException, DisconnectedException {
         outsideEDT();
+
+        if (!NetworkUtils.isGoogleReachable()) {
+            throw new DisconnectedException();
+        }
 
         // Don't overwrite system properties.
         final Properties props = new Properties(System.getProperties());
         if (settings.getProtocol() == Protocol.imaps) {
+            LOGGER.debug("Setting properties");
             props.setProperty("mail.imaps.starttls.enable", "true");
             props.setProperty("mail.imaps.host", settings.getHost());
             props.setProperty("mail.imaps.port", "993");
@@ -118,13 +125,19 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         }
 
         final Session session = Session.getInstance(props, null);
+        LOGGER.debug("Got session");
 
         // Set up the mailbox to read from
         try {
+            LOGGER.debug("Starting MBOX setup");
             store = session.getStore(settings.getProtocol().toString());
+            LOGGER.debug("Got MBOX store");
             store.connect(settings.getHost(), settings.getUsername(), settings.getPassword());
+            LOGGER.debug("Connected to MBOX store");
             inbox = store.getFolder("INBOX");
+            LOGGER.debug("Got inbox");
             inbox.open(Folder.READ_ONLY);
+            LOGGER.debug("Inbox opened");
         } catch (final NoSuchProviderException e) {
             LOGGER.error("Init exception", e);
             throw new DropletInitException(e);
@@ -141,18 +154,32 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     public void update() {
         outsideEDT();
 
+        LOGGER.info("Starting update");
+
         view.dropletUpdating(true);
 
+        LOGGER.info("Set icon");
+
         try {
+            LOGGER.info("Restarting");
+
             restart();
+
+            LOGGER.info("Restarted");
         } catch (DropletInitException e) {
             LOGGER.error("Failed to restart IMAP droplet", e);
             // The network connection might be down.
             view.dropletUpdating(false);
             return;
+        } catch (DisconnectedException e) {
+            LOGGER.error("Network down", e);
+            view.dropletUpdating(false);
+            return;
         }
 
+        LOGGER.info("Get ripples");
         Iterable<RippleModel> rms = getRipples();
+        LOGGER.info("Get ripples done");
         updateUI(rms);
     }
 
@@ -215,7 +242,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     }
 
     @Override
-    protected void restart() throws DropletInitException {
+    protected void restart() throws DropletInitException, DisconnectedException {
         cleanup();
         init();
     }

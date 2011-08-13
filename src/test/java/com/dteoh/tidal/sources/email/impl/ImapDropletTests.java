@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
 
+import com.dteoh.tidal.exceptions.DisconnectedException;
 import com.dteoh.tidal.exceptions.DropletCreationException;
 import com.dteoh.tidal.exceptions.DropletInitException;
 import com.dteoh.tidal.sources.email.impl.ImapDroplet;
@@ -55,8 +56,7 @@ public class ImapDropletTests {
 
     @Before
     public void setUp() {
-        settings = new EmailSettings(hostName, imapProtocol, testUser,
-                testPassword);
+        settings = new EmailSettings(hostName, imapProtocol, testUser, testPassword);
     }
 
     @After
@@ -84,9 +84,8 @@ public class ImapDropletTests {
     @Test
     public void testCreate2() {
         try {
-            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(),
-                    settings.getProtocol(), settings.getUsername(),
-                    settings.getPassword());
+            final ImapDroplet droplet = ImapDroplet.create(settings.getHost(), settings.getProtocol(),
+                    settings.getUsername(), settings.getPassword());
             assertEquals(settings, droplet.getSettings());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
@@ -99,8 +98,7 @@ public class ImapDropletTests {
     @Test
     public void testCreate3() {
         try {
-            ImapDroplet.create(settings.getHost(), Protocol.imap,
-                    settings.getUsername(), settings.getPassword());
+            ImapDroplet.create(settings.getHost(), Protocol.imap, settings.getUsername(), settings.getPassword());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
         }
@@ -112,8 +110,7 @@ public class ImapDropletTests {
     @Test
     public void testCreate4() {
         try {
-            ImapDroplet.create(settings.getHost(), Protocol.imaps,
-                    settings.getUsername(), settings.getPassword());
+            ImapDroplet.create(settings.getHost(), Protocol.imaps, settings.getUsername(), settings.getPassword());
         } catch (final DropletCreationException e) {
             fail(e.getMessage());
         }
@@ -134,6 +131,8 @@ public class ImapDropletTests {
             droplet.init();
         } catch (final DropletInitException e) {
             fail(e.getMessage());
+        } catch (DisconnectedException e) {
+            fail("Network down");
         }
     }
 

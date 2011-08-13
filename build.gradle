@@ -87,3 +87,4 @@ task tests(dependsOn: test) << {
 task makeDist(type: Zip, dependsOn: [copyLibs]) {
     from 'build/libs'
 }
+
