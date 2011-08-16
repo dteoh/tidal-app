@@ -40,8 +40,6 @@ import com.dteoh.tidal.configuration.ConfigurationController;
 import com.dteoh.tidal.exceptions.DropletCreationException;
 import com.dteoh.tidal.exceptions.UnsecuredException;
 import com.dteoh.tidal.guice.InjectLogger;
-import com.dteoh.tidal.platform.windows.SuspendAndResumeListener;
-import com.dteoh.tidal.platform.windows.events.PowerStateListener;
 import com.dteoh.tidal.sources.email.EmailDropletsController;
 import com.dteoh.tidal.sources.email.models.EmailSettings;
 import com.dteoh.tidal.views.AccessView;
@@ -87,8 +85,6 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     private final ConfigurationController configC;
     private final EmailDropletsController emailC;
 
-    private final SuspendAndResumeListener windowsPowerEvents;
-
     /**
      * Creates a new TidalController.
      * 
@@ -110,19 +106,6 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         menuBarC = menuBarController;
         dropletsViewC = dropletsViewManager;
         menuBarC.addMenuBarViewListener(this);
-
-        windowsPowerEvents = new SuspendAndResumeListener();
-        windowsPowerEvents.addPowerStateListener(new PowerStateListener() {
-            @Override
-            public void suspend() {
-                emailC.pause();
-            }
-
-            @Override
-            public void resume() {
-                emailC.schedule();
-            }
-        });
 
         initView();
     }
@@ -248,19 +231,6 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
         } catch (final Exception e) {
             logger.error("Error saving application settings", e);
         }
-
-        try {
-            Worker.post(new Task() {
-                @Override
-                public Object run() throws Exception {
-                    windowsPowerEvents.destroy();
-                    return null;
-                }
-            });
-        } catch (Exception e) {
-            logger.error("Error deregistering power events", e);
-        }
-
         System.exit(0);
     }
 
@@ -277,8 +247,7 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.dteoh.tidal.views.events.AccessViewListener#loginAttempted(org
+     * @see com.dteoh.tidal.views.events.AccessViewListener#loginAttempted(org
      * .tidal_app.tidal.events.views.AccessViewEvent)
      */
     @Override
@@ -347,8 +316,8 @@ public class TidalController implements AccessViewListener, MenuBarViewListener 
     /*
      * (non-Javadoc)
      * 
-     * @see com.dteoh.tidal.views.events.AccessViewListener#setupPassword
-     * (org .tidal_app.tidal.events.views.AccessViewEvent)
+     * @see com.dteoh.tidal.views.events.AccessViewListener#setupPassword (org
+     * .tidal_app.tidal.events.views.AccessViewEvent)
      */
     @Override
     public void setupPassword(final AccessViewEvent evt) {
