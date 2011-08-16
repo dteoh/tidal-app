@@ -4,6 +4,8 @@ Tidal is a simple stateless aggregator for IMAP email accounts.
 
 {{http://i.imgur.com/uF1Dk.png|Screenshot}}
 
+**[[https://github.com/downloads/dteoh/tidal-app/tidal-0.3.zip|Download now - Tidal 0.3]]**
+
 The application supports:
 
 * retrieving HTML and plaintext emails through IMAP
