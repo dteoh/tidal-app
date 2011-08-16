@@ -34,9 +34,7 @@ import org.slf4j.Logger;
 
 import com.dteoh.tidal.configuration.SaveConfigurable;
 import com.dteoh.tidal.controllers.ViewManager;
-import com.dteoh.tidal.exceptions.DisconnectedException;
 import com.dteoh.tidal.exceptions.DropletCreationException;
-import com.dteoh.tidal.exceptions.DropletInitException;
 import com.dteoh.tidal.guice.InjectLogger;
 import com.dteoh.tidal.id.ID;
 import com.dteoh.tidal.sources.SetupDroplet;
@@ -142,15 +140,6 @@ public final class EmailDropletsController implements SetupDroplet, EmailsContro
                         viewManager.displayView(imapsDroplet.getDropletView());
                     }
                 });
-
-                // Initialize the droplet
-                try {
-                    imapsDroplet.init();
-                } catch (DropletInitException e) {
-                    throw new DropletCreationException("Could not initialize imap droplet", e);
-                } catch (DisconnectedException e) {
-                    // Network down, we'll be scheduled to try again later.
-                }
 
                 return imapsDroplet;
             } else {

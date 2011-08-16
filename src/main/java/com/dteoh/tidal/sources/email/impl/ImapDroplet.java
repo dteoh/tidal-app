@@ -85,6 +85,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
     private ImapDroplet(final ID identifier, final EmailSettings settings) {
         super(identifier, settings);
+        updateUI(EMPTY);
     }
 
     /**
@@ -97,6 +98,7 @@ public final class ImapDroplet extends AbstractEmailDroplet {
     private ImapDroplet(final ID identifier, final String host, final Protocol protocol, final String username,
             final String password) {
         super(identifier, host, protocol, username, password);
+        updateUI(EMPTY);
     }
 
     @Override
@@ -145,9 +147,6 @@ public final class ImapDroplet extends AbstractEmailDroplet {
             LOGGER.error("Init exception", e);
             throw new DropletInitException(e);
         }
-
-        // All is well, update UI.
-        updateUI(EMPTY);
     }
 
     @Override
@@ -158,8 +157,6 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
         view.dropletUpdating(true);
 
-        LOGGER.info("Set icon");
-
         try {
             LOGGER.info("Restarting");
 
@@ -169,11 +166,11 @@ public final class ImapDroplet extends AbstractEmailDroplet {
         } catch (DropletInitException e) {
             LOGGER.error("Failed to restart IMAP droplet", e);
             // The network connection might be down.
-            view.dropletUpdating(false);
+            updateUI(EMPTY);
             return;
         } catch (DisconnectedException e) {
             LOGGER.error("Network down", e);
-            view.dropletUpdating(false);
+            updateUI(EMPTY);
             return;
         }
 
