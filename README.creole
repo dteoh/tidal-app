@@ -14,8 +14,6 @@ The application supports:
 
 Program requirements include [[http://www.java.com|Java 6]] and the [[http://java.sun.com/javase/downloads/index.jsp|Java Cryptography Extension]]. Only Windows is supported at the moment.
 
-----
-
 == Installing and Using Tidal ==
 
 # Install Java 6.
