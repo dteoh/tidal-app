@@ -2,7 +2,7 @@
 
 Tidal is a simple stateless aggregator for IMAP email accounts.
 
-[[http://imgur.com/xcxh2.png|Screenshot]]
+{{http://i.imgur.com/uF1Dk.png|Screenshot}}
 
 The application supports:
 
