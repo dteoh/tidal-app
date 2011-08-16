@@ -155,7 +155,12 @@ public final class ImapDroplet extends AbstractEmailDroplet {
 
         LOGGER.info("Starting update");
 
-        view.dropletUpdating(true);
+        EDTUtils.runOnEDT(new Runnable() {
+            @Override
+            public void run() {
+                view.dropletUpdating(true);
+            }
+        });
 
         try {
             LOGGER.info("Restarting");
